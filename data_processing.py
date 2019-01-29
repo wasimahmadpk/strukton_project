@@ -64,14 +64,13 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
     
     
     ### Interpolation external and geo-coordinates
-    get_lat = interp1d(geo_list[:,0], lat, fill_value= 'extrapolate')
+    #get_lat = interp1d(geo_list[:,0], lat, fill_value= 'extrapolate')
     get_long = interp1d(geo_list[:,0], lon, fill_value= 'extrapolate')
     
     ### documented in time tdms file
     
     syncdat = pd.read_hdf(syncfile, 'sync', mode='r')
     timedat = pd.read_hdf(datafile, 'time', mode='r', where = 'INTCNT >= syncdat.IntCnt.iloc[3] and INTCNT <= syncdat.IntCnt.iloc[-1]')
-    
     get_xcount = interp1d(syncdat.IntCnt[3:-2],syncdat.ExtCnt[3:-2], fill_value= 'extrapolate')
     get_icount = interp1d(syncdat.ExtCnt[3:-2],syncdat.IntCnt[3:-2], fill_value= 'extrapolate')
     xcounters = np.array(get_xcount(timedat.INTCNT))
@@ -84,12 +83,17 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
 
     # Populating Track and ERS values (Modified)
     edir, tdir = 0,0
+    switch_start = []
+    switch_end = []
     for i in range(len(route_list)-2):
         if i==0:
             start_ind, stop_ind = int(route_list[i,0]), int(route_list[i,1])
             edir = np.zeros(len(xcounters[(start_ind <= xcounters) & (xcounters <= stop_ind)]))
             edir.fill(int(route_list[i,14]))
             tdir = np.repeat(route_list[i,15], len(edir))
+            if route_list[i,11] != '':
+                switch_start.append(start_ind)
+                switch_end.append(stop_ind)
         else:
             start_ind, stop_ind = int(route_list[i,0]), int(route_list[i,1])
             temp = np.zeros(len(xcounters[(start_ind <= xcounters) & (xcounters <= stop_ind)]))
@@ -99,6 +103,9 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
             tdval = route_list[i,15]
             tval = np.repeat(tdval, len(temp))
             tdir = np.concatenate((tdir,tval), axis=-1)
+            if route_list[i,11] != '':
+                switch_start.append(start_ind)
+                switch_end.append(stop_ind)
 
     if len(timedat) != len(edir):
         edir = np.concatenate((edir, np.repeat(edval, (len(timedat)-len(edir)))), axis=-1)
@@ -106,8 +113,7 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
     ERS_DIR = edir
     TRACK_DIR = tdir
     
-    timedat = timedat.assign(TRACK_DIR = TRACK_DIR)
-    timedat = timedat.assign(ERS_DIR = ERS_DIR)
+    timedat = timedat.assign(TRACK_DIR = TRACK_DIR, ERS_DIR = ERS_DIR)
     
     CHA1 = np.array(timedat.CHA1)
     CHA2 = np.array(timedat.CHA2)
@@ -116,10 +122,8 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
     CHB1 = np.array(timedat.CHB1)
     CHB2 = np.array(timedat.CHB2)
     CHB3 = np.array(timedat.CHB3)
-    
-    
-    
-    #2. Transformmed channel
+
+    #2. Transformmed channels
     CHC1 = np.empty(len(tdir),dtype=object)
     CHC2 = np.empty(len(tdir),dtype=object)
     CHC3 = np.empty(len(tdir),dtype=object)
@@ -129,21 +133,46 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
     CHC1[(tdir=='Af') & (edir==1)] = CHB1[(tdir=='Af') & (edir==1)]
     CHC1[(tdir=='Af') & (edir==-1)] = CHA1[(tdir=='Af') & (edir==-1)]
     
-    CHC2[(tdir=='Op') & (edir==1)] = CHA2[(tdir=='Op') & (edir==1)]
-    CHC2[(tdir=='Op') & (edir==-1)] = CHB2[(tdir=='Op') & (edir==-1)]
-    CHC2[(tdir=='Af') & (edir==1)] = CHB2[(tdir=='Af') & (edir==1)]
-    CHC2[(tdir=='Af') & (edir==-1)] = CHA2[(tdir=='Af') & (edir==-1)]
+#    CHC2[(tdir=='Op') & (edir==1)] = CHA2[(tdir=='Op') & (edir==1)]
+#    CHC2[(tdir=='Op') & (edir==-1)] = CHB2[(tdir=='Op') & (edir==-1)]
+#    CHC2[(tdir=='Af') & (edir==1)] = CHB2[(tdir=='Af') & (edir==1)]
+#    CHC2[(tdir=='Af') & (edir==-1)] = CHA2[(tdir=='Af') & (edir==-1)]
     
     CHC3[(tdir=='Op') & (edir==1)] = CHA3[(tdir=='Op') & (edir==1)]
     CHC3[(tdir=='Op') & (edir==-1)] = CHB3[(tdir=='Op') & (edir==-1)]
     CHC3[(tdir=='Af') & (edir==1)] = CHB3[(tdir=='Af') & (edir==1)]
     CHC3[(tdir=='Af') & (edir==-1)] = CHA3[(tdir=='Af') & (edir==-1)]
+
+    CHD1 = np.empty(len(tdir), dtype=object)
+    CHD2 = np.empty(len(tdir), dtype=object)
+    CHD3 = np.empty(len(tdir), dtype=object)
+
+    CHD1[(tdir == 'Op') & (edir == 1)] = CHB1[(tdir == 'Op') & (edir == 1)]
+    CHD1[(tdir == 'Op') & (edir == -1)] = CHA1[(tdir == 'Op') & (edir == -1)]
+    CHD1[(tdir == 'Af') & (edir == 1)] = CHA1[(tdir == 'Af') & (edir == 1)]
+    CHD1[(tdir == 'Af') & (edir == -1)] = CHB1[(tdir == 'Af') & (edir == -1)]
+
+#    CHD2[(tdir == 'Op') & (edir == 1)] = CHB2[(tdir == 'Op') & (edir == 1)]
+#    CHD2[(tdir == 'Op') & (edir == -1)] = CHA2[(tdir == 'Op') & (edir == -1)]
+#    CHD2[(tdir == 'Af') & (edir == 1)] = CHA2[(tdir == 'Af') & (edir == 1)]
+#    CHD2[(tdir == 'Af') & (edir == -1)] = CHB2[(tdir == 'Af') & (edir == -1)]
+
+    CHD3[(tdir == 'Op') & (edir == 1)] = CHB3[(tdir == 'Op') & (edir == 1)]
+    CHD3[(tdir == 'Op') & (edir == -1)] = CHA3[(tdir == 'Op') & (edir == -1)]
+    CHD3[(tdir == 'Af') & (edir == 1)] = CHA3[(tdir == 'Af') & (edir == 1)]
+    CHD3[(tdir == 'Af') & (edir == -1)] = CHB3[(tdir == 'Af') & (edir == -1)]
+
+    #LAT = np.array(get_lat(xcounters))
+    #LON = np.array(get_long(xcounters))
+
+    timedat = timedat.drop(['CHA1', 'CHA2', 'CHA3', 'CHB1', 'CHB2', 'CHB3'], axis = 1)
+    timedat = timedat.assign(CHC1=CHC1, CHC3=CHC3, CHD1=CHD1, CHD3=CHD3)
     
+    switch_counters = np.array([])
     
+    for z in range(len(switch_start)):
+        temparr = np.array(timedat[(timedat.EXTCNT >= switch_start[z]) & (timedat.EXTCNT <= switch_end[z])].index)
+        switch_counters = np.concatenate((switch_counters, temparr),axis=0)
     
-            
-    LAT = get_lat(xcounters)
-    LON = get_long(xcounters)
-    
-    timedat = timedat.assign(CHC1=CHC1, CHC2=CHC2, CHC3=CHC3, LAT=LAT, LON=LON)
+    timedat = timedat.drop(list(switch_counters), axis=0)
     timedat.to_hdf(processedfile, key='processed', mode='w')

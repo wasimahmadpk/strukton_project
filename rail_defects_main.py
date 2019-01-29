@@ -9,6 +9,8 @@ import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from performance import get_perform
+from intersect import intersection
 from data_processing import pre_processing
 from geopy.distance import geodesic
 from itertools import zip_longest
@@ -57,7 +59,6 @@ else:
                   ttlist = [float(x) for x in tlist if len(x)>0]
                   geo_list.append(ttlist)
         print(f'Processed {line_count} lines in POI file.')
-        print ("Program is running...")
         geo_list = np.array(geo_list)
         
     lat = geo_list[:,1]
@@ -68,10 +69,49 @@ else:
     get_lat = interp1d(geo_list[:,0], lat, fill_value= 'extrapolate')
     get_long = interp1d(geo_list[:,0], lon, fill_value= 'extrapolate')
     
+    ## Get rail objects location
+    obj_counters = np.array([])
+    cntval = []
+    cntstart = []
+    cntstop = []
+    with open(r'F:\strukton_project\Groningen\labeledData\temp_dist.csv') as csv_file:
+        csv_reader = csv.reader(csv_file)
+        line_count = 0
+        
+        for row in csv_reader:
+            tempStr = ''.join(row)
+            if tempStr.startswith('#') or len(tempStr) == 0:
+                  continue
+            elif tempStr.startswith('Numbers'):
+                  print(f'Column names are {", ".join(row)}')
+                  line_count += 1
+            else:
+                  line_count += 1
+                  tlist = tempStr.split(";")
+                  if tlist[6]== 'D:\\Prorail\\Data\\Groningen\\171128\\Prorail17112805si12':
+                      if int(tlist[10])==1 or int(tlist[11])==1 or int(tlist[12])==1 or int(tlist[14])==1 or int(tlist[15])==1 or int(tlist[16])==1:
+                          cntstart.append(int(tlist[4]) - 500)
+                          cntstop.append(int(tlist[4]) + 500)
+#                          temparr = np.array(list(range(cntstart, cntstop, 1)))
+#                          obj_counters = np.concatenate((obj_counters, temparr), axis=0)
+#                  
+        print(f'Processed {line_count} lines in rail_objects file.')
+        print ("Program is running...")
+
+    
+    ################################################################
     processed_data = pd.read_hdf(processed_file, 'processed', mode='r')
+    
+    for z in range(len(cntstart)):
+        temparr = np.array(processed_data[(processed_data.EXTCNT >= cntstart[z]) & (processed_data.EXTCNT <= cntstop[z])].index)
+        obj_counters = np.concatenate((obj_counters, temparr),axis=0)
+    
+    processed_data = processed_data.drop(list(obj_counters), axis=0)
     
     CHC1 = np.array(processed_data.CHC1)
     CHC3 = np.array(processed_data.CHC3)
+    CHD1 = np.array(processed_data.CHD1)
+    CHD3 = np.array(processed_data.CHD3)
     EDIR = np.array(processed_data.ERS_DIR)
     
     int_count = np.array(processed_data.INTCNT)
@@ -79,7 +119,7 @@ else:
 #    date_time = syncdat.DateTime
     
     
-    #Pushing & Pulling ABA data
+    #Pushing & Pulling ABA data for one side (left or right)
     pull_data_chc1 = CHC1[(EDIR==1)]
     push_data_chc1 = CHC1[(EDIR==-1)]
     pull_data_chc3 = CHC3[(EDIR==1)]
@@ -91,19 +131,35 @@ else:
     pull_data = np.power((np.power(pull_data_chc1,2) + np.power(pull_data_chc3,2)), 1/2)
     push_data = np.power((np.power(push_data_chc1,2) + np.power(push_data_chc3,2)), 1/2)
     
+    ## Second side
+    pull_data_chc1 = CHD1[(EDIR==1)]
+    push_data_chc1 = CHD1[(EDIR==-1)]
+    pull_data_chc3 = CHD3[(EDIR==1)]
+    push_data_chc3 = CHD3[(EDIR==-1)]
+    
+    pull_int_count = int_count[(EDIR==1)]
+    push_int_count = int_count[(EDIR==-1)]
+    
+    pull_data2 = np.power((np.power(pull_data_chc1,2) + np.power(pull_data_chc3,2)), 1/2)
+    push_data2 = np.power((np.power(push_data_chc1,2) + np.power(push_data_chc3,2)), 1/2)
+    
+    ########################################
     data_list = []
     counters_list = []
     data_list.append(pull_data)
     data_list.append(push_data)
     counters_list.append(pull_int_count)
     counters_list.append(push_int_count)
-    
+    ########################################
+    data_list2 = []
+    data_list2.append(pull_data2)
+    data_list2.append(push_data2)
+    ########################################
     anom_xcount_list = []
     anom_xcount_train_list = []
     
     get_xcount = interp1d(int_count, ext_count, fill_value= 'extrapolate')
     get_icount = interp1d(ext_count, int_count, fill_value= 'extrapolate')
-    
     #///////////// Feature Extraction //////////////
     aba_data_mode = []
     int_count_mode = []

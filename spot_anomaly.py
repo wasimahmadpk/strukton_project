@@ -6,6 +6,7 @@ Created on Thu Jan  3 14:09:57 2019
 """
 
 from PIL import Image
+import xml.etree.ElementTree as ET
 import numpy as np
 import glob
 import csv
@@ -94,7 +95,7 @@ for i in range(len(image_list)):
         tnum = list(str(int(num)))
         cnt_signum = int(tnum[0]+tnum[1]+tnum[2])
         itlist2.append(cnt_signum)
-        anom_num = int(tnum[3]+tnum[4]+tnum[5]+tnum[6])*4 + 3150*4
+        anom_num = int(tnum[3]+tnum[4]+tnum[5]+tnum[6])*4 #+ 3150*4
         if img_signum == cnt_signum:
             if anom_num >= 40000:
                 next_spots.append(abs(40000 - anom_num)-1)
