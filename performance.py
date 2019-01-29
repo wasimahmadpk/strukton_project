@@ -86,8 +86,8 @@ for i in range(len(tree_list)):
 
         xmin = obj.find('xmin').text
         xmax = obj.find('xmax').text
-        print(xmin, xmax)
         xdim = (int(xmin) + int(xmax)) / 2
+        print(xmin, xdim, xmax)
         defect_spots.append(xdim)
         all_defects_spots.append(xdim)
 
@@ -124,14 +124,14 @@ for i in range(len(tree_list)):
 
     for s in range(len(defect_spots)):
         for w in range(len(anom_spots)):
-            if abs(anom_spots[w] - defect_spots[s]) < 2000:
+            if abs(anom_spots[w] - defect_spots[s]) < 5000:
                 hitrate = hitrate + 1
             else:
                 falarms = falarms + 1
 
     for s in range(len(anom_spots)):
         for w in range(len(defect_spots)):
-            if abs(anom_spots[s] - defect_spots[w]) < 2000:
+            if abs(anom_spots[s] - defect_spots[w]) < 5000:
                 hitrate = hitrate + 1
             else:
                 false_neg = false_neg + 1
