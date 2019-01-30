@@ -18,7 +18,7 @@ print('Calculating Model\'s Performance')
 tree_list = []
 file_names = []
 obj_dim = []
-hitrate, false_alarms, false_negatives = 0, 0, 0
+hit_rate, false_alarms, false_negatives = 0, 0, 0
 for filename in glob.glob(
         r'F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\xml\61\*.xml'):
     fname = os.path.basename(filename)
@@ -117,22 +117,25 @@ for i in range(len(tree_list)):
             else:
                 anom_spots.append(anom_num)
                 all_spots.append(anom_num)
-
-    for s in range(len(defect_spots)):
-        for w in range(len(anom_spots)):
-            if abs(anom_spots[w] - defect_spots[s]) < 4000:
-                hitrate = hitrate + 1
-            else:
-                false_alarms = false_alarms + 1
-
+    # compare anomalies
+    hit_container = []
     for s in range(len(anom_spots)):
         for w in range(len(defect_spots)):
-            if abs(anom_spots[s] - defect_spots[w]) < 4000:
-                hitrate = hitrate + 1
-                continue
-            else:
-                false_negatives = false_negatives + 1
+            hit_container.append(abs(anom_spots[s] - defect_spots[w]))
+        if any(hit_container) < 4000:
+            hit_rate = hit_rate + 1
+        else:
+            false_alarms = false_alarms + 1
+    # compare actual defects
+    hit_container = []
+    for s in range(len(defect_spots)):
+        for w in range(len(anom_spots)):
+            hit_container.append(abs(anom_spots[w] - defect_spots[s]))
+        if any(hit_container) < 4000:
+            continue
+        else:
+            false_negatives = false_negatives + 1
 
 
     # Comparison of actual defects vs detected anomalies
-print('Hits: {} , False Alarms: {}, False Negatives: '.format(hitrate, false_alarms, false_negatives))
+print('Hits: {} , False Alarms: {}, False Negatives: {}'.format(hit_rate, false_alarms, false_negatives))
