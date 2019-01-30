@@ -9,8 +9,6 @@ import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-#from performance import get_perform
-from intersect import intersection
 from data_processing import pre_processing
 from geopy.distance import geodesic
 from itertools import zip_longest
