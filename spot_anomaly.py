@@ -27,7 +27,7 @@ for filename in glob.glob(r'F:\strukton_project\Groningen\Prorail17112805si12\AB
 counters_pull = []
 counters_push = []
 
-with open('F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\counter_data\prorail17112805si12_pushing.csv') as csv_file:
+with open('F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\counter_data\prorail17112805si12_right_pushing.csv') as csv_file:
         csv_reader = csv.reader(csv_file)
         line_count = 0
         for row in csv_reader:
@@ -47,7 +47,7 @@ with open('F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805
         counters_push = np.array(counters_push)
 
 
-with open('F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\counter_data\prorail17112805si12_pulling.csv') as csv_file:
+with open('F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\counter_data\prorail17112805si12_right_pulling.csv') as csv_file:
         csv_reader = csv.reader(csv_file)
         line_count = 0
         for row in csv_reader:
@@ -111,10 +111,10 @@ for i in range(len(image_list)):
      # Replace white with red... (leaves alpha values alone...)
     #white_areas = (red == 27) & (blue == 27) & (green == 27)
     anom_points = np.zeros((data.shape[0], data.shape[1]), dtype=bool)
-    anom_points[:,anom_spots] = True
+    anom_points[:, anom_spots] = True
     print(anom_points.shape)
     print(data.shape)
-    data[..., :-1][anom_points] = (0, 128, 0) # Transpose back needed
+    data[..., :-1][anom_points] = (0, 128, 0)  # Transpose back needed
      
     im2 = Image.fromarray(data)
     im2 = im2.convert('RGB')

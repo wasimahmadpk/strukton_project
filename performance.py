@@ -32,7 +32,7 @@ counters_pull = []
 counters_push = []
 
 with open(
-        'F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\counter_data\prorail17112805si12_pushing.csv') as csv_file:
+        'F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\counter_data\prorail17112805si12_right_pushing.csv') as csv_file:
     csv_reader = csv.reader(csv_file)
     line_count = 0
     for row in csv_reader:
@@ -52,7 +52,7 @@ with open(
     counters_push = np.array(counters_push)
 
 with open(
-        'F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\counter_data\prorail17112805si12_pulling.csv') as csv_file:
+        'F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\counter_data\prorail17112805si12_right_pulling.csv') as csv_file:
     csv_reader = csv.reader(csv_file)
     line_count = 0
     for row in csv_reader:
@@ -109,7 +109,7 @@ for i in range(len(tree_list)):
         tnum = list(str(int(num)))
         cnt_signum = int(tnum[0] + tnum[1] + tnum[2])
         itlist2.append(cnt_signum)
-        anom_num = int(tnum[3] + tnum[4] + tnum[5] + tnum[6]) * 4  # + 3150*4
+        anom_num = int(tnum[3] + tnum[4] + tnum[5] + tnum[6])*4 + 3150*4
         if label_signum == cnt_signum:
             if anom_num >= 40000:
                 next_spots.append(abs(40000 - anom_num))
@@ -120,15 +120,16 @@ for i in range(len(tree_list)):
 
     for s in range(len(defect_spots)):
         for w in range(len(anom_spots)):
-            if abs(anom_spots[w] - defect_spots[s]) < 5000:
+            if abs(anom_spots[w] - defect_spots[s]) < 4000:
                 hitrate = hitrate + 1
             else:
                 false_alarms = false_alarms + 1
 
     for s in range(len(anom_spots)):
         for w in range(len(defect_spots)):
-            if abs(anom_spots[s] - defect_spots[w]) < 5000:
+            if abs(anom_spots[s] - defect_spots[w]) < 4000:
                 hitrate = hitrate + 1
+                continue
             else:
                 false_negatives = false_negatives + 1
 
