@@ -144,6 +144,8 @@ else:
     push_data2 = np.power((np.power(push_data_chc1,2) + np.power(push_data_chc3,2)), 1/2)
     
     ########################################
+    rail_data = []
+    rail_counters = []
     data_list = []
     counters_list = []
     data_list.append(pull_data)
@@ -154,6 +156,11 @@ else:
     data_list2 = []
     data_list2.append(pull_data2)
     data_list2.append(push_data2)
+    rail_data.append(data_list)
+    rail_data.append(data_list2)
+    rail_counters.append(counters_list)
+    rail_counters.append(counters_list)
+
     ########################################
     anom_xcount_list = []
     anom_xcount_train_list = []
@@ -161,173 +168,180 @@ else:
     get_xcount = interp1d(int_count, ext_count, fill_value= 'extrapolate')
     get_icount = interp1d(ext_count, int_count, fill_value= 'extrapolate')
     #///////////// Feature Extraction //////////////
-    aba_data_mode = []
-    int_count_mode = []
+
+    aba_data_side = []
     all_xcount_mode = []
-    for i in range(len(data_list)):
-    
-        list_of_features = extract_features(data_list[i], counters_list[i], 3000)
-        
-        rms = np.array(list_of_features[:,0])
-        skewness = np.array(list_of_features[:,3])
-        peak_to_peak = np.array(list_of_features[:,4])
-        crest_factor = np.array(list_of_features[:,5])
-        rmsf = np.array(list_of_features[:,12])
-        int_count = np.array(list_of_features[:,13])
-        
-        aba_data_mode.append(peak_to_peak)
-        int_count_mode.append(int_count_mode)
-        
-        ## features comparison
-        plt.figure(2)
-        plt.subplot(411)
-        plt.ylabel('RMS')
-        plt.xlabel('Time')
-        plt.plot(rms) 
-        plt.subplot(412)
-        plt.ylabel('Skewness')
-        plt.xlabel('Time')
-        plt.plot(skewness)
-        plt.subplot(413)
-        plt.ylabel('Peak to peak')
-        plt.xlabel('Time')
-        plt.plot(peak_to_peak)
-        plt.subplot(414)
-        plt.ylabel('Crest factor')
-        plt.xlabel('Time')
-        plt.plot(crest_factor)
-        plt.show()
-        print(rms)
-      
-        mylist = np.stack((peak_to_peak,crest_factor), axis=-1)
-        
-        #best_k(mylist)
-        #//////K-Means Clustering and Data Labelling for Supervised Anomaly detection///////////////
-        #norm_data = []
-        #anom_data = []
-        #kmeans = KMeans(n_clusters=2, random_state=1).fit(mylist)
-        #clusters = np.array(kmeans.labels_.astype(float))
-        #for i in range(len(clusters)):
-        #    if clusters[i] == 0:
-        #        norm_data.append(list_of_features[i,:])
-        ##        plt.scatter(list_of_features[i,0],list_of_features[i,4], c = 'g', marker = '*')
-        ##        plt.title("Data Clustering")
-        ##        plt.xlabel("Feature 1")
-        ##        plt.ylabel("Feature 2")
-        ##        plt.show()
-        #    elif clusters[i] ==1:
-        #        anom_data.append(list_of_features[i,:])
-        ##        plt.scatter(list_of_features[i,0],list_of_features[i,4], c = 'r', marker = 'o')
-        ##        plt.title("Data Clustering")
-        ##        plt.xlabel("Feature 1")
-        ##        plt.ylabel("Feature 2")
-        ##        plt.show()
-        #        
-        #         
-        #norm_data = np.array(norm_data)
-        #anom_data = np.array(anom_data)
-        
-        #X_train = np.concatenate((norm_data, anom_data), axis=0)
-        
-        #multi_anomaly_detection(norm_data, anom_data)
-        
-        norm_train, anom_train, norm_test, anom_test, anom_icount, anom_icount_train = isolation_forest(mylist, int_count)
-        
-    #    norm_train = np.concatenate(norm_train.tolist())
-    #    anom_train = np.concatenate(anom_train.tolist())
-    #    norm_test = np.concatenate(norm_test.tolist())
-    #    anom_test = np.concatenate(anom_test.tolist())
-        
-        all_xcount_mode.append(get_xcount(int_count))
-        anom_xcount_test = get_xcount(anom_icount)
-        anom_xcount_train = get_xcount(anom_icount_train)
-        anom_xcount = np.concatenate((anom_xcount_train, anom_xcount_test),axis=0)
-        
-        #new code for validation of anomalies
-        latitude = get_lat(anom_xcount)
-        longitude = get_long(anom_xcount)
-        dist = [0]
-        for z in range(len(latitude)-1):
-            point_one = (latitude[z], longitude[z])
-            point_two = (latitude[z+1], longitude[z+1])
-            distance = geodesic(point_one, point_two).km
-            dist.append(1000 * distance)
-         
-            
-        anom_xcount = [str(x) for x in anom_xcount]
-        latitude = [str(x) for x in latitude]
-        longitude = [str(x) for x in longitude]
-        dist = [str(x) for x in dist]
-        
-#        d = [list(anom_xcount), list(latitude), list(longitude), dist]
-#        write_data = zip_longest(*d, fillvalue = '')
-        write_data = zip(anom_xcount, latitude, longitude, dist)
-        train_mode = 'pushing' if i else 'pulling' 
-        with open(counters_path + '\prorail17112805si12_'+ train_mode +'.csv', 'w', newline='') as file:
-            try:
-                writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                writer.writerow(['counters', 'latitude','longitude','distance'])
-                for cnt, lat, lon, dist in write_data:
-                    writer.writerow([cnt, lat, lon, dist])
-            finally:
-                file.close()
-        #######################################################
-        
-        
-        anom_xcount_list.append(anom_xcount)
-        anom_xcount_train_list.append(anom_xcount_train)
-        
-        lat_list = get_lat(anom_xcount).tolist()
-        long_list = get_long(anom_xcount).tolist()
-        lat_list_train = get_lat(anom_xcount_train).tolist()
-        long_list_train = get_long(anom_xcount_train).tolist()
-        
-        #    dlist = []
-        #    xcgcode = []
-        #    
-        #geocodes_train = np.array(geocode)
-        #unique_gcodes_train = np.unique(geocodes_train, axis = 0)
-        #lat_list_train = unique_gcodes_train[:, 1].tolist()
-        #long_list_train = unique_gcodes_train[:, 2].tolist()
-        #
-        #lat_list_train = [float(i) for i in lat_list_train]
-        #long_list_train = [float(j) for j in lon_list_train]
-        
-        # Calculation of time of data acquisition
-        
-        #geo_xcount = geo_list[:,0]
-        #geo_icount = get_icount(geo_xcount)
-        #geo_icount[np.isnan(geo_icount)] = 0
-        
-        #dlist = []
-        #dtval = []
-        #
-        #for j in range(len(geo_icount)):
-        #    tval1 = geo_icount[j]
-        #    for k in range(len(int_count2)):
-        #        tval2 = int(int_count2[k])
-        #        diff = abs(tval2 - tval1)
-        #        dlist.append(diff)
-        #    dlist = np.array(dlist)
-        #    indmin = np.unravel_index(np.argmin(dlist, axis=None), dlist.shape)
-        #    datetime = date_time[indmin[0]].tolist()
-        #    xval = geo_list[indmin[0],[0]].tolist()
-        #    dtval.append(datetime[0])
-        #    dlist = []
-        #    xcgcode = []
-        #
-        #dtval = np.array(dtval)
-        #unique_dtval = np.unique(dtval, axis=0)
-        
-        gmap_plot(lat_list_train + lat_list, long_list_train + long_list)
-                
-        #///// Plot Confusion Matrix /////////////
-        
-        #YTrue = np.concatenate((X_true_test, X_true_outliers), axis=0)
-        #YPred = np.concatenate((y_pred_test, y_pred_outliers), axis=0)
-        #
-        #conf_mat = confusion_matrix(YTrue, YPred)
-        ## Plot non-normalized confusion matrix
-        #plt.figure()
-        #plot_confusion_matrix(conf_mat, classes= ['Normal', 'Anomaly'],
-        #                      title='Confusion matrix')
+    for i in range(len(rail_data)):
+        aba_data_mode = []
+        int_count_mode = []
+        for j in range(len(data_list)):
+            input = rail_data[i]
+            counters = rail_counters[i]
+            list_of_features = extract_features(input[j], counters[j], 3000)
+
+            rms = np.array(list_of_features[:,0])
+            skewness = np.array(list_of_features[:,3])
+            peak_to_peak = np.array(list_of_features[:,4])
+            crest_factor = np.array(list_of_features[:,5])
+            rmsf = np.array(list_of_features[:,12])
+            int_count = np.array(list_of_features[:,13])
+
+            aba_data_mode.append(peak_to_peak)
+            int_count_mode.append(int_count_mode)
+
+            ## features comparison
+            plt.figure(2)
+            plt.subplot(411)
+            plt.ylabel('RMS')
+            plt.xlabel('Time')
+            plt.plot(rms)
+            plt.subplot(412)
+            plt.ylabel('Skewness')
+            plt.xlabel('Time')
+            plt.plot(skewness)
+            plt.subplot(413)
+            plt.ylabel('Peak to peak')
+            plt.xlabel('Time')
+            plt.plot(peak_to_peak)
+            plt.subplot(414)
+            plt.ylabel('Crest factor')
+            plt.xlabel('Time')
+            plt.plot(crest_factor)
+            plt.show()
+            print(rms)
+
+            mylist = np.stack((peak_to_peak,crest_factor), axis=-1)
+
+            #best_k(mylist)
+            #//////K-Means Clustering and Data Labelling for Supervised Anomaly detection///////////////
+            #norm_data = []
+            #anom_data = []
+            #kmeans = KMeans(n_clusters=2, random_state=1).fit(mylist)
+            #clusters = np.array(kmeans.labels_.astype(float))
+            #for i in range(len(clusters)):
+            #    if clusters[i] == 0:
+            #        norm_data.append(list_of_features[i,:])
+            ##        plt.scatter(list_of_features[i,0],list_of_features[i,4], c = 'g', marker = '*')
+            ##        plt.title("Data Clustering")
+            ##        plt.xlabel("Feature 1")
+            ##        plt.ylabel("Feature 2")
+            ##        plt.show()
+            #    elif clusters[i] ==1:
+            #        anom_data.append(list_of_features[i,:])
+            ##        plt.scatter(list_of_features[i,0],list_of_features[i,4], c = 'r', marker = 'o')
+            ##        plt.title("Data Clustering")
+            ##        plt.xlabel("Feature 1")
+            ##        plt.ylabel("Feature 2")
+            ##        plt.show()
+            #
+            #
+            #norm_data = np.array(norm_data)
+            #anom_data = np.array(anom_data)
+
+            #X_train = np.concatenate((norm_data, anom_data), axis=0)
+
+            #multi_anomaly_detection(norm_data, anom_data)
+
+            norm_train, anom_train, norm_test, anom_test, anom_icount, anom_icount_train = isolation_forest(mylist, int_count)
+
+        #    norm_train = np.concatenate(norm_train.tolist())
+        #    anom_train = np.concatenate(anom_train.tolist())
+        #    norm_test = np.concatenate(norm_test.tolist())
+        #    anom_test = np.concatenate(anom_test.tolist())
+
+            all_xcount_mode.append(get_xcount(int_count))
+            anom_xcount_test = get_xcount(anom_icount)
+            anom_xcount_train = get_xcount(anom_icount_train)
+            anom_xcount = np.concatenate((anom_xcount_train, anom_xcount_test),axis=0)
+
+            #new code for validation of anomalies
+            latitude = get_lat(anom_xcount)
+            longitude = get_long(anom_xcount)
+            dist = [0]
+            for z in range(len(latitude)-1):
+                point_one = (latitude[z], longitude[z])
+                point_two = (latitude[z+1], longitude[z+1])
+                distance = geodesic(point_one, point_two).km
+                dist.append(1000 * distance)
+
+
+            anom_xcount = [str(x) for x in anom_xcount]
+            latitude = [str(x) for x in latitude]
+            longitude = [str(x) for x in longitude]
+            dist = [str(x) for x in dist]
+
+    #        d = [list(anom_xcount), list(latitude), list(longitude), dist]
+    #        write_data = zip_longest(*d, fillvalue = '')
+            write_data = zip(anom_xcount, latitude, longitude, dist)
+            track_side = 'right' if i else 'left'
+            train_mode = 'pushing' if j else 'pulling'
+
+            with open(counters_path + '\prorail17112805si12_' + track_side + '_' + train_mode + '.csv', 'w', newline='') as file:
+                try:
+                    writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                    writer.writerow(['counters', 'latitude','longitude','distance'])
+                    for cnt, lat, lon, dist in write_data:
+                        writer.writerow([cnt, lat, lon, dist])
+                finally:
+                    file.close()
+            #######################################################
+
+
+            anom_xcount_list.append(anom_xcount)
+            anom_xcount_train_list.append(anom_xcount_train)
+
+            lat_list = get_lat(anom_xcount).tolist()
+            long_list = get_long(anom_xcount).tolist()
+            lat_list_train = get_lat(anom_xcount_train).tolist()
+            long_list_train = get_long(anom_xcount_train).tolist()
+
+            #    dlist = []
+            #    xcgcode = []
+            #
+            #geocodes_train = np.array(geocode)
+            #unique_gcodes_train = np.unique(geocodes_train, axis = 0)
+            #lat_list_train = unique_gcodes_train[:, 1].tolist()
+            #long_list_train = unique_gcodes_train[:, 2].tolist()
+            #
+            #lat_list_train = [float(i) for i in lat_list_train]
+            #long_list_train = [float(j) for j in lon_list_train]
+
+            # Calculation of time of data acquisition
+
+            #geo_xcount = geo_list[:,0]
+            #geo_icount = get_icount(geo_xcount)
+            #geo_icount[np.isnan(geo_icount)] = 0
+
+            #dlist = []
+            #dtval = []
+            #
+            #for j in range(len(geo_icount)):
+            #    tval1 = geo_icount[j]
+            #    for k in range(len(int_count2)):
+            #        tval2 = int(int_count2[k])
+            #        diff = abs(tval2 - tval1)
+            #        dlist.append(diff)
+            #    dlist = np.array(dlist)
+            #    indmin = np.unravel_index(np.argmin(dlist, axis=None), dlist.shape)
+            #    datetime = date_time[indmin[0]].tolist()
+            #    xval = geo_list[indmin[0],[0]].tolist()
+            #    dtval.append(datetime[0])
+            #    dlist = []
+            #    xcgcode = []
+            #
+            #dtval = np.array(dtval)
+            #unique_dtval = np.unique(dtval, axis=0)
+
+            gmap_plot(lat_list_train + lat_list, long_list_train + long_list)
+
+            #///// Plot Confusion Matrix /////////////
+
+            #YTrue = np.concatenate((X_true_test, X_true_outliers), axis=0)
+            #YPred = np.concatenate((y_pred_test, y_pred_outliers), axis=0)
+            #
+            #conf_mat = confusion_matrix(YTrue, YPred)
+            ## Plot non-normalized confusion matrix
+            #plt.figure()
+            #plot_confusion_matrix(conf_mat, classes= ['Normal', 'Anomaly'],
+            #                      title='Confusion matrix')
+        aba_data_side.append(aba_data_mode)
