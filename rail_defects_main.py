@@ -177,19 +177,19 @@ else:
         for j in range(len(data_list)):
             input = rail_data[i]
             counters = rail_counters[i]
-            list_of_features = extract_features(input[j], counters[j], 3000)
+            list_of_features = extract_features(input[j], counters[j], 1500)
 
-            rms = np.array(list_of_features[:,0])
-            skewness = np.array(list_of_features[:,3])
-            peak_to_peak = np.array(list_of_features[:,4])
-            crest_factor = np.array(list_of_features[:,5])
-            rmsf = np.array(list_of_features[:,12])
-            int_count = np.array(list_of_features[:,13])
+            rms = np.array(list_of_features[:, 0])
+            skewness = np.array(list_of_features[:, 3])
+            peak_to_peak = np.array(list_of_features[:, 4])
+            crest_factor = np.array(list_of_features[:, 5])
+            rmsf = np.array(list_of_features[:, 12])
+            int_count = np.array(list_of_features[:, 13])
 
             aba_data_mode.append(peak_to_peak)
-            int_count_mode.append(int_count_mode)
+            int_count_mode.append(int_count)
 
-            ## features comparison
+            # features comparison
             plt.figure(2)
             plt.subplot(411)
             plt.ylabel('RMS')
