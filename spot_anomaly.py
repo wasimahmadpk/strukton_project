@@ -6,7 +6,6 @@ Created on Thu Jan  3 14:09:57 2019
 """
 
 from PIL import Image
-import xml.etree.ElementTree as ET
 import numpy as np
 import glob
 import csv

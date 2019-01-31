@@ -208,7 +208,7 @@ else:
             plt.show()
             print(rms)
 
-            mylist = np.stack((peak_to_peak,crest_factor), axis=-1)
+            mylist = np.stack((peak_to_peak, crest_factor, rms, skewness), axis=-1)
 
             #best_k(mylist)
             #//////K-Means Clustering and Data Labelling for Supervised Anomaly detection///////////////
