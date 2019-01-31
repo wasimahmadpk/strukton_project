@@ -178,9 +178,11 @@ else:
             list_of_features = extract_features(input[j], counters[j], 1500)
 
             rms = np.array(list_of_features[:, 0])
+            kurtosis = np.array(list_of_features[:, 2])
             skewness = np.array(list_of_features[:, 3])
             peak_to_peak = np.array(list_of_features[:, 4])
             crest_factor = np.array(list_of_features[:, 5])
+            impulse_factor = np.array(list_of_features[:, 6])
             rmsf = np.array(list_of_features[:, 12])
             int_count = np.array(list_of_features[:, 13])
 
@@ -206,9 +208,8 @@ else:
             plt.xlabel('Time')
             plt.plot(crest_factor)
             plt.show()
-            print(rms)
 
-            mylist = np.stack((peak_to_peak, crest_factor, rms, skewness), axis=-1)
+            mylist = np.stack((peak_to_peak, crest_factor, rms, skewness, kurtosis, impulse_factor), axis=-1)
 
             #best_k(mylist)
             #//////K-Means Clustering and Data Labelling for Supervised Anomaly detection///////////////

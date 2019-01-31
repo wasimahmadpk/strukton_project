@@ -27,15 +27,15 @@ def isolation_forest(my_data, int_count):
     xtest_count = int_count[round(len(int_count)/2):len(int_count)]
 
     # fit the model
-    clf = IsolationForest(max_samples=128, max_features=4, contamination=0.1, random_state=rng)
+    clf = IsolationForest(max_samples=128, max_features=6, contamination=0.1, random_state=rng)
     clf.fit(X_train)
     y_pred_train = clf.predict(X_train)
     y_pred_test = clf.predict(X_test)
     
-    norm_train = np.where(y_pred_train==1)
-    anom_train = np.where(y_pred_train==-1)
-    norm_test = np.where(y_pred_test==1)
-    anom_test = np.where(y_pred_test==-1)
+    norm_train = np.where(y_pred_train == 1)
+    anom_train = np.where(y_pred_train == -1)
+    norm_test = np.where(y_pred_test == 1)
+    anom_test = np.where(y_pred_test == -1)
     anom_icount = xtest_count[anom_test]
     anom_icount_train = xtrain_count[anom_train]
     
@@ -45,7 +45,7 @@ def isolation_forest(my_data, int_count):
     # Z = clf.decision_function(np.c_[xx.ravel(), yy.ravel()])
     # Z = Z.reshape(xx.shape)
     ZZ = clf.decision_function(X_test)
-    anomalies = ZZ[(y_pred_test==-1)]
+    anomalies = ZZ[(y_pred_test == -1)]
 
     anom_scores = 1 - normalize(anomalies)
 
@@ -76,9 +76,9 @@ def isolation_forest(my_data, int_count):
     # plt.colorbar(cb)
     # plt.show()
     #
-    norm_train = X_train[norm_train,:]
-    anom_train = X_train[anom_train,:]
-    norm_test = X_test[norm_test,:]
-    anom_test = X_test[anom_test,:]
+    norm_train = X_train[norm_train, :]
+    anom_train = X_train[anom_train, :]
+    norm_test = X_test[norm_test, :]
+    anom_test = X_test[anom_test, :]
     
     return norm_train, anom_train, norm_test, anom_test, anom_icount, anom_icount_train

@@ -8,22 +8,13 @@ from __future__ import division
 import math
 import numpy as np
 
-def power(my_list, pwr):
-    return [x**pwr for x in my_list]
 
-def absol(mylist):
-    return [abs(x) for x in mylist]
-
-def sqroot(mylist):
-    return [math.sqrt(x) for x in mylist]
-
-def extract_features(vibrationData, int_counter, windowSize): 
+def extract_features(vibration_data, int_counter, window_size): 
    
-    nwindows = math.floor(len(vibrationData)/windowSize)    # total images
-    #print (nwindows,'is window size')
+    nwindows = math.floor(len(vibration_data)/window_size)    # total windows
     
     # the LBP block label histograms of all the images 
-    #featureVectors = np.zeros((nwindows,3))
+    #feature_vectors = np.zeros((nwindows,3))
    
     fvl2 = []
     sr_counter = 0
@@ -31,50 +22,50 @@ def extract_features(vibrationData, int_counter, windowSize):
     for i in range(nwindows):
         
         #  adjust internal counter while sampling ABA data
-        int_count = int_counter[sr_counter:sr_counter + windowSize]
+        int_count = int_counter[sr_counter:sr_counter + window_size]
         avg_icount = round(np.mean(int_count))
-        sr_counter = sr_counter + round(windowSize/1.25)
+        sr_counter = sr_counter + round(window_size/1.25)
         
         fvl1 = []
-        window = np.array(vibrationData[s_idx:s_idx + windowSize], dtype = np.float32)
-        s_idx = s_idx + round(windowSize/1.25)               # start index for i-th image
-        xavp = sum(pow(window, 2))/windowSize                                           # Average power
-        xrms = math.sqrt(int(sum((pow(window, 2))))/windowSize)                              # RMS
-        xsra = pow((sum(np.sqrt(absol(window)))/windowSize), 2)                          #Square  root of amplitude
-        xm = np.mean(window);                                                                   # Mean value
-        sd = np.std(window);   
-        xkv = sum(pow(((window-xm)/sd), 4))/windowSize                                  # Kurtosis value
-        xsv = sum(pow(((window-xm)/sd), 3))/windowSize
-        #print("xkv value:", xkv)                                   # Skewness value
+        window = np.array(vibration_data[s_idx:s_idx + window_size], dtype=np.float32)
+
+        # list of extracted features from ABA signal
+        s_idx = s_idx + round(window_size/1.25)                   # start index for i-th window
+        xavp = sum(pow(window, 2))/window_size                    # Average power
+        xrms = math.sqrt(sum((pow(window, 2)))/window_size)       # RMS
+        xsra = pow((sum(np.sqrt(abs(window)))/window_size), 2)    # Square root of amplitude
+        xm = np.mean(window)                                      # Mean value
+        sd = np.std(window)
+        xkv = sum(pow(((window-xm)/sd), 4))/window_size           # Kurtosis value
+        xsv = sum(pow(((window-xm)/sd), 3))/window_size           # Skewness value
         maxW = max(window)                             
         minW = min(window)
-        xppv = maxW-minW                                                           # Peak to Peak value
-        xcf = max(abs(window))/np.sqrt((sum(pow(window, 2))/windowSize))                   # Crest factor
-        xif = max(abs(window))/(sum(abs(window))/windowSize)                          # Impulse factor
-        xmf = max(abs(window))/(pow((sum(np.sqrt(abs(window)))/windowSize), 2))            # Margin factor
-        xsf = np.sqrt(sum(pow(window, 2))/(windowSize))/(sum(abs(window))/windowSize)          # Shape factor
-        xkf = (pow(sum(((window - xm))/sd), 4)/windowSize)/(pow((sum(pow(window, 2))/windowSize), 2))  #Kurtosis factor
+        xppv = maxW-minW                                         # Peak to Peak value
+        xcf = max(abs(window))/np.sqrt((sum(pow(window, 2))/window_size))              # Crest factor
+        xif = max(abs(window))/(sum(abs(window))/window_size)                          # Impulse factor
+        xmf = max(abs(window))/(pow((sum(np.sqrt(abs(window)))/window_size), 2))       # Margin factor
+        xsf = np.sqrt(sum(pow(window, 2))/(window_size))/(sum(abs(window))/window_size)  # Shape factor
+        xkf = (pow(sum(((window - xm))/sd), 4)/window_size)/(pow((sum(pow(window, 2))/window_size), 2))  # Kurtosis factor
         
         X = np.fft.fft(window)
-        rmsf = np.sqrt(np.sum(abs(X/len(X))**2)) # RMS frequency domain
+        rmsf = np.sqrt(np.sum(abs(X/len(X))**2))  # RMS frequency domain
 
-        fvl1.append(xrms)  # featureVectors(i,1) = xrms;
-        fvl1.append(xsra)  # featureVectors(i,2) = xsra;
-        fvl1.append(xkv)  # featureVectors(i,3) = xkv;
-        fvl1.append(xsv)  # featureVectors(i,4) = xsv;
-        fvl1.append(xppv)  # featureVectors(i,5) = xppv;
-        fvl1.append(xcf)  # featureVectors(i,6) = xcf;
-        fvl1.append(xif)  # featureVectors(i,7) = xif;
-        fvl1.append(xmf)  # featureVectors(i,8) = xmf;
-        fvl1.append(xsf)  # featureVectors(i,9) = xsf;
-        fvl1.append(xkf)  # featureVectors(i,10) = xkf;
-
-        fvl1.append(xm)           # featureVectors(i,11) = xm;
-        fvl1.append(xavp)         # featureVectors(i,12) = xavp;
-        fvl1.append(rmsf)         # featureVectors(i,13) = rmsf;
-        fvl1.append(avg_icount)  # featureVectors(i,14) = int_count     keep track of internal counter
+        fvl1.append(xrms)        # feature_vectors(i,1) = RMS
+        fvl1.append(xsra)        # feature_vectors(i,2) = Square root of amplitude
+        fvl1.append(xkv)         # feature_vectors(i,3) = Kurtosis value
+        fvl1.append(xsv)         # feature_vectors(i,4) = Skewness value
+        fvl1.append(xppv)        # feature_vectors(i,5) = Peak to peak
+        fvl1.append(xcf)         # feature_vectors(i,6) = Crest factor
+        fvl1.append(xif)         # feature_vectors(i,7) = Impulse factor
+        fvl1.append(xmf)         # feature_vectors(i,8) = Margin factor
+        fvl1.append(xsf)         # feature_vectors(i,9) = Shape factor
+        fvl1.append(xkf)         # feature_vectors(i,10) = Kurtosis factor
+        fvl1.append(xm)          # feature_vectors(i,11) = Mean value
+        fvl1.append(xavp)        # feature_vectors(i,12) = Average power
+        fvl1.append(rmsf)        # feature_vectors(i,13) = RMS frequency domain
+        fvl1.append(avg_icount)  # feature_vectors(i,14) = internal counters     keep track of internal counter
         fvl2.append(fvl1)
 
-    featureVectors = np.array(fvl2)
-    featureVectors[np.isnan(featureVectors)] = 0
-    return featureVectors
+    feature_vectors = np.array(fvl2)
+    feature_vectors[np.isnan(feature_vectors)] = 0
+    return feature_vectors
