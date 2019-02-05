@@ -22,7 +22,6 @@ for filename in glob.glob(
     print(fname)
     file_names.append(fname)
     tree = ET.parse(filename)
-    # im = im.rotate(90)
     tree_list.append(tree)
 
 counters_pull = []
@@ -88,7 +87,6 @@ for i in range(len(tree_list)):
         defect_spots.append(xdim)
         all_defects_spots.append(xdim)
 
-
     itlist1 = []
     itlist2 = []
 
@@ -101,6 +99,7 @@ for i in range(len(tree_list)):
     # anom_spots = anom_spots + prev_spots
     next_spots = []
     prev_spots = []
+
     for j in range(len(counters_push) - 1):
         num = counters_push[j]
         tnum = list(str(int(num)))
@@ -119,7 +118,7 @@ for i in range(len(tree_list)):
     for s in range(len(anom_spots)):
         for w in range(len(defect_spots)):
             hit_container.append(abs(anom_spots[s] - defect_spots[w]))
-        if any(hit_container) < 10:
+        if any(hit_container) < 1000:
             hit_rate = hit_rate + 1
         else:
             false_alarms = false_alarms + 1
@@ -128,11 +127,10 @@ for i in range(len(tree_list)):
     for s in range(len(defect_spots)):
         for w in range(len(anom_spots)):
             hit_container.append(abs(anom_spots[w] - defect_spots[s]))
-        if any(hit_container) < 10:
+        if any(hit_container) < 1000:
             continue
         else:
             false_negatives = false_negatives + 1
-
 
     # Comparison of actual defects vs detected anomalies
 print('Hits: {} , False Alarms: {}, False Negatives: {}'.format(hit_rate, false_alarms, false_negatives))
