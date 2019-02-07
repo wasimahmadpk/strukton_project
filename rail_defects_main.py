@@ -102,9 +102,13 @@ else:
     
     for z in range(len(cntstart)):
         temparr = np.array(processed_data[(processed_data.EXTCNT >= cntstart[z]) & (processed_data.EXTCNT <= cntstop[z])].index)
-        obj_counters = np.concatenate((obj_counters, temparr),axis=0)
-    
-    processed_data = processed_data.drop(list(obj_counters), axis=0)
+        obj_counters = np.concatenate((obj_counters, temparr), axis=0)
+
+    processed_data.CHC1[list(obj_counters)] = np.mean(processed_data.CHC1)
+    processed_data.CHC3[list(obj_counters)] = np.mean(processed_data.CHC3)
+    processed_data.CHD1[list(obj_counters)] = np.mean(processed_data.CHD1)
+    processed_data.CHD3[list(obj_counters)] = np.mean(processed_data.CHD3)
+    # processed_data = processed_data.drop(list(obj_counters), axis=0)
     
     CHC1 = np.array(processed_data.CHC1)
     CHC3 = np.array(processed_data.CHC3)
