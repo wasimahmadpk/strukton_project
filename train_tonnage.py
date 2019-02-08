@@ -1,6 +1,13 @@
 import pandas as pd
 
-bigdata = pd.read_excel(r'F:\FMLP\dataset\QV Data locatie Almere_Weesp_v3_01.xlsx')
+df1 = pd.read_excel(r'F:\FMLP\dataset\QV Data locatie Almere_Weesp_v3_01.xlsx')
+df2 = pd.read_excel(r'F:\FMLP\dataset\QV Data locatie Almere_Weesp_v3_02.xlsx')
+df3 = pd.read_excel(r'F:\FMLP\dataset\QV Data locatie Almere_Weesp_v3_03.xlsx')
+df4 = pd.read_excel(r'F:\FMLP\dataset\QV Data locatie Almere_Weesp_v3_04.xlsx')
+
+frames = [df1, df2, df3, df4]
+bigdata = pd.concat(frames)
+
 bdata = bigdata[(bigdata.SpoorNummer == 'FC')]
 train_tonnage_data = bdata.groupby(['Voertuig_materieel_type'])
 train_tonnage_mean = train_tonnage_data['Askwaliteit_aslast_ton'].mean()
@@ -34,4 +41,4 @@ for table, group in train_tonnage_data:
     data_list.append(row_data)
 
 pdf = pd.DataFrame(data_list, columns=cols)
-pdf.to_excel(r'F:\FMLP\dataset\QV Data locatie Almere_Weesp_v3_01_processed.xlsx')
+pdf.to_excel(r'F:\FMLP\dataset\QV Data locatie Almere_Weesp_v3_processed.xlsx')
