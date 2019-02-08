@@ -55,17 +55,17 @@ def isolation_forest(my_data, int_count):
     plt.figure(4)
     plt.cla()
     plt.title("Anomaly detection-iForest")
-    cb = plt.contourf(xx, yy, Z, cmap=plt.cm.Blues_r)
-    b1 = plt.scatter(X_train[norm_train, 1], X_train[norm_train, 0], c='white',
+    cb = plt.contourf(xx, yy, Z, cmap=plt.cm.Green_r)
+    a = plt.scatter(X_train[norm_train, 1], X_train[norm_train, 0], c='white',
                      s=25, edgecolor='k')
-    b2 = plt.scatter(X_test[norm_test, 1], X_test[norm_test, 0], c='green',
+    b = plt.scatter(X_test[norm_test, 1], X_test[norm_test, 0], c='green',
                      s=25, edgecolor='k')
     c = plt.scatter(X_test[anom_test, 1], X_test[anom_test, 0], c='red',
                     s=25, edgecolor='k')
     plt.axis('tight')
     plt.xlim((-1, 50))
     plt.ylim((0, 10))
-    plt.legend([b1, b2, c],
+    plt.legend([a, b, c],
                ["training data", "normal data", "anomalies"],
                loc="upper ")
     plt.xlabel('Kurtosis')
