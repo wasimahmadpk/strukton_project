@@ -17,7 +17,7 @@ file_names = []
 obj_dim = []
 hit_rate, false_alarms, false_negatives = 0, 0, 0
 for filename in glob.glob(
-        r'F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\xml\61\*.xml'):
+                          r'F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\xml\61\*.xml'):
     fname = os.path.basename(filename)
     print(fname)
     file_names.append(fname)
@@ -28,7 +28,7 @@ counters_pull = []
 counters_push = []
 
 with open(
-        'F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\counter_data\prorail17112805si12_right_pushing.csv') as csv_file:
+        'F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\counter_data\prorail17112805si12_left_pushing.csv') as csv_file:
     csv_reader = csv.reader(csv_file)
     line_count = 0
     for row in csv_reader:
@@ -39,7 +39,6 @@ with open(
             print(f'Column names are {", ".join(row)}')
             line_count += 1
         else:
-            # print(f'\t{row[0]} works in the {row[1]} department, and was born in {row[2]}.')
             line_count += 1
             tlist = tempStr.split(",")
             counters_push.append(float(row[0]))
@@ -48,7 +47,7 @@ with open(
     counters_push = np.array(counters_push)
 
 with open(
-        'F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\counter_data\prorail17112805si12_right_pulling.csv') as csv_file:
+        'F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\counter_data\prorail17112805si12_left_pulling.csv') as csv_file:
     csv_reader = csv.reader(csv_file)
     line_count = 0
     for row in csv_reader:
@@ -113,6 +112,8 @@ for i in range(len(tree_list)):
             else:
                 anom_spots.append(anom_num)
                 all_spots.append(anom_num)
+        else:
+            false_alarms = false_alarms + 1
     # compare anomalies
     hit_container = []
     for s in range(len(anom_spots)):

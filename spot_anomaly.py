@@ -15,7 +15,7 @@ import os
 image_list = []
 file_names = []
 
-for filename in glob.glob(r'F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\images\Prorail17112805\Prorail17112805\61_marked\*.jpg'): #assuming gif
+for filename in glob.glob(r'F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\images\Prorail17112805\Prorail17112805\61_marked\*.jpg'):
     file_name = os.path.basename(filename)
     print(file_name)
     file_names.append(file_name)
@@ -26,7 +26,7 @@ for filename in glob.glob(r'F:\strukton_project\Groningen\Prorail17112805si12\AB
 counters_pull = []
 counters_push = []
 
-with open('F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\counter_data\prorail17112805si12_right_pushing.csv') as csv_file:
+with open('F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\counter_data\prorail17112805si12_left_pushing.csv') as csv_file:
         csv_reader = csv.reader(csv_file)
         line_count = 0
         for row in csv_reader:
@@ -46,7 +46,7 @@ with open('F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805
         counters_push = np.array(counters_push)
 
 
-with open('F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\counter_data\prorail17112805si12_right_pulling.csv') as csv_file:
+with open('F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\counter_data\prorail17112805si12_left_pulling.csv') as csv_file:
         csv_reader = csv.reader(csv_file)
         line_count = 0
         for row in csv_reader:
@@ -69,13 +69,13 @@ next_spots = []
 prev_spots = []
 all_spots = []
 for i in range(len(image_list)):
-    #image = Image.open(r'F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\images\Prorail17112805\Prorail17112805\61\61_4940000.jpg', 'r')
+    # image = Image.open(r'F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\images\Prorail17112805\Prorail17112805\61\61_4940000.jpg', 'r')
     image = image_list[i]
     im = image.convert('RGBA')
      
     data = np.array(im)   # "data" is a height x width x 4 numpy array
     print(data.shape)
-    #red, green, blue, alpha = data.T # Temporarily unpack the bands for readability
+    # red, green, blue, alpha = data.T # Temporarily unpack the bands for readability
     
     itlist1 = []
     itlist2 = []
@@ -86,7 +86,8 @@ for i in range(len(image_list)):
     itlist1.append(img_signum)
     anom_spots = []
     anom_spots = anom_spots + next_spots
-    #anom_spots = anom_spots + prev_spots
+
+    # anom_spots = anom_spots + prev_spots
     next_spots = []
     prev_spots = []
     for j in range(len(counters_push)-1):
@@ -94,7 +95,7 @@ for i in range(len(image_list)):
         tnum = list(str(int(num)))
         cnt_signum = int(tnum[0]+tnum[1]+tnum[2])
         itlist2.append(cnt_signum)
-        anom_num = int(tnum[3]+tnum[4]+tnum[5]+tnum[6])*4 #+ 3150*4
+        anom_num = int(tnum[3]+tnum[4]+tnum[5]+tnum[6])*4 + 3150*4
         if img_signum == cnt_signum:
             if anom_num >= 40000:
                 next_spots.append(abs(40000 - anom_num)-1)
@@ -107,8 +108,9 @@ for i in range(len(image_list)):
                 anom_spots.append(anom_num+1)
                 all_spots.append(anom_num)
             
-     # Replace white with red... (leaves alpha values alone...)
-    #white_areas = (red == 27) & (blue == 27) & (green == 27)
+    # Replace white with red... (leaves alpha values alone...)
+    # white_areas = (red == 27) & (blue == 27) & (green == 27)
+
     anom_points = np.zeros((data.shape[0], data.shape[1]), dtype=bool)
     anom_points[:, anom_spots] = True
     print(anom_points.shape)

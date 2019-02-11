@@ -23,18 +23,12 @@ from sklearn.metrics import confusion_matrix
 from confusion_mat import plot_confusion_matrix
 import csv
 
-#data_file = 'F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\Prorail17112805si12.time.h5'
-#sync_file = 'F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\Prorail17112805si12.time.h5'
-#seg_file = 'F:\strukton_project\Groningen\Routefile\Prorail17112805si12_seg.csv'
-#poi_file = 'F:\strukton_project\Groningen\Routefile\Prorail17112805si12_poi.csv'
-#processed_file = 'F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\\Prorail17112805si12.processed.h5'
-
 data_file = data_path[0]
 sync_file = data_path[1]
 seg_file = data_path[2]
 poi_file = data_path[3]
 processed_file = data_path[4]
-counters_path = "F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\counter_data"
+counters_path = data_path[5]
 
 if not os.path.isfile(processed_file):
     pre_processing(data_file, sync_file, seg_file, poi_file, processed_file)
@@ -46,16 +40,15 @@ else:
         for row in csv_reader:
             tempStr = ''.join(row)
             if tempStr.startswith('#') or len(tempStr) == 0:
-                  continue
+                continue
             elif tempStr.startswith('CNT'):
-                  print(f'Column names are {", ".join(row)}')
-                  line_count += 1
+                print(f'Column names are {", ".join(row)}')
+                line_count += 1
             else:
-                  #print(f'\t{row[0]} works in the {row[1]} department, and was born in {row[2]}.')
-                  line_count += 1
-                  tlist = tempStr.split(";")
-                  ttlist = [float(x) for x in tlist if len(x)>0]
-                  geo_list.append(ttlist)
+                line_count += 1
+                tlist = tempStr.split(";")
+                ttlist = [float(x) for x in tlist if len(x)>0]
+                geo_list.append(ttlist)
         print(f'Processed {line_count} lines in POI file.')
         geo_list = np.array(geo_list)
         
@@ -133,10 +126,10 @@ else:
     for i in range(len(rail_data) - 1):
         aba_data_mode = []
         int_count_mode = []
-        for j in range(len(data_list) - 1):
+        for j in range(len(data_list)):
             input_data = rail_data[i]
             counters = rail_counters[i]
-            list_of_features = extract_features(input_data[j], counters[j], 1500)
+            list_of_features = extract_features(input_data[j], counters[j], 3600)
 
             rms = np.array(list_of_features[:, 0])
             kurtosis = np.array(list_of_features[:, 2])
@@ -152,22 +145,18 @@ else:
 
             # features comparison
             plt.figure(2)
-            plt.subplot(411)
+            plt.subplot(311)
             plt.ylabel('RMS')
             plt.xlabel('Time')
             plt.plot(rms)
-            plt.subplot(412)
-            plt.ylabel('Skewness')
+            plt.subplot(312)
+            plt.ylabel('Kurtosis')
             plt.xlabel('Time')
-            plt.plot(skewness)
-            plt.subplot(413)
+            plt.plot(kurtosis)
+            plt.subplot(313)
             plt.ylabel('Peak to peak')
             plt.xlabel('Time')
             plt.plot(peak_to_peak)
-            plt.subplot(414)
-            plt.ylabel('Crest factor')
-            plt.xlabel('Time')
-            plt.plot(crest_factor)
             plt.show()
 
             mylist = np.stack((rms, kurtosis), axis=-1)
