@@ -49,8 +49,8 @@ def isolation_forest(my_data, int_count):
     plt.plot(anom_scores)
 
     # Contour plot of normal and anomalous samples in train and test set
-    aa, bb = np.meshgrid(np.linspace(np.min(my_data[:, 1])-1, 50, 30),
-                         np.linspace(np.min(my_data[:, 0])-1, 10, 30))
+    aa, bb = np.meshgrid(np.linspace(np.min(my_data[:, 1])-1, 50, 100),
+                         np.linspace(np.min(my_data[:, 0])-1, 15, 30))
     decision = clf.decision_function(np.c_[aa.ravel(), bb.ravel()])
     Z = decision.reshape(aa.shape)
 
@@ -66,7 +66,7 @@ def isolation_forest(my_data, int_count):
                     s=25, edgecolor='k')
     plt.axis('tight')
     plt.xlim((np.min(my_data[:, 1])-1, 50))
-    plt.ylim((np.min(my_data[:, 0])-1, 10))
+    plt.ylim((np.min(my_data[:, 0])-1, 15))
     plt.legend([a, b, c],
                ["training data", "normal data", "anomalies"],
                loc="upper")

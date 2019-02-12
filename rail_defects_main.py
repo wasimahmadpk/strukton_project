@@ -47,7 +47,7 @@ else:
             else:
                 line_count += 1
                 tlist = tempStr.split(";")
-                ttlist = [float(x) for x in tlist if len(x)>0]
+                ttlist = [float(x) for x in tlist if len(x) > 0]
                 geo_list.append(ttlist)
         print(f'Processed {line_count} lines in POI file.')
         geo_list = np.array(geo_list)
@@ -123,7 +123,7 @@ else:
     # ///////////// Feature Extraction //////////////
     aba_data_side = []
     all_xcount_mode = []
-    for i in range(len(rail_data) - 1):
+    for i in range(len(rail_data)):
         aba_data_mode = []
         int_count_mode = []
         for j in range(len(data_list)):
@@ -159,36 +159,7 @@ else:
             plt.plot(peak_to_peak)
             plt.show()
 
-            mylist = np.stack((rms, kurtosis), axis=-1)
-
-            # best_k(mylist)
-            # //////K-Means Clustering and Data Labelling for Supervised Anomaly detection///////////////
-            # norm_data = []
-            # anom_data = []
-            # kmeans = KMeans(n_clusters=2, random_state=1).fit(mylist)
-            # clusters = np.array(kmeans.labels_.astype(float))
-            # for i in range(len(clusters)):
-            #    if clusters[i] == 0:
-            #        norm_data.append(list_of_features[i,:])
-            #        plt.scatter(list_of_features[i,0],list_of_features[i,4], c = 'g', marker = '*')
-            #        plt.title("Data Clustering")
-            #        plt.xlabel("Feature 1")
-            #        plt.ylabel("Feature 2")
-            #        plt.show()
-            #    elif clusters[i] ==1:
-            #        anom_data.append(list_of_features[i,:])
-            #        plt.scatter(list_of_features[i,0],list_of_features[i,4], c = 'r', marker = 'o')
-            #        plt.title("Data Clustering")
-            #        plt.xlabel("Feature 1")
-            #        plt.ylabel("Feature 2")
-            #        plt.show()
-
-            # norm_data = np.array(norm_data)
-            # anom_data = np.array(anom_data)
-
-            # X_train = np.concatenate((norm_data, anom_data), axis=0)
-            # multi_anomaly_detection(norm_data, anom_data)
-
+            mylist = np.stack((crest_factor, kurtosis), axis=-1)
             norm_train, anom_train, norm_test, anom_test, anom_icount, anom_icount_train = isolation_forest(mylist, int_count)
 
             # norm_train = np.concatenate(norm_train.tolist())

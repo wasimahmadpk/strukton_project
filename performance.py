@@ -44,7 +44,6 @@ with open(
             counters_push.append(float(row[0]))
     print(f'Processed {line_count} lines in push-counters file.')
     print("Program is running...")
-    counters_push = np.array(counters_push)
 
 with open(
         'F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\counter_data\prorail17112805si12_left_pulling.csv') as csv_file:
@@ -63,9 +62,8 @@ with open(
             tlist = tempStr.split(",")
             counters_pull.append(float(row[0]))
     print(f'Processed {line_count} lines in pull-counters file.')
-    print("Program is running...")
-    counters_pull = np.array(counters_pull)
 
+all_counters = np.array(counters_push + counters_pull)
 next_spots = []
 prev_spots = []
 all_spots = []

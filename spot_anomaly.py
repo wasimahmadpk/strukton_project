@@ -15,7 +15,7 @@ import os
 image_list = []
 file_names = []
 
-for filename in glob.glob(r'F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\images\Prorail17112805\Prorail17112805\61_marked\*.jpg'):
+for filename in glob.glob(r'F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\images\Prorail17112805\Prorail17112805\61\*.jpg'):
     file_name = os.path.basename(filename)
     print(file_name)
     file_names.append(file_name)
@@ -42,8 +42,6 @@ with open('F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805
                   tlist = tempStr.split(",")
                   counters_push.append(float(row[0]))
         print(f'Processed {line_count} lines in push-counters file.')
-        print ("Program is running...")
-        counters_push = np.array(counters_push)
 
 
 with open('F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\counter_data\prorail17112805si12_left_pulling.csv') as csv_file:
@@ -52,24 +50,24 @@ with open('F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805
         for row in csv_reader:
             tempStr = ''.join(row)
             if tempStr.startswith('#') or len(tempStr) == 0:
-                  continue
+                continue
             elif tempStr.startswith('counters'):
-                  print(f'Column names are {", ".join(row)}')
-                  line_count += 1
+                print(f'Column names are {", ".join(row)}')
+                line_count += 1
             else:
-                  #print(f'\t{row[0]} works in the {row[1]} department, and was born in {row[2]}.')
-                  line_count += 1
-                  tlist = tempStr.split(",")
-                  counters_pull.append(float(row[0]))
+                line_count += 1
+                tlist = tempStr.split(",")
+                counters_pull.append(float(row[0]))
         print(f'Processed {line_count} lines in pull-counters file.')
-        print ("Program is running...")
-        counters_pull = np.array(counters_pull)
+        print("Program is running...")
+
+all_counters = np.array(counters_push + counters_pull)
 
 next_spots = []
 prev_spots = []
 all_spots = []
+
 for i in range(len(image_list)):
-    # image = Image.open(r'F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\images\Prorail17112805\Prorail17112805\61\61_4940000.jpg', 'r')
     image = image_list[i]
     im = image.convert('RGBA')
      
@@ -90,12 +88,15 @@ for i in range(len(image_list)):
     # anom_spots = anom_spots + prev_spots
     next_spots = []
     prev_spots = []
-    for j in range(len(counters_push)-1):
-        num = counters_push[j]
+    for j in range(len(all_counters)-1):
+        num = all_counters[j]
         tnum = list(str(int(num)))
         cnt_signum = int(tnum[0]+tnum[1]+tnum[2])
         itlist2.append(cnt_signum)
-        anom_num = int(tnum[3]+tnum[4]+tnum[5]+tnum[6])*4 + 3150*4
+        if j < len(counters_pull):
+            anom_num = int(tnum[3]+tnum[4]+tnum[5]+tnum[6])*4 + 3150*4
+        else:
+            anom_num = int(tnum[3]+tnum[4]+tnum[5]+tnum[6])*4 - 3150*4
         if img_signum == cnt_signum:
             if anom_num >= 40000:
                 next_spots.append(abs(40000 - anom_num)-1)
@@ -112,11 +113,11 @@ for i in range(len(image_list)):
     # white_areas = (red == 27) & (blue == 27) & (green == 27)
 
     anom_points = np.zeros((data.shape[0], data.shape[1]), dtype=bool)
-    anom_points[:, anom_spots] = True
+    anom_points[anom_spots, :] = True
     print(anom_points.shape)
     print(data.shape)
     data[..., :-1][anom_points] = (0, 128, 0)  # Transpose back needed
      
     im2 = Image.fromarray(data)
     im2 = im2.convert('RGB')
-    im2.save(r'F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\images\Prorail17112805\Prorail17112805\61_marked_new\{}_new.jpg'.format(file), 'JPEG')
+    im2.save(r'F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\images\Prorail17112805\Prorail17112805\61_new\{}_new.jpg'.format(file), 'JPEG')
