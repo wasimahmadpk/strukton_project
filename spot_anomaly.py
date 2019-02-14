@@ -19,8 +19,8 @@ for filename in glob.glob(r'F:\strukton_project\Groningen\Prorail17112805si12\AB
     file_name = os.path.basename(filename)
     print(file_name)
     file_names.append(file_name)
-    im =Image.open(filename)
-    #im = im.rotate(90)
+    im = Image.open(filename)
+    # im = im.rotate(90)
     image_list.append(im)
 
 counters_pull = []
@@ -32,15 +32,14 @@ with open('F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805
         for row in csv_reader:
             tempStr = ''.join(row)
             if tempStr.startswith('#') or len(tempStr) == 0:
-                  continue
+                continue
             elif tempStr.startswith('counters'):
-                  print(f'Column names are {", ".join(row)}')
-                  line_count += 1
+                print(f'Column names are {", ".join(row)}')
+                line_count += 1
             else:
-                  #print(f'\t{row[0]} works in the {row[1]} department, and was born in {row[2]}.')
-                  line_count += 1
-                  tlist = tempStr.split(",")
-                  counters_push.append(float(row[0]))
+                line_count += 1
+                tlist = tempStr.split(",")
+                counters_push.append(float(row[0]))
         print(f'Processed {line_count} lines in push-counters file.')
 
 
@@ -93,10 +92,11 @@ for i in range(len(image_list)):
         tnum = list(str(int(num)))
         cnt_signum = int(tnum[0]+tnum[1]+tnum[2])
         itlist2.append(cnt_signum)
-        if j < len(counters_pull):
+        if j < len(counters_push):
             anom_num = int(tnum[3]+tnum[4]+tnum[5]+tnum[6])*4 + 3150*4
         else:
             anom_num = int(tnum[3]+tnum[4]+tnum[5]+tnum[6])*4 - 3150*4
+
         if img_signum == cnt_signum:
             if anom_num >= 40000:
                 next_spots.append(abs(40000 - anom_num)-1)

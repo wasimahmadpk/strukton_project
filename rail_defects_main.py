@@ -123,10 +123,10 @@ else:
     # ///////////// Feature Extraction //////////////
     aba_data_side = []
     all_xcount_mode = []
-    for i in range(len(rail_data)):
+    for i in range(len(rail_data) - 1):
         aba_data_mode = []
         int_count_mode = []
-        for j in range(len(data_list)):
+        for j in range(len(data_list) - 1):
             input_data = rail_data[i]
             counters = rail_counters[i]
             list_of_features = extract_features(input_data[j], counters[j], 3600)

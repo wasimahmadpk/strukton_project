@@ -68,6 +68,7 @@ next_spots = []
 prev_spots = []
 all_spots = []
 all_defects_spots = []
+
 for i in range(len(tree_list)):
 
     root = tree_list[i]
@@ -102,7 +103,12 @@ for i in range(len(tree_list)):
         tnum = list(str(int(num)))
         cnt_signum = int(tnum[0] + tnum[1] + tnum[2])
         itlist2.append(cnt_signum)
-        anom_num = int(tnum[3] + tnum[4] + tnum[5] + tnum[6])*4 + 3150*4
+
+        if j < len(counters_push):
+            anom_num = int(tnum[3]+tnum[4]+tnum[5]+tnum[6])*4 + 3150*4
+        else:
+            anom_num = int(tnum[3]+tnum[4]+tnum[5]+tnum[6])*4 - 3150*4
+
         if label_signum == cnt_signum:
             if anom_num >= 40000:
                 next_spots.append(abs(40000 - anom_num))
