@@ -61,40 +61,45 @@ else:
 
     processed_data = pd.read_hdf(processed_file, 'processed', mode='r')
     
-    CHC1 = np.array(processed_data.CHC1)
-    CHC3 = np.array(processed_data.CHC3)
-    CHD1 = np.array(processed_data.CHD1)
-    CHD3 = np.array(processed_data.CHD3)
+    # CHC1 = np.array(processed_data.CHC1)
+    # CHC3 = np.array(processed_data.CHC3)
+    # CHD1 = np.array(processed_data.CHD1)
+    # CHD3 = np.array(processed_data.CHD3)
     EDIR = np.array(processed_data.ERS_DIR)
-    
+    CHA1 = np.array(processed_data.CHA1)
+    CHA3 = np.array(processed_data.CHA3)
+    CHB1 = np.array(processed_data.CHB1)
+    CHB3 = np.array(processed_data.CHB3)
+
     int_count = np.array(processed_data.INTCNT)
     ext_count = np.array(processed_data.EXTCNT)
     # date_time = syncdat.DateTime
 
     # Pushing & Pulling ABA data for one side (left or right)
-    pull_data_chc1 = CHC1[(EDIR == 1)]
-    push_data_chc1 = CHC1[(EDIR == -1)]
-    pull_data_chc3 = CHC3[(EDIR == 1)]
-    push_data_chc3 = CHC3[(EDIR == -1)]
-    
+    pull_data_cha1 = CHA1[(EDIR == 1)]
+    push_data_cha1 = CHA1[(EDIR == -1)]
+    pull_data_cha3 = CHA3[(EDIR == 1)]
+    push_data_cha3 = CHA3[(EDIR == -1)]
+
     pull_int_count = int_count[(EDIR == 1)]
     push_int_count = int_count[(EDIR == -1)]
     
-    pull_data = np.power((np.power(pull_data_chc1, 2) + np.power(pull_data_chc3, 2)), 1/2)
-    push_data = np.power((np.power(push_data_chc1, 2) + np.power(push_data_chc3, 2)), 1/2)
-    
+    pull_data = np.power((np.power(pull_data_cha1, 2) + np.power(pull_data_cha3, 2)), 1/2)
+    push_data = np.power((np.power(push_data_cha1, 2) + np.power(push_data_cha3, 2)), 1/2)
+
+    cha_data = np.power((np.power(CHA1, 2) + np.power(CHA3, 2)), 1 / 2)
+
     # Second side
-    pull_data_chc1 = CHD1[(EDIR == 1)]
-    push_data_chc1 = CHD1[(EDIR == -1)]
-    pull_data_chc3 = CHD3[(EDIR == 1)]
-    push_data_chc3 = CHD3[(EDIR == -1)]
-    
+    pull_data_chb1 = CHB1[(EDIR == 1)]
+    push_data_chb1 = CHB1[(EDIR == -1)]
+    pull_data_chb3 = CHB3[(EDIR == 1)]
+    push_data_chb3 = CHB3[(EDIR == -1)]
+
     pull_int_count = int_count[(EDIR == 1)]
     push_int_count = int_count[(EDIR == -1)]
-    
-    pull_data2 = np.power((np.power(pull_data_chc1, 2) + np.power(pull_data_chc3, 2)), 1/2)
-    push_data2 = np.power((np.power(push_data_chc1, 2) + np.power(push_data_chc3, 2)), 1/2)
-    
+
+    pull_data2 = np.power((np.power(pull_data_chb1, 2) + np.power(pull_data_chb3, 2)), 1/2)
+    push_data2 = np.power((np.power(push_data_chb1, 2) + np.power(push_data_chb3, 2)), 1/2)
     ########################################
     rail_data = []
     rail_counters = []
@@ -123,13 +128,13 @@ else:
     # ///////////// Feature Extraction //////////////
     aba_data_side = []
     all_xcount_mode = []
-    for i in range(len(rail_data) - 1):
+    for i in range(len(rail_data)):
         aba_data_mode = []
         int_count_mode = []
-        for j in range(len(data_list) - 1):
-            input_data = rail_data[i]
-            counters = rail_counters[i]
-            list_of_features = extract_features(input_data[j], counters[j], 3600)
+        for j in range(len(data_list)):
+            input_data = data_list[j]
+            counters = counters_list[j]
+            list_of_features = extract_features(input_data, counters, 3600)
 
             rms = np.array(list_of_features[:, 0])
             kurtosis = np.array(list_of_features[:, 2])
@@ -189,7 +194,7 @@ else:
             dist = [str(x) for x in dist]
 
             write_data = zip(anom_xcount, latitude, longitude, dist)
-            track_side = 'right' if i else 'left'
+            track_side = 'chb' if i else 'cha'
             train_mode = 'pushing' if j else 'pulling'
 
             with open(counters_path + '\prorail17112805si12_' + track_side + '_' + train_mode + '.csv', 'w', newline='') as file:

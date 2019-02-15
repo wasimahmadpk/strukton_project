@@ -26,7 +26,7 @@ for filename in glob.glob(r'F:\strukton_project\Groningen\Prorail17112805si12\AB
 counters_pull = []
 counters_push = []
 
-with open('F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\counter_data\prorail17112805si12_left_pushing.csv') as csv_file:
+with open('F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\counter_data\prorail17112805si12_cha_pushing.csv') as csv_file:
         csv_reader = csv.reader(csv_file)
         line_count = 0
         for row in csv_reader:
@@ -43,7 +43,7 @@ with open('F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805
         print(f'Processed {line_count} lines in push-counters file.')
 
 
-with open('F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\counter_data\prorail17112805si12_left_pulling.csv') as csv_file:
+with open('F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\counter_data\prorail17112805si12_cha_pulling.csv') as csv_file:
         csv_reader = csv.reader(csv_file)
         line_count = 0
         for row in csv_reader:

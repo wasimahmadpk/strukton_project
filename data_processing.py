@@ -64,9 +64,9 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
     # documented in time tdms file
     
     syncdat = pd.read_hdf(syncfile, 'sync', mode='r')
-    timedat = pd.read_hdf(datafile, 'time', mode='r', where = 'INTCNT >= syncdat.IntCnt.iloc[3] and INTCNT <= syncdat.IntCnt.iloc[-1]')
-    get_xcount = interp1d(syncdat.IntCnt[3:-2],syncdat.ExtCnt[3:-2], fill_value= 'extrapolate')
-    get_icount = interp1d(syncdat.ExtCnt[3:-2],syncdat.IntCnt[3:-2], fill_value= 'extrapolate')
+    timedat = pd.read_hdf(datafile, 'time', mode='r', where='INTCNT >= syncdat.IntCnt.iloc[3] and INTCNT <= syncdat.IntCnt.iloc[-1]')
+    get_xcount = interp1d(syncdat.IntCnt[3:-2], syncdat.ExtCnt[3:-2], fill_value='extrapolate')
+    get_icount = interp1d(syncdat.ExtCnt[3:-2], syncdat.IntCnt[3:-2], fill_value='extrapolate')
     xcounters = np.array(get_xcount(timedat.INTCNT))
     timedat = timedat.assign(EXTCNT=xcounters)
     
@@ -137,57 +137,57 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
     timedat = timedat.assign(TRACK_DIR=TRACK_DIR, ERS_DIR=ERS_DIR)
     
     CHA1 = np.array(timedat.CHA1)
-    CHA2 = np.array(timedat.CHA2)
+    # CHA2 = np.array(timedat.CHA2)
     CHA3 = np.array(timedat.CHA3)
     
     CHB1 = np.array(timedat.CHB1)
-    CHB2 = np.array(timedat.CHB2)
+    # CHB2 = np.array(timedat.CHB2)
     CHB3 = np.array(timedat.CHB3)
 
-    # 2. Transformmed channels
-    CHC1 = np.empty(len(tdir), dtype=object)
-    CHC2 = np.empty(len(tdir), dtype=object)
-    CHC3 = np.empty(len(tdir), dtype=object)
-    
-    CHC1[(tdir == 'Op') & (edir == 1)] = CHA1[(tdir == 'Op') & (edir == 1)]
-    CHC1[(tdir == 'Op') & (edir == -1)] = CHB1[(tdir == 'Op') & (edir == -1)]
-    CHC1[(tdir == 'Af') & (edir == 1)] = CHB1[(tdir == 'Af') & (edir == 1)]
-    CHC1[(tdir == 'Af') & (edir == -1)] = CHA1[(tdir == 'Af') & (edir == -1)]
-    
-    # CHC2[(tdir=='Op') & (edir==1)] = CHA2[(tdir=='Op') & (edir==1)]
-    # CHC2[(tdir=='Op') & (edir==-1)] = CHB2[(tdir=='Op') & (edir==-1)]
-    # CHC2[(tdir=='Af') & (edir==1)] = CHB2[(tdir=='Af') & (edir==1)]
-    # CHC2[(tdir=='Af') & (edir==-1)] = CHA2[(tdir=='Af') & (edir==-1)]
-    
-    CHC3[(tdir == 'Op') & (edir == 1)] = CHA3[(tdir == 'Op') & (edir == 1)]
-    CHC3[(tdir == 'Op') & (edir == -1)] = CHB3[(tdir == 'Op') & (edir == -1)]
-    CHC3[(tdir == 'Af') & (edir == 1)] = CHB3[(tdir == 'Af') & (edir == 1)]
-    CHC3[(tdir == 'Af') & (edir == -1)] = CHA3[(tdir == 'Af') & (edir == -1)]
-
-    CHD1 = np.empty(len(tdir), dtype=object)
-    CHD2 = np.empty(len(tdir), dtype=object)
-    CHD3 = np.empty(len(tdir), dtype=object)
-
-    CHD1[(tdir == 'Op') & (edir == 1)] = CHB1[(tdir == 'Op') & (edir == 1)]
-    CHD1[(tdir == 'Op') & (edir == -1)] = CHA1[(tdir == 'Op') & (edir == -1)]
-    CHD1[(tdir == 'Af') & (edir == 1)] = CHA1[(tdir == 'Af') & (edir == 1)]
-    CHD1[(tdir == 'Af') & (edir == -1)] = CHB1[(tdir == 'Af') & (edir == -1)]
-
-    # CHD2[(tdir == 'Op') & (edir == 1)] = CHB2[(tdir == 'Op') & (edir == 1)]
-    # CHD2[(tdir == 'Op') & (edir == -1)] = CHA2[(tdir == 'Op') & (edir == -1)]
-    # CHD2[(tdir == 'Af') & (edir == 1)] = CHA2[(tdir == 'Af') & (edir == 1)]
-    # CHD2[(tdir == 'Af') & (edir == -1)] = CHB2[(tdir == 'Af') & (edir == -1)]
-
-    CHD3[(tdir == 'Op') & (edir == 1)] = CHB3[(tdir == 'Op') & (edir == 1)]
-    CHD3[(tdir == 'Op') & (edir == -1)] = CHA3[(tdir == 'Op') & (edir == -1)]
-    CHD3[(tdir == 'Af') & (edir == 1)] = CHA3[(tdir == 'Af') & (edir == 1)]
-    CHD3[(tdir == 'Af') & (edir == -1)] = CHB3[(tdir == 'Af') & (edir == -1)]
+    # # 2. Transformmed channels
+    # CHC1 = np.empty(len(tdir), dtype=object)
+    # CHC2 = np.empty(len(tdir), dtype=object)
+    # CHC3 = np.empty(len(tdir), dtype=object)
+    #
+    # CHC1[(tdir == 'Op') & (edir == 1)] = CHA1[(tdir == 'Op') & (edir == 1)]
+    # CHC1[(tdir == 'Op') & (edir == -1)] = CHB1[(tdir == 'Op') & (edir == -1)]
+    # CHC1[(tdir == 'Af') & (edir == 1)] = CHB1[(tdir == 'Af') & (edir == 1)]
+    # CHC1[(tdir == 'Af') & (edir == -1)] = CHA1[(tdir == 'Af') & (edir == -1)]
+    #
+    # # CHC2[(tdir=='Op') & (edir==1)] = CHA2[(tdir=='Op') & (edir==1)]
+    # # CHC2[(tdir=='Op') & (edir==-1)] = CHB2[(tdir=='Op') & (edir==-1)]
+    # # CHC2[(tdir=='Af') & (edir==1)] = CHB2[(tdir=='Af') & (edir==1)]
+    # # CHC2[(tdir=='Af') & (edir==-1)] = CHA2[(tdir=='Af') & (edir==-1)]
+    #
+    # CHC3[(tdir == 'Op') & (edir == 1)] = CHA3[(tdir == 'Op') & (edir == 1)]
+    # CHC3[(tdir == 'Op') & (edir == -1)] = CHB3[(tdir == 'Op') & (edir == -1)]
+    # CHC3[(tdir == 'Af') & (edir == 1)] = CHB3[(tdir == 'Af') & (edir == 1)]
+    # CHC3[(tdir == 'Af') & (edir == -1)] = CHA3[(tdir == 'Af') & (edir == -1)]
+    #
+    # CHD1 = np.empty(len(tdir), dtype=object)
+    # CHD2 = np.empty(len(tdir), dtype=object)
+    # CHD3 = np.empty(len(tdir), dtype=object)
+    #
+    # CHD1[(tdir == 'Op') & (edir == 1)] = CHB1[(tdir == 'Op') & (edir == 1)]
+    # CHD1[(tdir == 'Op') & (edir == -1)] = CHA1[(tdir == 'Op') & (edir == -1)]
+    # CHD1[(tdir == 'Af') & (edir == 1)] = CHA1[(tdir == 'Af') & (edir == 1)]
+    # CHD1[(tdir == 'Af') & (edir == -1)] = CHB1[(tdir == 'Af') & (edir == -1)]
+    #
+    # # CHD2[(tdir == 'Op') & (edir == 1)] = CHB2[(tdir == 'Op') & (edir == 1)]
+    # # CHD2[(tdir == 'Op') & (edir == -1)] = CHA2[(tdir == 'Op') & (edir == -1)]
+    # # CHD2[(tdir == 'Af') & (edir == 1)] = CHA2[(tdir == 'Af') & (edir == 1)]
+    # # CHD2[(tdir == 'Af') & (edir == -1)] = CHB2[(tdir == 'Af') & (edir == -1)]
+    #
+    # CHD3[(tdir == 'Op') & (edir == 1)] = CHB3[(tdir == 'Op') & (edir == 1)]
+    # CHD3[(tdir == 'Op') & (edir == -1)] = CHA3[(tdir == 'Op') & (edir == -1)]
+    # CHD3[(tdir == 'Af') & (edir == 1)] = CHA3[(tdir == 'Af') & (edir == 1)]
+    # CHD3[(tdir == 'Af') & (edir == -1)] = CHB3[(tdir == 'Af') & (edir == -1)]
 
     # LAT = np.array(get_lat(xcounters))
     # LON = np.array(get_long(xcounters))
 
-    timedat = timedat.drop(['CHA1', 'CHA2', 'CHA3', 'CHB1', 'CHB2', 'CHB3'], axis = 1)
-    timedat = timedat.assign(CHC1=CHC1, CHC3=CHC3, CHD1=CHD1, CHD3=CHD3)
+    timedat = timedat.drop(['CHA2', 'CHB2'], axis=1)
+    # timedat = timedat.assign(CHC1=CHC1, CHC3=CHC3, CHD1=CHD1, CHD3=CHD3)
     
     switch_counters = np.array([])
     
@@ -195,24 +195,39 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
         temparr = np.array(timedat[(timedat.EXTCNT >= switch_start[z]) & (timedat.EXTCNT <= switch_end[z])].index)
         switch_counters = np.concatenate((switch_counters, temparr), axis=0)
 
-    chc1_mean = np.mean(timedat.CHC1)
-    chc3_mean = np.mean(timedat.CHC3)
-    chd1_mean = np.mean(timedat.CHD1)
-    chd3_mean = np.mean(timedat.CHD3)
+    # chc1_mean = np.mean(timedat.CHC1)
+    # chc3_mean = np.mean(timedat.CHC3)
+    # chd1_mean = np.mean(timedat.CHD1)
+    # chd3_mean = np.mean(timedat.CHD3)
 
-    timedat.CHC1[list(switch_counters)] = chc1_mean
-    timedat.CHC3[list(switch_counters)] = chc3_mean
-    timedat.CHD1[list(switch_counters)] = chd1_mean
-    timedat.CHD3[list(switch_counters)] = chd3_mean
+    cha1_mean = np.mean(timedat.CHA1)
+    cha3_mean = np.mean(timedat.CHA3)
+    chb1_mean = np.mean(timedat.CHB1)
+    chb3_mean = np.mean(timedat.CHB3)
+
+    # timedat.CHC1[list(switch_counters)] = chc1_mean
+    # timedat.CHC3[list(switch_counters)] = chc3_mean
+    # timedat.CHD1[list(switch_counters)] = chd1_mean
+    # timedat.CHD3[list(switch_counters)] = chd3_mean
+
+    timedat.CHA1[list(switch_counters)] = cha1_mean
+    timedat.CHA3[list(switch_counters)] = cha3_mean
+    timedat.CHB1[list(switch_counters)] = chb1_mean
+    timedat.CHB3[list(switch_counters)] = chb3_mean
 
     for z in range(len(cntstart)):
         temparr = np.array(timedat[(timedat.EXTCNT >= cntstart[z]) & (timedat.EXTCNT <= cntstop[z])].index)
         obj_counters = np.concatenate((obj_counters, temparr), axis=0)
 
-    timedat.CHC1[list(obj_counters)] = chc1_mean
-    timedat.CHC3[list(obj_counters)] = chc3_mean
-    timedat.CHD1[list(obj_counters)] = chd1_mean
-    timedat.CHD3[list(obj_counters)] = chd3_mean
+    # timedat.CHC1[list(obj_counters)] = chc1_mean
+    # timedat.CHC3[list(obj_counters)] = chc3_mean
+    # timedat.CHD1[list(obj_counters)] = chd1_mean
+    # timedat.CHD3[list(obj_counters)] = chd3_mean
+
+    timedat.CHA1[list(obj_counters)] = cha1_mean
+    timedat.CHA3[list(obj_counters)] = cha3_mean
+    timedat.CHB1[list(obj_counters)] = chb1_mean
+    timedat.CHB3[list(obj_counters)] = chb3_mean
 
     # timedat = timedat.drop(list(switch_counters), axis=0)
     timedat.to_hdf(processedfile, key='processed', mode='w')

@@ -28,7 +28,7 @@ counters_pull = []
 counters_push = []
 
 with open(
-        'F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\counter_data\prorail17112805si12_left_pushing.csv') as csv_file:
+        'F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\counter_data\prorail17112805si12_cha_pushing.csv') as csv_file:
     csv_reader = csv.reader(csv_file)
     line_count = 0
     for row in csv_reader:
@@ -46,7 +46,7 @@ with open(
     print("Program is running...")
 
 with open(
-        'F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\counter_data\prorail17112805si12_left_pulling.csv') as csv_file:
+        'F:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\counter_data\prorail17112805si12_cha_pulling.csv') as csv_file:
     csv_reader = csv.reader(csv_file)
     line_count = 0
     for row in csv_reader:
@@ -98,8 +98,8 @@ for i in range(len(tree_list)):
     next_spots = []
     prev_spots = []
 
-    for j in range(len(counters_push) - 1):
-        num = counters_push[j]
+    for j in range(len(all_counters) - 1):
+        num = all_counters[j]
         tnum = list(str(int(num)))
         cnt_signum = int(tnum[0] + tnum[1] + tnum[2])
         itlist2.append(cnt_signum)
