@@ -68,6 +68,8 @@ next_spots = []
 prev_spots = []
 all_spots = []
 all_defects_spots = []
+defect_track = []
+anom_track = []
 
 for i in range(len(tree_list)):
 
@@ -85,6 +87,7 @@ for i in range(len(tree_list)):
         defect_spots.append(xdim)
         all_defects_spots.append(xdim)
 
+    defect_track.append(defect_spots)
     itlist1 = []
     itlist2 = []
 
@@ -96,7 +99,6 @@ for i in range(len(tree_list)):
     anom_spots = anom_spots + next_spots
     # anom_spots = anom_spots + prev_spots
     next_spots = []
-    prev_spots = []
 
     for j in range(len(all_counters) - 1):
         num = all_counters[j]
@@ -118,24 +120,52 @@ for i in range(len(tree_list)):
                 anom_spots.append(anom_num)
                 all_spots.append(anom_num)
 
-    # compare anomalies
-    hit_container = []
-    for s in range(len(anom_spots)):
-        for w in range(len(defect_spots)):
-            hit_container.append(abs(anom_spots[s] - defect_spots[w]))
-        if any(np.array(hit_container) < 4000):
-            hit_rate = hit_rate + 1
-        else:
-            false_alarms = false_alarms + 1
-    # compare actual defects
-    hit_container = []
-    for s in range(len(defect_spots)):
-        for w in range(len(anom_spots)):
-            hit_container.append(abs(anom_spots[w] - defect_spots[s]))
-        if any(np.array(hit_container) < 4000):
-            continue
-        else:
-            false_negatives = false_negatives + 1
+    anom_track.append(anom_spots)
+    if i > 1:
+        a_spots = anom_track[i-1] + prev_spots
+        d_spots = defect_track[i-1]
+        prev_spots = []
 
-    # Comparison of actual defects vs detected anomalies
-print('Hits: {} , False Alarms: {}, False Negatives: {}'.format(hit_rate, false_alarms, false_negatives))
+        # compare anomalies
+        hit_container = []
+        for s in range(len(a_spots)):
+            for w in range(len(d_spots)):
+                hit_container.append(abs(a_spots[s] - d_spots[w]))
+            if any(np.array(hit_container) < 4000):
+                hit_rate = hit_rate + 1
+            else:
+                false_alarms = false_alarms + 1
+        # compare actual defects
+        hit_container = []
+        for s in range(len(d_spots)):
+            for w in range(len(a_spots)):
+                hit_container.append(abs(a_spots[w] - d_spots[s]))
+            if any(np.array(hit_container) < 4000):
+                continue
+            else:
+                false_negatives = false_negatives + 1
+
+a_spots = anom_track[i] + prev_spots
+d_spots = defect_track[i]
+
+# compare anomalies
+hit_container = []
+for s in range(len(a_spots)):
+    for w in range(len(d_spots)):
+        hit_container.append(abs(a_spots[s] - d_spots[w]))
+    if any(np.array(hit_container) < 4000):
+        hit_rate = hit_rate + 1
+    else:
+        false_alarms = false_alarms + 1
+        # compare actual defects
+hit_container = []
+for s in range(len(d_spots)):
+    for w in range(len(a_spots)):
+        hit_container.append(abs(a_spots[w] - d_spots[s]))
+    if any(np.array(hit_container) < 4000):
+        continue
+    else:
+        false_negatives = false_negatives + 1
+
+# Model performance in terms of hit rate, false alarms and miss rate
+print('Hits: {} , False Alarms: {}, Misses: {}'.format(hit_rate, false_alarms, false_negatives))
