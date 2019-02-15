@@ -112,6 +112,7 @@ for i in range(len(tree_list)):
         if label_signum == cnt_signum:
             if anom_num >= 40000:
                 next_spots.append(abs(40000 - anom_num))
+            elif anom_num < 0:
                 prev_spots.append(40000 + anom_num)
             else:
                 anom_spots.append(anom_num)

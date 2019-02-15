@@ -102,6 +102,7 @@ for i in range(len(image_list)):
                 next_spots.append(abs(40000 - anom_num)-1)
                 next_spots.append(abs(40000 - anom_num))
                 next_spots.append(abs(40000 - anom_num)+1)
+            elif anom_num < 0:
                 prev_spots.append(40000 + anom_num)
             else:
                 anom_spots.append(anom_num-1)
