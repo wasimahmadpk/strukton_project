@@ -116,14 +116,13 @@ for i in range(len(tree_list)):
             else:
                 anom_spots.append(anom_num)
                 all_spots.append(anom_num)
-        else:
-            false_alarms = false_alarms + 1
+
     # compare anomalies
     hit_container = []
     for s in range(len(anom_spots)):
         for w in range(len(defect_spots)):
             hit_container.append(abs(anom_spots[s] - defect_spots[w]))
-        if any(hit_container) < 1000:
+        if any(np.array(hit_container) < 4000):
             hit_rate = hit_rate + 1
         else:
             false_alarms = false_alarms + 1
@@ -132,7 +131,7 @@ for i in range(len(tree_list)):
     for s in range(len(defect_spots)):
         for w in range(len(anom_spots)):
             hit_container.append(abs(anom_spots[w] - defect_spots[s]))
-        if any(hit_container) < 1000:
+        if any(np.array(hit_container) < 4000):
             continue
         else:
             false_negatives = false_negatives + 1
