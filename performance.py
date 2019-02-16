@@ -12,6 +12,7 @@ import os
 
 print('Calculating Model\'s Performance')
 
+lab_list = []
 tree_list = []
 file_names = []
 obj_dim = []
@@ -23,6 +24,11 @@ for filename in glob.glob(
     file_names.append(fname)
     tree = ET.parse(filename)
     tree_list.append(tree)
+
+    file, ext = os.path.splitext(fname)
+    fname = list(file)
+    label_signum = int(fname[3] + fname[4] + fname[5])
+    lab_list.append(label_signum)
 
 counters_pull = []
 counters_push = []
@@ -70,6 +76,16 @@ all_spots = []
 all_defects_spots = []
 defect_track = []
 anom_track = []
+
+for y in range(len(all_counters)):
+    num = all_counters[y]
+    tnum = list(str(int(num)))
+    cnt_signum = int(tnum[0] + tnum[1] + tnum[2])
+    if any(np.array(cnt_signum) == np.array(lab_list)):
+        continue
+    else:
+        false_alarms = false_alarms + 1
+
 
 for i in range(len(tree_list)):
 
