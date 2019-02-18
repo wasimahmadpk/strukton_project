@@ -147,7 +147,7 @@ for i in range(len(tree_list)):
         for s in range(len(a_spots)):
             for w in range(len(d_spots)):
                 hit_container.append(abs(a_spots[s] - d_spots[w]))
-            if any(np.array(hit_container) < 4000):
+            if any(np.array(hit_container) < 6000):
                 hit_rate = hit_rate + 1
             else:
                 false_alarms = false_alarms + 1
@@ -156,7 +156,7 @@ for i in range(len(tree_list)):
         for s in range(len(d_spots)):
             for w in range(len(a_spots)):
                 hit_container.append(abs(a_spots[w] - d_spots[s]))
-            if any(np.array(hit_container) < 4000):
+            if any(np.array(hit_container) < 6000):
                 continue
             else:
                 false_negatives = false_negatives + 1
