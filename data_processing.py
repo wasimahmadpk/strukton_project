@@ -217,10 +217,10 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
     # timedat.CHD1[list(switch_counters)] = chd1_mean
     # timedat.CHD3[list(switch_counters)] = chd3_mean
 
-    timedat.CHA1[list(set(switch_counters))] = cha1_mean
-    timedat.CHA3[list(set(switch_counters))] = cha3_mean
-    timedat.CHB1[list(set(switch_counters))] = chb1_mean
-    timedat.CHB3[list(set(switch_counters))] = chb3_mean
+    timedat.CHA1.iloc[list(set(switch_counters))] = cha1_mean
+    timedat.CHA3.iloc[list(set(switch_counters))] = cha3_mean
+    timedat.CHB1.iloc[list(set(switch_counters))] = chb1_mean
+    timedat.CHB3.iloc[list(set(switch_counters))] = chb3_mean
 
     # for z in range(len(cntstart)):
     #     temparr = np.array(timedat[(timedat.EXTCNT >= cntstart[z]) & (timedat.EXTCNT <= cntstop[z])].index)
