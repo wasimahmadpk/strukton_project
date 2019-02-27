@@ -72,7 +72,7 @@ else:
     CHB3 = np.array(processed_data.CHB3)
 
     int_count = np.array(processed_data.INTCNT)
-    ext_count = np.array(processed_data.EXTCNT)
+    ext_count = np.array(processed_data.ExtCnt)
     # date_time = syncdat.DateTime
 
     # Pushing & Pulling ABA data for one side (left or right)
@@ -164,7 +164,7 @@ else:
             plt.plot(peak_to_peak)
             plt.show()
 
-            mylist = np.stack((peak_to_peak, peak_to_peak), axis=-1)
+            mylist = np.stack((peak_to_peak, kurtosis), axis=-1)
             norm_train, anom_train, norm_test, anom_test, anom_icount, anom_icount_train = isolation_forest(mylist, int_count)
 
             # norm_train = np.concatenate(norm_train.tolist())
