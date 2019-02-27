@@ -17,7 +17,7 @@ Created on Thu Dec 13 13:48:04 2018
 # Flevolijn Track
 data_file = 'F:\strukton_project\Flevolijn\Prorail18022101si12\ABA\Prorail18022101si12\Prorail18022101si12.h5'
 sync_file = 'F:\strukton_project\Flevolijn\Prorail18022101si12\ABA\Prorail18022101si12.sync.xlsx'
-seg_file = 'F:\strukton_project\Flevolijn\RouteFile\Prorail18022101si12_seg.csv'
+seg_file = 'F:\strukton_project\Flevolijn\RouteFile\wspexp.csv'
 poi_file = 'F:\strukton_project\Flevolijn\RouteFile\Prorail18022101si12_poi.csv'
 processed_file = 'F:\strukton_project\Flevolijn\Prorail18022101si12\ABA\Prorail18022101si12\Prorail18022101si12.processed.h5'
 counters_path = 'F:\strukton_project\Flevolijn\Prorail18022101si12\ABA\Prorail18022101si12\counter_data'

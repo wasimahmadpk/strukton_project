@@ -22,7 +22,7 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
             tempStr = ''.join(row)
             if tempStr.startswith('#') or len(tempStr) == 0:
                 continue
-            elif tempStr.startswith('PRV10_CNT_BGN'):
+            elif tempStr.startswith('CNT_BGN'):
                 print(f'Column names are {", ".join(row)}')
                 line_count += 1
             else:
