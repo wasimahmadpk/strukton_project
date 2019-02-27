@@ -134,7 +134,7 @@ else:
         for j in range(len(data_list)):
             input_data = data_list[j]
             counters = counters_list[j]
-            list_of_features = extract_features(input_data, counters, 3600)
+            list_of_features = extract_features(input_data, counters, 3000)
 
             rms = np.array(list_of_features[:, 0])
             kurtosis = np.array(list_of_features[:, 2])

@@ -29,7 +29,7 @@ def isolation_forest(my_data, int_count):
     xtest_count = int_count[round(len(int_count)/2):len(int_count)]
 
     # fit the model
-    clf = IsolationForest(max_samples=256, max_features=my_data.shape[1], contamination=0.1, random_state=rng)
+    clf = IsolationForest(max_samples=128, max_features=my_data.shape[1], contamination=0.05, random_state=rng)
     clf.fit(X_train)
     y_pred_train = clf.predict(X_train)
     y_pred_test = clf.predict(X_test)
