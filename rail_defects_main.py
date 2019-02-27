@@ -34,7 +34,7 @@ if not os.path.isfile(processed_file):
     pre_processing(data_file, sync_file, seg_file, poi_file, processed_file)
 else:
     geo_list = []
-    with open('F:\strukton_project\Groningen\Routefile\Prorail17112805si12_poi.csv') as csv_file:
+    with open(poi_file) as csv_file:
         csv_reader = csv.reader(csv_file)
         line_count = 0
         for row in csv_reader:
@@ -197,7 +197,7 @@ else:
             track_side = 'chb' if i else 'cha'
             train_mode = 'pushing' if j else 'pulling'
 
-            with open(counters_path + '\prorail17112805si12_' + track_side + '_' + train_mode + '.csv', 'w', newline='') as file:
+            with open(counters_path + '\Prorail18022101si12_' + track_side + '_' + train_mode + '.csv', 'w', newline='') as file:
                 try:
                     writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                     writer.writerow(['counters', 'latitude', 'longitude', 'distance'])

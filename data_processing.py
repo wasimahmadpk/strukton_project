@@ -22,7 +22,7 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
             tempStr = ''.join(row)
             if tempStr.startswith('#') or len(tempStr) == 0:
                 continue
-            elif tempStr.startswith('PRV9_CNT_BGN'):
+            elif tempStr.startswith('PRV10_CNT_BGN'):
                 print(f'Column names are {", ".join(row)}')
                 line_count += 1
             else:
@@ -60,45 +60,52 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
     # Interpolation external and geo-coordinates
     # get_lat = interp1d(geo_list[:,0], lat, fill_value= 'extrapolate')
     # get_long = interp1d(geo_list[:,0], lon, fill_value= 'extrapolate')
-    
+
+    # read Sync CSV file
+
+    sync_data = pd.read_excel(syncfile)
+
     # documented in time tdms file
     
-    syncdat = pd.read_hdf(syncfile, 'sync', mode='r')
-    timedat = pd.read_hdf(datafile, 'time', mode='r', where='INTCNT >= syncdat.IntCnt.iloc[3] and INTCNT <= syncdat.IntCnt.iloc[-1]')
-    get_xcount = interp1d(syncdat.IntCnt[3:-2], syncdat.ExtCnt[3:-2], fill_value='extrapolate')
-    get_icount = interp1d(syncdat.ExtCnt[3:-2], syncdat.IntCnt[3:-2], fill_value='extrapolate')
-    xcounters = np.array(get_xcount(timedat.INTCNT))
-    timedat = timedat.assign(EXTCNT=xcounters)
+    # syncdat = pd.read_hdf(syncfile, 'sync', mode='r')
+    # where='INTCNT >= syncdat.IntCnt.iloc[3] and INTCNT <= syncdat.IntCnt.iloc[-1]
+    timedat = pd.read_hdf(datafile, 'time', mode='r')
+    # get_xcount = interp1d(syncdat.IntCnt[3:-2], syncdat.ExtCnt[3:-2], fill_value='extrapolate')
+    # get_icount = interp1d(syncdat.ExtCnt[3:-2], syncdat.IntCnt[3:-2], fill_value='extrapolate')
+
+    xcounters = timedat.ExtCnt
+    # xcounters = np.array(get_xcount(timedat.INTCNT))
+    # timedat = timedat.assign(EXTCNT=xcounters)
     
     # newext = np.arange(np.ceil(timedat.EXTCNT[0]/10)*10,np.floor(timedat.EXTCNT[-1]/10)*10,100)
     # distsamp = interp1d(timedat.EXTCNT,dispchab3)
     # newdisp = distsamp(newext)
 
     # Get rail objects location
-    obj_counters = np.array([])
-    cntval = []
-    cntstart = []
-    cntstop = []
-    with open(r'F:\strukton_project\Groningen\labeledData\temp_dist.csv') as csv_file:
-        csv_reader = csv.reader(csv_file)
-        line_count = 0
-
-        for row in csv_reader:
-            tempStr = ''.join(row)
-            if tempStr.startswith('#') or len(tempStr) == 0:
-                continue
-            elif tempStr.startswith('Numbers'):
-                print(f'Column names are {", ".join(row)}')
-                line_count += 1
-            else:
-                line_count += 1
-                tlist = tempStr.split(";")
-                if tlist[6] == 'D:\\Prorail\\Data\\Groningen\\171128\\Prorail17112805si12':
-                    if int(tlist[10]) == 1 or int(tlist[11]) == 1 or int(tlist[12]) == 1 or int(tlist[14]) == 1 or int(
-                            tlist[15]) == 1 or int(tlist[16]) == 1:
-                        cntstart.append(int(tlist[4]) - 500)
-                        cntstop.append(int(tlist[4]) + 500)
-        print(f'Processed {line_count} lines in rail_objects file.')
+    # obj_counters = np.array([])
+    # cntval = []
+    # cntstart = []
+    # cntstop = []
+    # with open(r'F:\strukton_project\Groningen\labeledData\temp_dist.csv') as csv_file:
+    #     csv_reader = csv.reader(csv_file)
+    #     line_count = 0
+    #
+    #     for row in csv_reader:
+    #         tempStr = ''.join(row)
+    #         if tempStr.startswith('#') or len(tempStr) == 0:
+    #             continue
+    #         elif tempStr.startswith('Numbers'):
+    #             print(f'Column names are {", ".join(row)}')
+    #             line_count += 1
+    #         else:
+    #             line_count += 1
+    #             tlist = tempStr.split(";")
+    #             if tlist[6] == 'D:\\Prorail\\Data\\Groningen\\171128\\Prorail17112805si12':
+    #                 if int(tlist[10]) == 1 or int(tlist[11]) == 1 or int(tlist[12]) == 1 or int(tlist[14]) == 1 or int(
+    #                         tlist[15]) == 1 or int(tlist[16]) == 1:
+    #                     cntstart.append(int(tlist[4]) - 500)
+    #                     cntstop.append(int(tlist[4]) + 500)
+    #     print(f'Processed {line_count} lines in rail_objects file.')
 
     ################################################################
 
@@ -107,9 +114,9 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
     switch_start = []
     switch_end = []
     for i in range(len(route_list)-2):
-        if i==0:
+        if i == 0:
             start_ind, stop_ind = int(route_list[i, 0]), int(route_list[i, 1])
-            edir = np.zeros(len(xcounters[(start_ind <= xcounters) & (xcounters <= stop_ind)]))
+            edir = np.zeros(len(xcounters[(start_ind < xcounters) & (xcounters < stop_ind)]))
             edir.fill(int(route_list[i, 14]))
             tdir = np.repeat(route_list[i, 15], len(edir))
             if route_list[i, 11] != '':
@@ -117,7 +124,7 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
                 switch_end.append(stop_ind)
         else:
             start_ind, stop_ind = int(route_list[i, 0]), int(route_list[i, 1])
-            temp = np.zeros(len(xcounters[(start_ind <= xcounters) & (xcounters <= stop_ind)]))
+            temp = np.zeros(len(xcounters[(start_ind < xcounters) & (xcounters < stop_ind)]))
             edval = int(route_list[i, 14])
             temp.fill(edval)
             edir = np.concatenate((edir, temp), axis=-1)
@@ -129,8 +136,8 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
                 switch_end.append(stop_ind)
 
     if len(timedat) != len(edir):
-        edir = np.concatenate((edir, np.repeat(edval, (len(timedat)-len(edir)))), axis=-1)
-        tdir = np.concatenate((tdir, np.repeat(tdval, (len(timedat)-len(tdir)))), axis=-1)
+        edir = np.concatenate((edir, np.repeat(edval, (abs(len(timedat)-len(edir))))), axis=-1)
+        tdir = np.concatenate((tdir, np.repeat(tdval, (abs(len(timedat)-len(tdir))))), axis=-1)
     ERS_DIR = edir
     TRACK_DIR = tdir
     
@@ -192,7 +199,7 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
     switch_counters = np.array([])
     
     for z in range(len(switch_start)):
-        temparr = np.array(timedat[(timedat.EXTCNT >= switch_start[z]) & (timedat.EXTCNT <= switch_end[z])].index)
+        temparr = np.array(timedat[(timedat.ExtCnt >= switch_start[z]) & (timedat.ExtCnt <= switch_end[z])].index)
         switch_counters = np.concatenate((switch_counters, temparr), axis=0)
 
     # chc1_mean = np.mean(timedat.CHC1)
@@ -210,24 +217,24 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
     # timedat.CHD1[list(switch_counters)] = chd1_mean
     # timedat.CHD3[list(switch_counters)] = chd3_mean
 
-    timedat.CHA1[list(switch_counters)] = cha1_mean
-    timedat.CHA3[list(switch_counters)] = cha3_mean
-    timedat.CHB1[list(switch_counters)] = chb1_mean
-    timedat.CHB3[list(switch_counters)] = chb3_mean
+    timedat.CHA1[list(set(switch_counters))] = cha1_mean
+    timedat.CHA3[list(set(switch_counters))] = cha3_mean
+    timedat.CHB1[list(set(switch_counters))] = chb1_mean
+    timedat.CHB3[list(set(switch_counters))] = chb3_mean
 
-    for z in range(len(cntstart)):
-        temparr = np.array(timedat[(timedat.EXTCNT >= cntstart[z]) & (timedat.EXTCNT <= cntstop[z])].index)
-        obj_counters = np.concatenate((obj_counters, temparr), axis=0)
+    # for z in range(len(cntstart)):
+    #     temparr = np.array(timedat[(timedat.EXTCNT >= cntstart[z]) & (timedat.EXTCNT <= cntstop[z])].index)
+    #     obj_counters = np.concatenate((obj_counters, temparr), axis=0)
 
     # timedat.CHC1[list(obj_counters)] = chc1_mean
     # timedat.CHC3[list(obj_counters)] = chc3_mean
     # timedat.CHD1[list(obj_counters)] = chd1_mean
     # timedat.CHD3[list(obj_counters)] = chd3_mean
 
-    timedat.CHA1[list(obj_counters)] = cha1_mean
-    timedat.CHA3[list(obj_counters)] = cha3_mean
-    timedat.CHB1[list(obj_counters)] = chb1_mean
-    timedat.CHB3[list(obj_counters)] = chb3_mean
+    # timedat.CHA1[list(obj_counters)] = cha1_mean
+    # timedat.CHA3[list(obj_counters)] = cha3_mean
+    # timedat.CHB1[list(obj_counters)] = chb1_mean
+    # timedat.CHB3[list(obj_counters)] = chb3_mean
 
     # timedat = timedat.drop(list(switch_counters), axis=0)
     timedat.to_hdf(processedfile, key='processed', mode='w')
