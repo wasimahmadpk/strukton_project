@@ -128,13 +128,14 @@ else:
     # ///////////// Feature Extraction //////////////
     aba_data_side = []
     all_xcount_mode = []
-    for i in range(len(rail_data)-1):
+    for i in range(len(rail_data)):
         aba_data_mode = []
         int_count_mode = []
+        input_data = rail_data[i]
         for j in range(len(data_list)):
-            input_data = data_list[j]
+            in_data = input_data[j]
             counters = counters_list[j]
-            list_of_features = extract_features(input_data, counters, 3000)
+            list_of_features = extract_features(in_data, counters, 3000)
 
             rms = np.array(list_of_features[:, 0])
             kurtosis = np.array(list_of_features[:, 2])
