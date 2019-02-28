@@ -134,6 +134,8 @@ else:
         input_data = rail_data[i]
         for j in range(len(data_list)):
             in_data = input_data[j]
+            if len(in_data) == 0:
+                continue
             counters = counters_list[j]
             list_of_features = extract_features(in_data, counters, 3000)
 
