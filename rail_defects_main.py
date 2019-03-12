@@ -72,7 +72,7 @@ else:
     CHB3 = np.array(processed_data.CHB3)
 
     int_count = np.array(processed_data.INTCNT)
-    ext_count = np.array(processed_data.EXTCNT)
+    ext_count = np.array(processed_data.ExtCnt)
     # date_time = syncdat.DateTime
 
     # Pushing & Pulling ABA data for one side (left or right)
@@ -182,6 +182,9 @@ else:
             anom_xcount_train = get_xcount(anom_icount_train)
             anom_xcount = np.concatenate((anom_xcount_train, anom_xcount_test), axis=0)
 
+            anom_xcount_list.append(anom_xcount)
+            anom_xcount_train_list.append(anom_xcount_train)
+
             # new code for validation of anomalies
             latitude = get_lat(anom_xcount)
             longitude = get_long(anom_xcount)
@@ -211,9 +214,6 @@ else:
                 finally:
                     file.close()
             #######################################################
-
-            anom_xcount_list.append(anom_xcount)
-            anom_xcount_train_list.append(anom_xcount_train)
 
             lat_list = get_lat(anom_xcount).tolist()
             long_list = get_long(anom_xcount).tolist()
