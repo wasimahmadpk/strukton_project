@@ -87,7 +87,7 @@ for i in range(len(image_list)):
     # anom_spots = anom_spots + prev_spots
     next_spots = []
     prev_spots = []
-    for j in range(len(all_counters)-1):
+    for j in range(len(all_counters)):
         num = all_counters[j]
         tnum = list(str(int(num)))
         cnt_signum = int(tnum[0]+tnum[1]+tnum[2]+tnum[3]+tnum[4])
