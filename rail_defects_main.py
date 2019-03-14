@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from data_processing import pre_processing
+from compare_anomaly import match_anomaly
 from geopy.distance import geodesic
 from itertools import zip_longest
 from data_paths import data_path
@@ -83,6 +84,9 @@ else:
 
     pull_int_count = int_count[(EDIR == 1)]
     push_int_count = int_count[(EDIR == -1)]
+
+    pull_ext_count = int_count[(EDIR == 1)]
+    push_ext_count = int_count[(EDIR == -1)]
     
     pull_data = np.power((np.power(pull_data_cha1, 2) + np.power(pull_data_cha3, 2)), 1/2)
     push_data = np.power((np.power(push_data_cha1, 2) + np.power(push_data_cha3, 2)), 1/2)
@@ -95,20 +99,21 @@ else:
     pull_data_chb3 = CHB3[(EDIR == 1)]
     push_data_chb3 = CHB3[(EDIR == -1)]
 
-    pull_int_count = int_count[(EDIR == 1)]
-    push_int_count = int_count[(EDIR == -1)]
-
     pull_data2 = np.power((np.power(pull_data_chb1, 2) + np.power(pull_data_chb3, 2)), 1/2)
     push_data2 = np.power((np.power(push_data_chb1, 2) + np.power(push_data_chb3, 2)), 1/2)
     ########################################
     rail_data = []
     rail_counters = []
+    rail_xcounters = []
     data_list = []
     counters_list = []
+    xcounters_list = []
     data_list.append(pull_data)
     data_list.append(push_data)
     counters_list.append(pull_int_count)
     counters_list.append(push_int_count)
+    xcounters_list.append(pull_int_count)
+    xcounters_list.append(push_int_count)
     ########################################
     data_list2 = []
     data_list2.append(pull_data2)
@@ -117,8 +122,10 @@ else:
     rail_data.append(data_list2)
     rail_counters.append(counters_list)
     rail_counters.append(counters_list)
-
+    rail_xcounters.append(xcounters_list)
+    rail_xcounters.append(xcounters_list)
     ########################################
+
     anom_xcount_list = []
     anom_xcount_train_list = []
     
@@ -128,10 +135,12 @@ else:
     # ///////////// Feature Extraction //////////////
     aba_data_side = []
     all_xcount_mode = []
+    anom_xcount_mode = []
 
     for i in range(len(rail_data)):
         aba_data_mode = []
         int_count_mode = []
+        anom_xcount_list = []
         input_data = rail_data[i]
 
         for j in range(len(data_list)):
@@ -149,9 +158,6 @@ else:
             impulse_factor = np.array(list_of_features[:, 6])
             rmsf = np.array(list_of_features[:, 12])
             int_count = np.array(list_of_features[:, 13])
-
-            aba_data_mode.append(peak_to_peak)
-            int_count_mode.append(int_count)
 
             # features comparison
             plt.figure(2)
@@ -183,7 +189,6 @@ else:
             anom_xcount = np.concatenate((anom_xcount_train, anom_xcount_test), axis=0)
 
             anom_xcount_list.append(anom_xcount)
-            anom_xcount_train_list.append(anom_xcount_train)
 
             # new code for validation of anomalies
             latitude = get_lat(anom_xcount)
@@ -270,3 +275,6 @@ else:
             # plot_confusion_matrix(conf_mat, classes= ['Normal', 'Anomaly'],
             #                      title='Confusion matrix')
         aba_data_side.append(aba_data_mode)
+        anom_xcount_mode.append(anom_xcount_list)
+
+    anomaly_positions = match_anomaly(rail_data, rail_xcounters, anom_xcount_mode, seg_file)
