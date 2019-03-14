@@ -1,4 +1,5 @@
 import csv
+import math
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
@@ -28,8 +29,6 @@ def match_anomaly(abadata, allxcount, anomxcount, segfile):
         route_list = np.array(route_list)
 
     winsize = 10000
-    start_idx = 0
-    stop_idx = start_idx + winsize
     anomaly_positions = []
     for i in range(len(abadata)-1):
         cha_aba = abadata[i]
@@ -39,21 +38,23 @@ def match_anomaly(abadata, allxcount, anomxcount, segfile):
         chb_axcount = anomxcount[i+1]
 
         for j in range(len(cha_aba)):
+            start_idx = 0
             cha_dir_aba = cha_aba[j]
             chb_dir_aba = chb_aba[j]
             dir_xcount = ch_xcount[j]
             cha_dir_axcount = cha_axcount[j]
             chb_dir_axcount = chb_axcount[j]
-            numwindows = round(len(ch_xcount)/10000)
-            numwinb = round(len(ch_xcount)/10000)
+            numwindows = math.floor(len(dir_xcount)/winsize)
+            numwinb = round(len(dir_xcount)/10000)
 
             anom_pos_listA = []
             anom_pos_listB = []
-            winanoma = []
-            winanomb = []
 
             for a in range(numwindows):
-                counters = ch_xcount[start_idx: start_idx + winsize]
+                winanoma = []
+                winanomb = []
+                print(a, j)
+                counters = dir_xcount[start_idx: start_idx + winsize]
                 data_cha = cha_dir_aba[start_idx: start_idx + winsize]
                 data_chb = chb_dir_aba[start_idx: start_idx + winsize]
                 start_idx = start_idx + winsize
@@ -61,15 +62,15 @@ def match_anomaly(abadata, allxcount, anomxcount, segfile):
                 fname = str(counters[0]) + '_' + mode
 
                 for b in range(len(cha_dir_axcount)):
-                    axcount = cha_dir_axcount[b]
-                    if (axcount >= counters[0] & axcount <= counters[-1]):
+                    axcount = int(cha_dir_axcount[b])
+                    if ((axcount >= counters[0]) & (axcount <= counters[-1])):
                         winanoma.append(round(axcount))
                     else:
                         continue
 
                 for c in range(len(chb_dir_axcount)):
-                    axcount = chb_dir_axcount[c]
-                    if (axcount >= counters[0] & axcount <= counters[-1]):
+                    axcount = int(chb_dir_axcount[c])
+                    if ((axcount >= counters[0]) & (axcount <= counters[-1])):
                         winanomb.append(round(axcount))
                     else:
                         continue
@@ -77,7 +78,7 @@ def match_anomaly(abadata, allxcount, anomxcount, segfile):
                 if (len(winanoma) > 0 or len(winanomb) > 0):
                     plt.figure(6)
                     plt.subplot(211)
-                    plt.xlabel(fname)
+                    plt.title(fname)
                     plt.ylabel('Channel A')
                     plt.plot(counters, data_cha)
                     for xc in winanoma:
@@ -88,6 +89,7 @@ def match_anomaly(abadata, allxcount, anomxcount, segfile):
                     for xc in winanomb:
                         plt.axvline(x=xc, color='k', linestyle='--')
                     plt.savefig(r'F:\strukton_project\Flevolijn\Prorail18022101si12\ABA\Prorail18022101si12\channel_comparison\{}.png'.format(fname))
+                    plt.clf()
 
             for k in range(len(cha_dir_axcount)):
                 axcount = int(cha_dir_axcount[k])
@@ -96,7 +98,7 @@ def match_anomaly(abadata, allxcount, anomxcount, segfile):
 
                 for z in range(len(route_list)):
                     if(axcount >= int(route_list[z, 0]) & axcount <= int(route_list[z, 1])):
-                        pos_start, pos_end = float(route_list[z, 7]), float(route_list[z, 8])
+                        pos_start, pos_end = float(route_list[z, 7])*1000, float(route_list[z, 8])*1000
                         count_start, count_end = int(route_list[z, 0]), int(route_list[z, 1])
                         pos_list.append(pos_start)
                         pos_list.append(pos_end)
@@ -104,8 +106,9 @@ def match_anomaly(abadata, allxcount, anomxcount, segfile):
                         count_list.append(count_end)
 
                         get_position = interp1d(count_list, pos_list, fill_value='extrapolate')
-                        anom_pos = get_position(axcount)
+                        anom_pos = get_position(axcount)/1000
                         anom_pos_listA.append(anom_pos)
+                        break
                     else:
                         continue
 
@@ -116,7 +119,7 @@ def match_anomaly(abadata, allxcount, anomxcount, segfile):
 
                 for z in range(len(route_list)):
                     if (axcount >= int(route_list[z, 0]) & axcount <= int(route_list[z, 1])):
-                        pos_start, pos_end = float(route_list[z, 7]), float(route_list[z, 8])
+                        pos_start, pos_end = float(route_list[z, 7])*1000, float(route_list[z, 8])*1000
                         count_start, count_end = int(route_list[z, 0]), int(route_list[z, 1])
                         pos_list.append(pos_start)
                         pos_list.append(pos_end)
@@ -124,8 +127,9 @@ def match_anomaly(abadata, allxcount, anomxcount, segfile):
                         count_list.append(count_end)
 
                         get_position = interp1d(count_list, pos_list, fill_value='extrapolate')
-                        anom_pos = get_position(axcount)
+                        anom_pos = get_position(axcount)/1000
                         anom_pos_listB.append(anom_pos)
+                        break
                     else:
                         continue
             anomaly_positions.append(anom_pos_listA)

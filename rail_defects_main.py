@@ -112,8 +112,8 @@ else:
     data_list.append(push_data)
     counters_list.append(pull_int_count)
     counters_list.append(push_int_count)
-    xcounters_list.append(pull_int_count)
-    xcounters_list.append(push_int_count)
+    xcounters_list.append(pull_ext_count)
+    xcounters_list.append(push_ext_count)
     ########################################
     data_list2 = []
     data_list2.append(pull_data2)
