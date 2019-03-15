@@ -117,11 +117,10 @@ def match_anomaly(abadata, allxcount, anomxcount, segfile):
                     else:
                         continue
 
-                mode = 'pushing' if j else 'pulling'
-                fname = str(counters[0]) + '_' + km_position + ' KM' + '_' + mode
-
                 if (len(winanoma) > 0 or len(winanomb) > 0):
                     print('Inside plotting' + '_' + str(j))
+                    mode = 'pushing' if j else 'pulling'
+                    fname = str(counters[0]) + '_' + str(km_position) + ' KM' + '_' + mode
                     plt.figure(6)
                     plt.subplot(211)
                     plt.title(fname)
