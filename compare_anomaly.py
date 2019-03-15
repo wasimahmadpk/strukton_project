@@ -105,7 +105,7 @@ def match_anomaly(abadata, allxcount, anomxcount, segfile):
                     axcount = int(cha_dir_axcount[b])
                     if ((axcount >= counters[0]) and (axcount <= counters[-1])):
                         winanoma.append(round(axcount))
-                        km_position = anom_pos_listA[b]
+                        km_position = round(anom_pos_listA[b], 3)
                     else:
                         continue
 
@@ -113,14 +113,14 @@ def match_anomaly(abadata, allxcount, anomxcount, segfile):
                     axcount = int(chb_dir_axcount[c])
                     if ((axcount >= counters[0]) and (axcount <= counters[-1])):
                         winanomb.append(round(axcount))
-                        km_position = anom_pos_listB[c]
+                        km_position = round(anom_pos_listB[c], 3)
                     else:
                         continue
 
                 if (len(winanoma) > 0 or len(winanomb) > 0):
                     print('Inside plotting' + '_' + str(j))
                     mode = 'pushing' if j else 'pulling'
-                    fname = str(counters[0]) + '_' + str(km_position) + ' KM' + '_' + mode
+                    fname = str(counters[0]) + '_' + str(km_position) + ' km' + '_' + mode
                     plt.figure(6)
                     plt.subplot(211)
                     plt.title(fname)
