@@ -85,8 +85,8 @@ else:
     pull_int_count = int_count[(EDIR == 1)]
     push_int_count = int_count[(EDIR == -1)]
 
-    pull_ext_count = int_count[(EDIR == 1)]
-    push_ext_count = int_count[(EDIR == -1)]
+    pull_ext_count = ext_count[(EDIR == 1)]
+    push_ext_count = ext_count[(EDIR == -1)]
     
     pull_data = np.power((np.power(pull_data_cha1, 2) + np.power(pull_data_cha3, 2)), 1/2)
     push_data = np.power((np.power(push_data_cha1, 2) + np.power(push_data_cha3, 2)), 1/2)

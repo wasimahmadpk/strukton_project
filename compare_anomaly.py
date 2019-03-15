@@ -76,6 +76,7 @@ def match_anomaly(abadata, allxcount, anomxcount, segfile):
                         continue
 
                 if (len(winanoma) > 0 or len(winanomb) > 0):
+                    print('Inside plotting' + '_' + str(j))
                     plt.figure(6)
                     plt.subplot(211)
                     plt.title(fname)
