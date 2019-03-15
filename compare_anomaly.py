@@ -50,6 +50,48 @@ def match_anomaly(abadata, allxcount, anomxcount, segfile):
             anom_pos_listA = []
             anom_pos_listB = []
 
+            for k in range(len(cha_dir_axcount)):
+                axcount = int(cha_dir_axcount[k])
+                pos_list = []
+                count_list = []
+
+                for z in range(len(route_list)):
+                    if(axcount >= int(route_list[z, 0]) and axcount <= int(route_list[z, 1])):
+                        pos_start, pos_end = float(route_list[z, 7])*1000, float(route_list[z, 8])*1000
+                        count_start, count_end = int(route_list[z, 0]), int(route_list[z, 1])
+                        pos_list.append(pos_start)
+                        pos_list.append(pos_end)
+                        count_list.append(count_start)
+                        count_list.append(count_end)
+
+                        get_position = interp1d(count_list, pos_list, fill_value='extrapolate')
+                        anom_pos = get_position(axcount)/1000
+                        anom_pos_listA.append(anom_pos)
+                        break
+                    else:
+                        continue
+
+            for k in range(len(chb_dir_axcount)):
+                axcount = int(chb_dir_axcount[k])
+                pos_list = []
+                count_list = []
+
+                for z in range(len(route_list)):
+                    if (axcount >= int(route_list[z, 0]) and axcount <= int(route_list[z, 1])):
+                        pos_start, pos_end = float(route_list[z, 7])*1000, float(route_list[z, 8])*1000
+                        count_start, count_end = int(route_list[z, 0]), int(route_list[z, 1])
+                        pos_list.append(pos_start)
+                        pos_list.append(pos_end)
+                        count_list.append(count_start)
+                        count_list.append(count_end)
+
+                        get_position = interp1d(count_list, pos_list, fill_value='extrapolate')
+                        anom_pos = get_position(axcount)/1000
+                        anom_pos_listB.append(anom_pos)
+                        break
+                    else:
+                        continue
+
             for a in range(numwindows):
                 winanoma = []
                 winanomb = []
@@ -58,19 +100,21 @@ def match_anomaly(abadata, allxcount, anomxcount, segfile):
                 data_cha = cha_dir_aba[start_idx: start_idx + winsize]
                 data_chb = chb_dir_aba[start_idx: start_idx + winsize]
                 start_idx = start_idx + winsize
-                mode = 'pushing' if j else 'pulling'
-                fname = str(counters[0]) + '_' + mode
 
                 for b in range(len(cha_dir_axcount)):
                     axcount = int(cha_dir_axcount[b])
-                    if ((axcount >= counters[0]) & (axcount <= counters[-1])):
+                    if ((axcount >= counters[0]) and (axcount <= counters[-1])):
                         winanoma.append(round(axcount))
+                        km_position = anom_pos_listA[b]
                     else:
                         continue
 
+                mode = 'pushing' if j else 'pulling'
+                fname = str(counters[0]) + '_' +km_position + ' KM' + '_' + mode
+
                 for c in range(len(chb_dir_axcount)):
                     axcount = int(chb_dir_axcount[c])
-                    if ((axcount >= counters[0]) & (axcount <= counters[-1])):
+                    if ((axcount >= counters[0]) and (axcount <= counters[-1])):
                         winanomb.append(round(axcount))
                     else:
                         continue
@@ -92,47 +136,6 @@ def match_anomaly(abadata, allxcount, anomxcount, segfile):
                     plt.savefig(r'F:\strukton_project\Flevolijn\Prorail18022101si12\ABA\Prorail18022101si12\channel_comparison\{}.png'.format(fname))
                     plt.clf()
 
-            for k in range(len(cha_dir_axcount)):
-                axcount = int(cha_dir_axcount[k])
-                pos_list = []
-                count_list = []
-
-                for z in range(len(route_list)):
-                    if(axcount >= int(route_list[z, 0]) & axcount <= int(route_list[z, 1])):
-                        pos_start, pos_end = float(route_list[z, 7])*1000, float(route_list[z, 8])*1000
-                        count_start, count_end = int(route_list[z, 0]), int(route_list[z, 1])
-                        pos_list.append(pos_start)
-                        pos_list.append(pos_end)
-                        count_list.append(count_start)
-                        count_list.append(count_end)
-
-                        get_position = interp1d(count_list, pos_list, fill_value='extrapolate')
-                        anom_pos = get_position(axcount)/1000
-                        anom_pos_listA.append(anom_pos)
-                        break
-                    else:
-                        continue
-
-            for k in range(len(chb_dir_axcount)):
-                axcount = int(chb_dir_axcount[k])
-                pos_list = []
-                count_list = []
-
-                for z in range(len(route_list)):
-                    if (axcount >= int(route_list[z, 0]) & axcount <= int(route_list[z, 1])):
-                        pos_start, pos_end = float(route_list[z, 7])*1000, float(route_list[z, 8])*1000
-                        count_start, count_end = int(route_list[z, 0]), int(route_list[z, 1])
-                        pos_list.append(pos_start)
-                        pos_list.append(pos_end)
-                        count_list.append(count_start)
-                        count_list.append(count_end)
-
-                        get_position = interp1d(count_list, pos_list, fill_value='extrapolate')
-                        anom_pos = get_position(axcount)/1000
-                        anom_pos_listB.append(anom_pos)
-                        break
-                    else:
-                        continue
             anomaly_positions.append(anom_pos_listA)
             anomaly_positions.append(anom_pos_listB)
 
