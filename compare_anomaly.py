@@ -127,12 +127,12 @@ def match_anomaly(abadata, allxcount, anomxcount, segfile):
                     plt.ylabel('Channel A')
                     plt.plot(counters, data_cha)
                     for xc in winanoma:
-                        plt.axvline(x=xc, color='k', linestyle='--')
+                        plt.axvline(x=xc, color='r', linestyle='--')
                     plt.subplot(212)
                     plt.ylabel('Channel B')
                     plt.plot(counters, data_chb)
                     for xc in winanomb:
-                        plt.axvline(x=xc, color='k', linestyle='--')
+                        plt.axvline(x=xc, color='r', linestyle='--')
                     plt.savefig(r'F:\strukton_project\Flevolijn\Prorail18022101si12\ABA\Prorail18022101si12\channel_comparison\{}.png'.format(fname))
                     plt.clf()
 
