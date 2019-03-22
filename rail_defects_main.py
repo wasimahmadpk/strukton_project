@@ -13,7 +13,7 @@ from data_processing import pre_processing
 from compare_anomaly import match_anomaly
 from geopy.distance import geodesic
 from itertools import zip_longest
-from data_paths import data_path
+from data_paths import data_paths
 from scipy.interpolate import interp1d
 from sklearn.cluster import KMeans
 from extract_features import extract_features
@@ -24,12 +24,13 @@ from sklearn.metrics import confusion_matrix
 from confusion_mat import plot_confusion_matrix
 import csv
 
-data_file = data_path[0]
-sync_file = data_path[1]
-seg_file = data_path[2]
-poi_file = data_path[3]
-processed_file = data_path[4]
-counters_path = data_path[5]
+fpaths = data_paths()
+data_file = fpaths.data_path[0]
+sync_file = fpaths.data_path[1]
+seg_file = fpaths.data_path[2]
+poi_file = fpaths.data_path[3]
+processed_file = fpaths.data_path[4]
+counters_path = fpaths.data_path[5]
 
 if not os.path.isfile(processed_file):
     pre_processing(data_file, sync_file, seg_file, poi_file, processed_file)

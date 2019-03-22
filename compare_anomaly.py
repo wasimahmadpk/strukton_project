@@ -30,6 +30,8 @@ def match_anomaly(abadata, allxcount, anomxcount, segfile):
 
     winsize = 10000
     anomaly_positions = []
+    all_km_positions_cha = []
+    all_km_positions_chb = []
     for i in range(len(abadata)-1):
         cha_aba = abadata[i]
         chb_aba = abadata[i+1]
