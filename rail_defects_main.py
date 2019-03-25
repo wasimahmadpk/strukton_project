@@ -293,8 +293,8 @@ else:
               newline='') as file:
         try:
             writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-            writer.writerow(['counters', 'positions'])
-            for cnt, pos in write_data:
-                writer.writerow([cnt, pos])
+            writer.writerow(['positions', 'counters'])
+            for pos, cnt in write_data:
+                writer.writerow([pos, cnt])
         finally:
             file.close()
