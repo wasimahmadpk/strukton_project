@@ -299,7 +299,7 @@ else:
     # Data-frame for severity analysis
 
     dict = {'position': anom_pos_cha, 'counters': anom_pos_cha, 'score': anom_score_cha}
-    df_anom_pos_score = pd.dataframe(data=dict)
+    df_anom_pos_score = pd.DataFrame(data=dict)
 
     ##################################
 
