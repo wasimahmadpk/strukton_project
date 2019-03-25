@@ -128,6 +128,7 @@ else:
     ########################################
 
     anom_xcount_list = []
+    anom_score_list = []
     anom_xcount_train_list = []
     
     get_xcount = interp1d(int_count, ext_count, fill_value='extrapolate')
@@ -137,11 +138,13 @@ else:
     aba_data_side = []
     all_xcount_mode = []
     anom_xcount_mode = []
+    anom_score_mode = []
 
     for i in range(len(rail_data)):
         aba_data_mode = []
         int_count_mode = []
         anom_xcount_list = []
+        anom_score_list = []
         input_data = rail_data[i]
 
         for j in range(len(data_list)):
@@ -177,7 +180,7 @@ else:
             plt.show()
 
             mylist = np.stack((rms, kurtosis, skewness, peak_to_peak, crest_factor, impulse_factor), axis=-1)
-            norm_train, anom_train, norm_test, anom_test, anom_icount, anom_icount_train = isolation_forest(mylist, int_count)
+            norm_train, anom_train, norm_test, anom_test, anom_icount, anom_icount_train, anom_score = isolation_forest(mylist, int_count)
 
             # norm_train = np.concatenate(norm_train.tolist())
             # anom_train = np.concatenate(anom_train.tolist())
@@ -188,8 +191,10 @@ else:
             anom_xcount_test = get_xcount(anom_icount)
             anom_xcount_train = get_xcount(anom_icount_train)
             anom_xcount = np.concatenate((anom_xcount_train, anom_xcount_test), axis=0)
+            anom_score = anom_score
 
             anom_xcount_list.append(anom_xcount)
+            anom_score_list.append(anom_score)
 
             # new code for validation of anomalies
             latitude = get_lat(anom_xcount)
@@ -277,24 +282,36 @@ else:
             #                      title='Confusion matrix')
         aba_data_side.append(aba_data_mode)
         anom_xcount_mode.append(anom_xcount_list)
+        anom_score_mode.append(anom_score_list)
 
+    # function call: compare anomalies in ABA on both channels i.e. CHA and CHB
     anomaly_positions = match_anomaly(rail_data, rail_xcounters, anom_xcount_mode, seg_file)
+
     anom_pos_cha = np.array(anomaly_positions[0] + anomaly_positions[2])
     anom_xcount_cha = np.concatenate((anom_xcount_mode[0][0], anom_xcount_mode[0][1]), axis=0)
-    anom_pos_xcount = np.stack((anom_pos_cha, anom_xcount_cha), axis=-1)
+    anom_score_cha = np.concatenate((anom_score_mode[0][0], anom_score_mode[0][1]), axis=0)
+    anom_pos_xcount = np.stack((anom_pos_cha, anom_xcount_cha, anom_score_cha), axis=-1)
     anom_pos_xcount_sorted = anom_pos_xcount[anom_pos_xcount[:, 0].argsort()]
     anom_pos_cha = list(anom_pos_xcount_sorted[:, 0])
     anom_xcount_cha = list(anom_pos_xcount_sorted[:, 1])
+    anom_score_cha = list(anom_pos_xcount_sorted[:, 2])
 
-    write_data = zip(anom_pos_cha, anom_xcount_cha)
+    # Data-frame for severity analysis
+
+    dict = {'position': anom_pos_cha, 'counters': anom_pos_cha, 'score': anom_score_cha}
+    df_anom_pos_score = pd.dataframe(data=dict)
+
+    ##################################
+
+    write_data = zip(anom_pos_cha, anom_xcount_cha, anom_score_cha)
     track_side = 'cha_km'
 
     with open(counters_path + '\Prorail18022101si12_' + track_side + '.csv', 'w',
               newline='') as file:
         try:
             writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-            writer.writerow(['positions', 'counters'])
-            for pos, cnt in write_data:
-                writer.writerow([pos, cnt])
+            writer.writerow(['positions', 'counters', 'severity'])
+            for pos, cnt, sev in write_data:
+                writer.writerow([pos, cnt, sev])
         finally:
             file.close()
