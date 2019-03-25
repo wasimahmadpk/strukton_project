@@ -42,7 +42,7 @@ def isolation_forest(my_data, int_count):
     anom_icount_train = xtrain_count[anom_train]
 
     # Anomaly score
-    ZZ = clf.decision_function(X_test)
+    ZZ = clf.decision_function(my_data)
     y_pred = np.concatenate((y_pred_train, y_pred_test), axis=0)
     anomalies = ZZ[(y_pred == -1)]
     anom_scores = 1 - normalize(anomalies)
