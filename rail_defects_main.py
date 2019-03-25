@@ -17,6 +17,7 @@ from data_paths import data_paths
 from scipy.interpolate import interp1d
 from sklearn.cluster import KMeans
 from extract_features import extract_features
+from severity_analysis import DefectSeverity
 from gmapplot import gmap_plot
 from anomaly_detection import isolation_forest
 from multi_anomaly_detection import multi_anomaly_detection
@@ -300,6 +301,13 @@ else:
 
     dict = {'position': anom_pos_cha, 'counters': anom_xcount_cha, 'score': anom_score_cha}
     df_anom_pos_score = pd.DataFrame(data=dict)
+    ectpath = r'F:\strukton_project\Flevolijn\ECT\EC_data_2018_FC_FO_L.csv'
+    headchecks = DefectSeverity(df_anom_pos_score, ectpath).get_trend()
+
+    plt.figure(15)
+    plt.xlabel('anomaly score')
+    plt.ylabel('crack depth')
+    plt.plot(headchecks[:, 2], headchecks[:, 3])
 
     ##################################
 

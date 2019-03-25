@@ -43,5 +43,5 @@ class DefectSeverity:
                     tlist = tlist + [crack_depth] * headcheck.shape[0]
                     headcheck.append(tempdf)
 
-            headcheck = headcheck.assign(depth = crack_depth_list)
+            headcheck = headcheck.assign(depth=crack_depth_list)
         return headcheck
