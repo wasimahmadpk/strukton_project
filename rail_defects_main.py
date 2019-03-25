@@ -279,3 +279,22 @@ else:
         anom_xcount_mode.append(anom_xcount_list)
 
     anomaly_positions = match_anomaly(rail_data, rail_xcounters, anom_xcount_mode, seg_file)
+    anom_pos_cha = np.array(anomaly_positions[0] + anomaly_positions[2])
+    anom_xcount_cha = np.concatenate((anom_xcount_mode[0][0], anom_xcount_mode[0][1]), axis=0)
+    anom_pos_xcount = np.stack((anom_pos_cha, anom_xcount_cha), axis=-1)
+    anom_pos_xcount_sorted = anom_pos_xcount[anom_pos_xcount[:, 0].argsort()]
+    anom_pos_cha = list(anom_pos_xcount_sorted[:, 0])
+    anom_xcount_cha = list(anom_pos_xcount_sorted[:, 1])
+
+    write_data = zip(anom_pos_cha, anom_xcount_cha)
+    track_side = 'cha_km'
+
+    with open(counters_path + '\Prorail18022101si12_' + track_side + '.csv', 'w',
+              newline='') as file:
+        try:
+            writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            writer.writerow(['counters', 'positions'])
+            for cnt, pos in write_data:
+                writer.writerow([cnt, pos])
+        finally:
+            file.close()
