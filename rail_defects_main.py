@@ -307,7 +307,7 @@ else:
     plt.figure(15)
     plt.xlabel('anomaly score')
     plt.ylabel('crack depth')
-    plt.plot(headchecks[:, 2], headchecks[:, 3])
+    plt.plot(headchecks['score'].tolist(), headchecks['depth'].tolist())
 
     ##################################
 
