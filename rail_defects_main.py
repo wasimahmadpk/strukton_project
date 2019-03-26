@@ -305,9 +305,10 @@ else:
     headchecks = DefectSeverity(df_anom_pos_score, ectpath).get_trend()
 
     plt.figure(15)
-    plt.xlabel('anomaly score')
-    plt.ylabel('crack depth')
-    plt.plot(headchecks['score'].tolist(), headchecks['depth'].tolist())
+    plt.xlabel('No. of anomalies')
+    plt.ylabel('anomaly score and crack depth')
+    plt.plot(headchecks['depth'].tolist())
+    plt.plot(headchecks['score'].tolist())
 
     ##################################
 
