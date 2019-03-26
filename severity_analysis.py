@@ -28,16 +28,16 @@ class DefectSeverity:
                      line_count += 1
                      tlist = tempStr.split(";")
                      ttlist = [x for x in tlist if len(x) > 0]
-                     self.ect_list.append(ttlist)
+                     self.ectlist.append(ttlist)
             print(f'Processed {line_count} lines in POI file.')
-            ect_list = np.array(self.ect_list)
+            ect_list = np.array(self.ectlist)
 
             crack_depth_list = []
             tlist = []
             headcheck = pd.DataFrame()
             for i in range(len(ect_list)):
                 km_from, km_to, crack_depth = float(ect_list[i, 3]), float(ect_list[i, 4]), float(ect_list[i, 8])
-                tempdf = self.severity_data[self.severity_data['position'] <= km_from & self.severity_data['position' <= km_to]]
+                tempdf = self.severity_data[(self.severity_data.position >= km_from) & (self.severity_data.position <= km_to)]
                 if headcheck.shape[0] > 0:
                     crack_depth_list.append(crack_depth)
                     tlist = tlist + [crack_depth] * headcheck.shape[0]
