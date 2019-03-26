@@ -38,7 +38,7 @@ class DefectSeverity:
             for i in range(len(ect_list)):
                 km_from, km_to, crack_depth = float(ect_list[i, 3]), float(ect_list[i, 4]), float(ect_list[i, 8])
                 tempdf = self.severity_data[(self.severity_data.position >= km_from) & (self.severity_data.position <= km_to)]
-                if headcheck.shape[0] > 0:
+                if tempdf.shape[0] > 0:
                     crack_depth_list.append(crack_depth)
                     tlist = tlist + [crack_depth] * headcheck.shape[0]
                     headcheck.append(tempdf)
