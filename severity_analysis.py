@@ -27,7 +27,7 @@ class DefectSeverity:
                 else:
                      line_count += 1
                      tlist = tempStr.split(";")
-                     ttlist = [float(x) for x in tlist if len(x) > 0]
+                     ttlist = [x for x in tlist if len(x) > 0]
                      self.ect_list.append(ttlist)
             print(f'Processed {line_count} lines in POI file.')
             ect_list = np.array(self.ect_list)
