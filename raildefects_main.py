@@ -25,7 +25,8 @@ from sklearn.metrics import confusion_matrix
 from confusion_mat import plot_confusion_matrix
 import csv
 
-class raildefects_main:
+
+class RailDefects:
 
     def __init__(self, flag):
         self.flag = flag
@@ -333,3 +334,9 @@ class raildefects_main:
             #             writer.writerow([pos, cnt, sev])
             #     finally:
             #         file.close()
+
+
+if __name__ == "__main__":
+    obj = RailDefects(1)
+    obj.anomaly_detection(pprocessed_file=data_paths.data_path[4])
+
