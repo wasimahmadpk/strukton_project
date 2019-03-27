@@ -6,24 +6,19 @@ Created on Thu Feb 01 13:21:46 2018
 """
 
 import os
+import csv
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-from data_processing import pre_processing
-from compare_anomaly import match_anomaly
-from geopy.distance import geodesic
-from itertools import zip_longest
-from data_paths import data_paths
-from scipy.interpolate import interp1d
-from sklearn.cluster import KMeans
-from extract_features import extract_features
-from severity_analysis import DefectSeverity
 from gmapplot import gmap_plot
+import matplotlib.pyplot as plt
+from data_paths import data_paths
+from geopy.distance import geodesic
+from scipy.interpolate import interp1d
+from compare_anomaly import match_anomaly
+from data_processing import pre_processing
+from severity_analysis import DefectSeverity
+from extract_features import extract_features
 from anomaly_detection import isolation_forest
-from multi_anomaly_detection import multi_anomaly_detection
-from sklearn.metrics import confusion_matrix
-from confusion_mat import plot_confusion_matrix
-import csv
 
 
 class RailDefects:
