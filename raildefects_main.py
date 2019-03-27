@@ -17,6 +17,7 @@ from data_paths import data_paths
 from scipy.interpolate import interp1d
 from sklearn.cluster import KMeans
 from extract_features import extract_features
+from severity_analysis import DefectSeverity
 from gmapplot import gmap_plot
 from anomaly_detection import isolation_forest
 from multi_anomaly_detection import multi_anomaly_detection
@@ -26,20 +27,19 @@ import csv
 
 class raildefects_main:
 
-    fpaths = data_paths()
-    data_file = fpaths.data_path[0]
-    sync_file = fpaths.data_path[1]
-    seg_file = fpaths.data_path[2]
-    poi_file = fpaths.data_path[3]
-    processed_file = fpaths.data_path[4]
-    counters_path = fpaths.data_path[5]
-
     def __init__(self, flag):
         self.flag = flag
+        fpaths = data_paths()
+        self.data_file = fpaths.data_path[0]
+        self.sync_file = fpaths.data_path[1]
+        self.seg_file = fpaths.data_path[2]
+        self.poi_file = fpaths.data_path[3]
+        self.processed_file = fpaths.data_path[4]
+        self.counters_path = fpaths.data_path[5]
 
-    def anomaly_detection(self):
+    def anomaly_detection(self, pprocessed_file):
 
-        a = 2
+        self.processed_file = pprocessed_file
         if not os.path.isfile(self.processed_file):
             pre_processing(self.data_file, self.sync_file, self.seg_file, self.poi_file, self.processed_file)
         else:
@@ -136,6 +136,7 @@ class raildefects_main:
             ########################################
 
             anom_xcount_list = []
+            anom_score_list = []
             anom_xcount_train_list = []
 
             get_xcount = interp1d(int_count, ext_count, fill_value='extrapolate')
@@ -145,11 +146,13 @@ class raildefects_main:
             aba_data_side = []
             all_xcount_mode = []
             anom_xcount_mode = []
+            anom_score_mode = []
 
             for i in range(len(rail_data)):
                 aba_data_mode = []
                 int_count_mode = []
                 anom_xcount_list = []
+                anom_score_list = []
                 input_data = rail_data[i]
 
                 for j in range(len(data_list)):
@@ -185,9 +188,8 @@ class raildefects_main:
                     plt.show()
 
                     mylist = np.stack((rms, kurtosis, skewness, peak_to_peak, crest_factor, impulse_factor), axis=-1)
-                    norm_train, anom_train, norm_test, anom_test, anom_icount, anom_icount_train = isolation_forest(
-                        mylist,
-                        int_count)
+                    norm_train, anom_train, norm_test, anom_test, anom_icount, anom_icount_train, anom_score = isolation_forest(
+                        mylist, int_count)
 
                     # norm_train = np.concatenate(norm_train.tolist())
                     # anom_train = np.concatenate(anom_train.tolist())
@@ -198,8 +200,10 @@ class raildefects_main:
                     anom_xcount_test = get_xcount(anom_icount)
                     anom_xcount_train = get_xcount(anom_icount_train)
                     anom_xcount = np.concatenate((anom_xcount_train, anom_xcount_test), axis=0)
+                    anom_score = anom_score
 
                     anom_xcount_list.append(anom_xcount)
+                    anom_score_list.append(anom_score)
 
                     # new code for validation of anomalies
                     latitude = get_lat(anom_xcount)
@@ -288,6 +292,44 @@ class raildefects_main:
                     #                      title='Confusion matrix')
                 aba_data_side.append(aba_data_mode)
                 anom_xcount_mode.append(anom_xcount_list)
+                anom_score_mode.append(anom_score_list)
 
+            # function call: compare anomalies in ABA on both channels i.e. CHA and CHB
             anomaly_positions = match_anomaly(rail_data, rail_xcounters, anom_xcount_mode, self.seg_file)
             return anomaly_positions
+            # anom_pos_cha = np.array(anomaly_positions[0] + anomaly_positions[2])
+            # anom_xcount_cha = np.concatenate((anom_xcount_mode[0][0], anom_xcount_mode[0][1]), axis=0)
+            # anom_score_cha = np.concatenate((anom_score_mode[0][0], anom_score_mode[0][1]), axis=0)
+            # anom_pos_xcount = np.stack((anom_pos_cha, anom_xcount_cha, anom_score_cha), axis=-1)
+            # anom_pos_xcount_sorted = anom_pos_xcount[anom_pos_xcount[:, 0].argsort()]
+            # anom_pos_cha = list(anom_pos_xcount_sorted[:, 0])
+            # anom_xcount_cha = list(anom_pos_xcount_sorted[:, 1])
+            # anom_score_cha = list(anom_pos_xcount_sorted[:, 2])
+            #
+            # # Data-frame for severity analysis
+            #
+            # dict = {'position': anom_pos_cha, 'counters': anom_xcount_cha, 'score': anom_score_cha}
+            # df_anom_pos_score = pd.DataFrame(data=dict)
+            # ectpath = r'F:\strukton_project\Flevolijn\ECT\EC_data_2018_FC_FO_L.csv'
+            # headchecks = DefectSeverity(df_anom_pos_score, ectpath).get_trend()
+            #
+            # plt.figure(15)
+            # plt.xlabel('No. of anomalies')
+            # plt.ylabel('anomaly score and crack depth')
+            # plt.plot(headchecks['depth'].tolist())
+            # plt.plot(headchecks['score'].tolist())
+            #
+            # ##################################
+            #
+            # write_data = zip(anom_pos_cha, anom_xcount_cha, anom_score_cha)
+            # track_side = 'cha_km'
+            #
+            # with open(self.counters_path + '\Prorail18022101si12_' + track_side + '.csv', 'w',
+            #           newline='') as file:
+            #     try:
+            #         writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            #         writer.writerow(['positions', 'counters', 'severity'])
+            #         for pos, cnt, sev in write_data:
+            #             writer.writerow([pos, cnt, sev])
+            #     finally:
+            #         file.close()
