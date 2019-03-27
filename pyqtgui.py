@@ -4,10 +4,15 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit, QFileDialog
+from PyQt5.QtWidgets import (QHBoxLayout, QFrame,
+    QSplitter, QStyleFactory)
+from PyQt5.QtCore import Qt
+import sys
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtCore import QSize
 from raildefects_main import raildefects_main
+
 
 class App(QWidget):
 
@@ -15,10 +20,10 @@ class App(QWidget):
 
         super().__init__()
         self.title = 'Rail Condition Monitoring System'
-        self.left = 10
-        self.top = 10
-        self.width = 640
-        self.height = 480
+        self.left = 325
+        self.top = 170
+        self.width = 750
+        self.height = 500
         self.fileName = 0
         self.initUI()
 
@@ -26,7 +31,6 @@ class App(QWidget):
 
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
-
         self.browse_btn = QPushButton('Browse', self)
         self.browse_btn.clicked.connect(self.browseFile)
         self.browse_btn.resize(100, 32)
@@ -41,6 +45,7 @@ class App(QWidget):
         # self.openFileNameDialog()
         # self.openFileNamesDialog()
         # self.saveFileDialog()
+
         self.show()
 
     def browseFile(self):
