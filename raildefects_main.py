@@ -340,6 +340,7 @@ if __name__ == "__main__":
     plt.title('Severity Analysis')
     plt.xlabel('No. of anomalies')
     plt.ylabel('anomaly score and crack depth (mm)')
-    plt.plot(headchecks['depth'].tolist())
-    plt.plot(headchecks['score'].tolist())
+    plt.plot(headchecks['depth'].tolist(), label='crack depth')
+    plt.plot(headchecks['score'].tolist(), lablel='anomaly severity')
+    plt.legend(loc='upper right')
 
