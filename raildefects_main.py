@@ -292,7 +292,7 @@ class RailDefects:
 
             # function call: compare anomalies in ABA on both channels i.e. CHA and CHB
             anomaly_positions = match_anomaly(rail_data, rail_xcounters, anom_xcount_mode, self.seg_file)
-            return anomaly_positions
+            # return anomaly_positions
             anom_pos_cha = np.array(anomaly_positions[0] + anomaly_positions[2])
             anom_xcount_cha = np.concatenate((anom_xcount_mode[0][0], anom_xcount_mode[0][1]), axis=0)
             anom_score_cha = np.concatenate((anom_score_mode[0][0], anom_score_mode[0][1]), axis=0)
@@ -308,6 +308,7 @@ class RailDefects:
             df_anom_pos_score = pd.DataFrame(data=dict)
             ectpath = r'F:\strukton_project\Flevolijn\ECT\EC_data_2018_FC_FO_L.csv'
             headchecks = DefectSeverity(df_anom_pos_score, ectpath).get_trend()
+            return headchecks
 
             plt.figure(15)
             plt.xlabel('No. of anomalies')
@@ -333,5 +334,5 @@ class RailDefects:
 
 if __name__ == "__main__":
     obj = RailDefects(1)
-    obj.anomaly_detection(pprocessed_file=data_paths.data_path[4])
+    headchecks = obj.anomaly_detection(pprocessed_file=data_paths.data_path[4])
 
