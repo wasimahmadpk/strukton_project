@@ -310,11 +310,11 @@ class RailDefects:
             headchecks = DefectSeverity(df_anom_pos_score, ectpath).get_trend()
             return headchecks
 
-            plt.figure(15)
-            plt.xlabel('No. of anomalies')
-            plt.ylabel('anomaly score and crack depth')
-            plt.plot(headchecks['depth'].tolist())
-            plt.plot(headchecks['score'].tolist())
+            # plt.figure(15)
+            # plt.xlabel('No. of anomalies')
+            # plt.ylabel('anomaly score and crack depth')
+            # plt.plot(headchecks['depth'].tolist())
+            # plt.plot(headchecks['score'].tolist())
 
             ##################################
 
@@ -335,4 +335,11 @@ class RailDefects:
 if __name__ == "__main__":
     obj = RailDefects(1)
     headchecks = obj.anomaly_detection(pprocessed_file=data_paths.data_path[4])
+
+    plt.figure(15)
+    plt.title('Severity Analysis')
+    plt.xlabel('No. of anomalies')
+    plt.ylabel('anomaly score and crack depth (mm)')
+    plt.plot(headchecks['depth'].tolist())
+    plt.plot(headchecks['score'].tolist())
 
