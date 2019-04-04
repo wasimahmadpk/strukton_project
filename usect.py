@@ -6,4 +6,5 @@ df_tracks = df.groupby('ObjectOms', as_index=False).count().sort_values('Been', 
 toptentracks = df_tracks['ObjectOms'].iloc[0:-1].tolist()
 dframe = df[df['ObjectOms'].isin(toptentracks)]
 dframe = dframe[dframe['ObjectOms'] != 'LEEG']
+
 dframe.to_excel(r'F:\strukton_project\USECT\US_TOTAL_PROCESSED.xlsx')
