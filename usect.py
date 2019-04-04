@@ -1,4 +1,6 @@
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 
 df = pd.read_excel(r'F:\strukton_project\USECT\US_TOTAL.xlsx')
 df = df[(df['UIC foutcode'] == 2223) & (df['Been'] == 'L')]
@@ -6,7 +8,7 @@ df_tracks = df.groupby('ObjectOms', as_index=False).count().sort_values('Been', 
 toptentracks = df_tracks['ObjectOms'].iloc[0:-1].tolist()
 dframe = df[df['ObjectOms'].isin(toptentracks)]
 dframe = dframe[dframe['ObjectOms'] != 'LEEG'].sort_values('ObjectOms')
-dfsorted = dframe.groupby('ObjectOms').apply(lambda x: x.sort_values(['Datum']))
+dfsorted = dframe.groupby('ObjectOms', as_index=False).apply(lambda x: x.sort_values(['Datum']))
 dfsorted.to_excel(r'F:\strukton_project\USECT\US_TOTAL_PROCESSED.xlsx')
 
 track_name = dfsorted['ObjectOms'].iloc[0]
@@ -28,12 +30,32 @@ for table, group in dfgrouped:
     row_data = []
     for row, data in group.iterrows():
         for d in range(len(data)):
+                if data[d] == '':
+                    row_data.append('')
+                else:
+                    row_data.append(data[d])
+        count = count + 1
+        data_list.append(row_data)
+        row_data = []
+    pdf = pd.DataFrame(data_list, columns=cols)
+    gpdf = pdf.groupby('Year', as_index=False)
+    count = 0
+    row_data = []
+    data_list = []
+    for table, group in gpdf:
+        print('\nCREATE TABLE {}('.format(table))
+        row_data = []
+        for row, data in group.iterrows():
+            for d in range(len(data)):
                 row_data.append(data[d])
-        break
-    count = count + 1
-    data_list.append(row_data)
-
-# pdf = pd.DataFrame(data_list, columns=cols)
+            count = count + 1
+            data_list.append(row_data)
+            row_data = []
+        pdf = pd.DataFrame(data_list, columns=cols)
+        km_position = (np.array(pdf['KilometerVan'].iloc[0:-1].tolist()) + np.array(pdf['KilometerTot'].tolist()))/2
+        crack_depth = pdf['US_Classificatie'].iloc[0:-1].tolist()
+        plt.figure(count)
+        plt.plot(km_position, crack_depth)
 
 
 
