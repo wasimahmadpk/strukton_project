@@ -2,7 +2,7 @@ import pandas as pd
 
 df = pd.read_excel(r'F:\strukton_project\USECT\US_TOTAL.xlsx')
 
-df_tracks = df.groupby('ObjectOms').count().sort_values('Been')
+df_tracks = df.groupby('ObjectOms').count().sort_values('Been', ascending=False)
 
 # frames = [df1, df2, df3, df4]
 # bigdata = pd.concat(frames)
