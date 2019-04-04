@@ -20,9 +20,9 @@ dfgrouped = dfmodified.groupby('ObjectOms', as_index=False)
 data_list = []
 cols = []
 
-for c in range(len(dfgrouped.columns)):
-    cols.append(dfgrouped.columns[c])
-
+for c in range(len(dfmodified.columns)):
+    cols.append(dfmodified.columns[c])
+count = 0
 for table, group in dfgrouped:
     print('\nCREATE TABLE {}('.format(table))
     row_data = []
@@ -33,7 +33,7 @@ for table, group in dfgrouped:
     count = count + 1
     data_list.append(row_data)
 
-pdf = pd.DataFrame(data_list, columns=cols)
+# pdf = pd.DataFrame(data_list, columns=cols)
 
 
 
