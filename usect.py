@@ -1,9 +1,11 @@
 import pandas as pd
 
 df = pd.read_excel(r'F:\strukton_project\USECT\US_TOTAL.xlsx')
-
-df_tracks = df.groupby('ObjectOms').count().sort_values('Been', ascending=False)
-
+df = df[df['UIC foutcode'] == 2223]
+df_tracks = df.groupby('ObjectOms', as_index=False).count().sort_values('Been', ascending=False).head(10)
+toptentracks = df_tracks['ObjectOms'].iloc[0:-1].tolist()
+dframe = df[df['ObjectOms'].isin(toptentracks)]
+dfleft = dframe[dframe['Been'] == 'L']
 # frames = [df1, df2, df3, df4]
 # bigdata = pd.concat(frames)
 
