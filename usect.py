@@ -42,4 +42,4 @@ dfleft = dframe[dframe['Been'] == 'L']
 #     data_list.append(row_data)
 #
 # pdf = pd.DataFrame(data_list, columns=cols)
-# pdf.to_excel(r'F:\FMLP\dataset\QV Data locatie Almere_Weesp_v3_processed.xlsx')
+dfleft.to_excel(r'F:\strukton_project\USECT\US_TOTAL_PROCESSED.xlsx')
