@@ -53,7 +53,7 @@ for table, group in dfgrouped:
             row_data = []
         pdf = pd.DataFrame(data_list, columns=cols)
         km_position = (np.array(pdf['KilometerVan'].iloc[0:-1].tolist()) + np.array(pdf['KilometerTot'].tolist()))/2
-        crack_depth = pdf['US_Classificatie'].iloc[0:-1].tolist()
+        crack_depth = pdf['US Classificatie'].iloc[0:-1].tolist()
         plt.figure(count)
         plt.plot(km_position, crack_depth)
 
