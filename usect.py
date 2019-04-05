@@ -19,7 +19,6 @@ for idx, row in dfsorted.iterrows():
 
 dfmodified = dfsorted.assign(Year=year_list)
 dfgrouped = dfmodified.groupby('ObjectOms', as_index=False)
-data_list = []
 cols = []
 
 for c in range(len(dfmodified.columns)):
@@ -29,6 +28,7 @@ for table, group in dfgrouped:
     print('\nCREATE TABLE {}('.format(table))
     print('This is group:', group)
     row_data = []
+    data_list = []
     for row, data in group.iterrows():
         print('This is row:', row)
         print('This is data:', data)
@@ -37,29 +37,29 @@ for table, group in dfgrouped:
                     row_data.append('')
                 else:
                     row_data.append(data[d])
-        count = count + 1
+
         data_list.append(row_data)
         row_data = []
+    count = count + 1
     pdf = pd.DataFrame(data_list, columns=cols)
+    gpdf = pdf.groupby('Year', as_index=False)
+    row_data = []
+    data_list = []
+    for table, group in gpdf:
+        print('\nCREATE TABLE {}('.format(table))
+        row_data = []
+        for row, data in group.iterrows():
+            for d in range(len(data)):
+                row_data.append(data[d])
+            data_list.append(row_data)
+            row_data = []
+        pdftrack = pd.DataFrame(data_list, columns=cols)
+        km_position = (np.array(pdf['KilometerVan'].iloc[0:-1].tolist()) + np.array(pdf['KilometerTot'].tolist()))/2
+        crack_depth = pdf['US_Classificatie'].iloc[0:-1].tolist()
+        plt.figure(count)
+        plt.plot(km_position, crack_depth, '*')
     break
-    # gpdf = pdf.groupby('Year', as_index=False)
-    # count = 0
-    # row_data = []
-    # data_list = []
-    # for table, group in gpdf:
-    #     print('\nCREATE TABLE {}('.format(table))
-    #     row_data = []
-    #     for row, data in group.iterrows():
-    #         for d in range(len(data)):
-    #             row_data.append(data[d])
-    #         count = count + 1
-    #         data_list.append(row_data)
-    #         row_data = []
-    #     pdf = pd.DataFrame(data_list, columns=cols)
-    #     km_position = (np.array(pdf['KilometerVan'].iloc[0:-1].tolist()) + np.array(pdf['KilometerTot'].tolist()))/2
-    #     crack_depth = pdf['US_Classificatie'].iloc[0:-1].tolist()
-    #     plt.figure(count)
-    #     plt.plot(km_position, crack_depth)
-    #
-    #
-    #
+
+
+
+
