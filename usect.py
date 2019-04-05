@@ -32,6 +32,7 @@ for table, group in dfgrouped:
     for row, data in group.iterrows():
         print('This is row:', row)
         print('This is data', data)
+        break
     #     for d in range(len(data)):
     #             if data[d] == '':
     #                 row_data.append('')
