@@ -32,16 +32,16 @@ for table, group in dfgrouped:
     for row, data in group.iterrows():
         print('This is row:', row)
         print('This is data:', data)
-        break
-    #     for d in range(len(data)):
-    #             if data[d] == '':
-    #                 row_data.append('')
-    #             else:
-    #                 row_data.append(data[d])
-    #     count = count + 1
-    #     data_list.append(row_data)
-    #     row_data = []
-    # pdf = pd.DataFrame(data_list, columns=cols)
+        for d in range(len(data)):
+                if data[d] == '':
+                    row_data.append('')
+                else:
+                    row_data.append(data[d])
+        count = count + 1
+        data_list.append(row_data)
+        row_data = []
+    pdf = pd.DataFrame(data_list, columns=cols)
+    break
     # gpdf = pdf.groupby('Year', as_index=False)
     # count = 0
     # row_data = []
