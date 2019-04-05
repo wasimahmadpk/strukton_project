@@ -55,7 +55,7 @@ for table, group in dfgrouped:
             row_data = []
         pdftrack = pd.DataFrame(data_list, columns=cols)
         km_position = pdftrack['KilometerTot'].tolist()
-        crack_depth = pdf['US_Classificatie'].tolist()
+        crack_depth = pdftrack['US_Classificatie'].tolist()
         plt.figure(count)
         plt.plot(km_position, crack_depth, '*')
     break
