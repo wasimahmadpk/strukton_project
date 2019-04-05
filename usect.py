@@ -53,10 +53,20 @@ for table, group in dfgrouped:
                 row_data.append(data[d])
             data_list.append(row_data)
             row_data = []
+        plotlist = []
         pdftrack = pd.DataFrame(data_list, columns=cols)
         km_position = pdftrack['KilometerTot'].tolist()
         crack_depth = pdftrack['US_Classificatie'].tolist()
+        plotlist.append(km_position)
+        plotlist.append(crack_depth)
+        # plotlist.append(km_position)
+        # plotlist.append(crack_depth)
+        # pdfplot = pd.DataFrame(plotlist, columns=['position', 'crack'])
+        # pdfplot = pdfplot.sort_values('position')
         plt.figure(count)
+        plt.title('Crack Evolution')
+        plt.xlabel('Position (km)')
+        plt.ylabel('Crack size (mm)')
         plt.plot(km_position, crack_depth, '*')
     break
 
