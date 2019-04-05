@@ -44,10 +44,10 @@ for table, group in dfgrouped:
     pdf = pd.DataFrame(data_list, columns=cols)
     gpdf = pdf.groupby('Year', as_index=False)
     row_data = []
-    data_list = []
     for table, group in gpdf:
         print('\nCREATE TABLE {}('.format(table))
         row_data = []
+        data_list = []
         for row, data in group.iterrows():
             for d in range(len(data)):
                 row_data.append(data[d])
@@ -59,15 +59,15 @@ for table, group in dfgrouped:
         crack_depth = pdftrack['US_Classificatie'].tolist()
         plotlist.append(km_position)
         plotlist.append(crack_depth)
-        # plotlist.append(km_position)
-        # plotlist.append(crack_depth)
-        # pdfplot = pd.DataFrame(plotlist, columns=['position', 'crack'])
-        # pdfplot = pdfplot.sort_values('position')
+        pltlist = [[plotlist[j][i] for j in range(len(plotlist))] for i in range(len(plotlist[0]))]
+        pltarr = np.array(pltlist)
+        sorted = pltarr[pltarr[:, 0].argsort()]
         plt.figure(count)
         plt.title('Crack Evolution')
         plt.xlabel('Position (km)')
         plt.ylabel('Crack size (mm)')
-        plt.plot(km_position, crack_depth, '*')
+        plt.xticks(sorted[:, 0])
+        plt.plot(sorted[:, 0], sorted[:, 1], '*--')
     break
 
 
