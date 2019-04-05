@@ -27,35 +27,39 @@ for c in range(len(dfmodified.columns)):
 count = 0
 for table, group in dfgrouped:
     print('\nCREATE TABLE {}('.format(table))
+    print('This is group:', group)
     row_data = []
     for row, data in group.iterrows():
-        for d in range(len(data)):
-                if data[d] == '':
-                    row_data.append('')
-                else:
-                    row_data.append(data[d])
-        count = count + 1
-        data_list.append(row_data)
-        row_data = []
-    pdf = pd.DataFrame(data_list, columns=cols)
-    gpdf = pdf.groupby('Year', as_index=False)
-    count = 0
-    row_data = []
-    data_list = []
-    for table, group in gpdf:
-        print('\nCREATE TABLE {}('.format(table))
-        row_data = []
-        for row, data in group.iterrows():
-            for d in range(len(data)):
-                row_data.append(data[d])
-            count = count + 1
-            data_list.append(row_data)
-            row_data = []
-        pdf = pd.DataFrame(data_list, columns=cols)
-        km_position = (np.array(pdf['KilometerVan'].iloc[0:-1].tolist()) + np.array(pdf['KilometerTot'].tolist()))/2
-        crack_depth = pdf['US_Classificatie'].iloc[0:-1].tolist()
-        plt.figure(count)
-        plt.plot(km_position, crack_depth)
-
-
-
+        print('This is row:', row)
+        print('This is data:', data)
+        break
+    #     for d in range(len(data)):
+    #             if data[d] == '':
+    #                 row_data.append('')
+    #             else:
+    #                 row_data.append(data[d])
+    #     count = count + 1
+    #     data_list.append(row_data)
+    #     row_data = []
+    # pdf = pd.DataFrame(data_list, columns=cols)
+    # gpdf = pdf.groupby('Year', as_index=False)
+    # count = 0
+    # row_data = []
+    # data_list = []
+    # for table, group in gpdf:
+    #     print('\nCREATE TABLE {}('.format(table))
+    #     row_data = []
+    #     for row, data in group.iterrows():
+    #         for d in range(len(data)):
+    #             row_data.append(data[d])
+    #         count = count + 1
+    #         data_list.append(row_data)
+    #         row_data = []
+    #     pdf = pd.DataFrame(data_list, columns=cols)
+    #     km_position = (np.array(pdf['KilometerVan'].iloc[0:-1].tolist()) + np.array(pdf['KilometerTot'].tolist()))/2
+    #     crack_depth = pdf['US_Classificatie'].iloc[0:-1].tolist()
+    #     plt.figure(count)
+    #     plt.plot(km_position, crack_depth)
+    #
+    #
+    #
