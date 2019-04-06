@@ -83,7 +83,9 @@ for table, group in dfgrouped:
         plt.title('Crack Evolution - ' + tname)
         plt.xlabel('Position (km)')
         plt.ylabel('Crack size (mm)')
-        crack_evol, = plt.plot(sorted[:, 0], sorted[:, 1], '*', label=year)
+        xax = sorted[:, 0]
+        yax = sorted[:, 1]
+        crack_evol, = plt.stem(xax, yax, '*', label=year)
     flatx = [val for sublist in pxlist for val in sublist]
     plt.xticks(flatx)
     plt.legend(loc='upper right')
