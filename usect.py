@@ -42,8 +42,20 @@ for table, group in dfgrouped:
         row_data = []
     count = count + 1
     pdf = pd.DataFrame(data_list, columns=cols)
+
+    tname = pdf['ObjectOms'][0]
+    if tname == 'WISSEL 1227/1229A':
+        tname = 'WISSEL-1227-1229A'
+    elif tname == 'WISSEL 1233B/1245A':
+        tname = 'WISSEL-1233B-1245A'
+    elif tname == 'WISSEL 1263B/1267A':
+        tname = 'WISSEL-1263B-1267A'
+
     gpdf = pdf.groupby('Year', as_index=False)
     row_data = []
+    pxlist = []
+    pylist = []
+    yrlist = []
     for table, group in gpdf:
         print('\nCREATE TABLE {}('.format(table))
         row_data = []
@@ -57,18 +69,28 @@ for table, group in dfgrouped:
         pdftrack = pd.DataFrame(data_list, columns=cols)
         km_position = pdftrack['KilometerTot'].tolist()
         crack_depth = pdftrack['US_Classificatie'].tolist()
+        year = str(pdftrack['Year'][0])
         plotlist.append(km_position)
         plotlist.append(crack_depth)
         pltlist = [[plotlist[j][i] for j in range(len(plotlist))] for i in range(len(plotlist[0]))]
         pltarr = np.array(pltlist)
         sorted = pltarr[pltarr[:, 0].argsort()]
+        pxlist.append(sorted[:, 0])
+        pylist.append(sorted[:, 1])
+        yrlist.append(year)
+
         plt.figure(count)
-        plt.title('Crack Evolution')
+        plt.title('Crack Evolution - ' + tname)
         plt.xlabel('Position (km)')
         plt.ylabel('Crack size (mm)')
-        plt.xticks(sorted[:, 0])
-        plt.plot(sorted[:, 0], sorted[:, 1], '*--')
-    break
+        crack_evol, = plt.plot(sorted[:, 0], sorted[:, 1], '*--', label=year)
+    flatx = [val for sublist in pxlist for val in sublist]
+    plt.xticks(flatx)
+    plt.legend(loc='upper right')
+    plt.savefig(r'F:\strukton_project\USECT\{}.png'.format(tname))
+    plt.clf()
+    plt.close()
+
 
 
 
