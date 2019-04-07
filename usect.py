@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from numpy import random
 import matplotlib.pyplot as plt
 
 df = pd.read_excel(r'F:\strukton_project\USECT\US_TOTAL.xlsx')
@@ -79,20 +80,50 @@ for table, group in dfgrouped:
         pylist.append(sorted[:, 1])
         yrlist.append(year)
 
-        plt.figure(count)
+        # plt.figure(count)
+        # plt.title('Crack Evolution - ' + tname)
+        # plt.xlabel('Position (km)')
+        # plt.ylabel('Crack size (mm)')
+        # plt.ylim(0, 10)
+        xax = sorted[:, 0]
+        yax = sorted[:, 1]
+        # markerline, stemlines, baseline = plt.stem(xax, yax, 'g', markerfmt='go', label=year)
+    flatx = [val for sublist in pxlist for val in sublist]
+    # # plt.xticks(flatx)
+    # plt.legend(loc='upper right')
+    # plt.savefig(r'F:\strukton_project\USECT\{}.png'.format(tname))
+    # plt.clf()
+    # plt.close()
+    # create figure
+    plt.figure(count)
+    plots = []
+    proxies = []
+
+    for x_var, y_var in zip(pxlist, pylist):
+        c = color = random.rand(3)
+        markerline, stemlines, baseline = plt.stem(x_var, y_var)
+        plots.append((markerline, stemlines, baseline))
+
         plt.title('Crack Evolution - ' + tname)
         plt.xlabel('Position (km)')
         plt.ylabel('Crack size (mm)')
-        xax = sorted[:, 0]
-        yax = sorted[:, 1]
-        markerline, stemlines, baseline = plt.stem(xax, yax, label=year)
-    flatx = [val for sublist in pxlist for val in sublist]
-    # plt.xticks(flatx)
-    plt.legend(loc='upper right')
+        plt.ylim(0, 10)
+
+        plt.setp(stemlines, linewidth=2, color=c)  # set stems to random colors
+        plt.setp(markerline, 'markerfacecolor')  # make points blue
+
+        # plot proxy artist
+        h, = plt.plot(1, 1, color=c)
+        proxies.append(h)
+    # hide proxies
+    plt.legend(proxies, yrlist, loc='best', numpoints=1)
+    plt.xticks(flatx)
+    for h in proxies:
+        h.set_visible(False)
     plt.savefig(r'F:\strukton_project\USECT\{}.png'.format(tname))
+    plt.show()
     plt.clf()
     plt.close()
-
 
 
 
