@@ -3,6 +3,18 @@ import numpy as np
 from numpy import random
 import matplotlib.pyplot as plt
 
+# ################## generating different colors for stemp plots ########
+
+def get_spaced_colors(n):
+    max_value = 16581375  # 255**3
+    interval = int(max_value / n)
+    colors = [hex(I)[2:].zfill(6) for I in range(0, max_value, interval)]
+
+    return [(int(i[:2], 16), int(i[2:4], 16), int(i[4:], 16)) for i in colors]
+
+#########################################################################
+
+
 df = pd.read_excel(r'F:\strukton_project\USECT\US_TOTAL.xlsx')
 df = df[(df['UIC foutcode'] == 2223) & (df['Been'] == 'L')]
 df_tracks = df.groupby('ObjectOms', as_index=False).count().sort_values('Been', ascending=False).head(10)
@@ -19,6 +31,13 @@ for idx, row in dfsorted.iterrows():
     year_list.append(row['Datum'].year)
 
 dfmodified = dfsorted.assign(Year=year_list)
+us_rap_nummer_list = []
+us_rap_nummer = dfmodified['US_Rap_Nummer (complas)']
+
+for i in range(len(us_rap_nummer)):
+    us_rap_nummer_list.append(us_rap_nummer.iloc[i][0:7])
+
+dfmodified = dfmodified.assign(USRapNumCode=us_rap_nummer_list)
 dfgrouped = dfmodified.groupby('ObjectOms', as_index=False)
 cols = []
 
@@ -79,31 +98,22 @@ for table, group in dfgrouped:
         pxlist.append(sorted[:, 0])
         pylist.append(sorted[:, 1])
         yrlist.append(year)
-
-        # plt.figure(count)
-        # plt.title('Crack Evolution - ' + tname)
-        # plt.xlabel('Position (km)')
-        # plt.ylabel('Crack size (mm)')
-        # plt.ylim(0, 10)
         xax = sorted[:, 0]
         yax = sorted[:, 1]
-        # markerline, stemlines, baseline = plt.stem(xax, yax, 'g', markerfmt='go', label=year)
+
     flatx = [val for sublist in pxlist for val in sublist]
-    # # plt.xticks(flatx)
-    # plt.legend(loc='upper right')
-    # plt.savefig(r'F:\strukton_project\USECT\{}.png'.format(tname))
-    # plt.clf()
-    # plt.close()
     # create figure
     plt.figure(count)
     plots = []
     proxies = []
-
+    colors = get_spaced_colors(len(pxlist))
+    counter = 0
     for x_var, y_var in zip(pxlist, pylist):
         c = color = random.rand(3)
         markerline, stemlines, baseline = plt.stem(x_var, y_var)
         plots.append((markerline, stemlines, baseline))
-
+        c1 = list(colors[counter])
+        counter = counter + 1
         plt.title('Crack Evolution - ' + tname)
         plt.xlabel('Position (km)')
         plt.ylabel('Crack size (mm)')
@@ -118,13 +128,12 @@ for table, group in dfgrouped:
     # hide proxies
     plt.legend(proxies, yrlist, loc='best', numpoints=1)
     plt.xticks(flatx)
+    plt.tick_params(axis='x', rotation=80)
     for h in proxies:
         h.set_visible(False)
-    plt.savefig(r'F:\strukton_project\USECT\{}.png'.format(tname))
+    plt.savefig(r'F:\strukton_project\USECT\{}.png'.format(tname), dpi=300)
     plt.show()
     plt.clf()
     plt.close()
-
-
 
 
