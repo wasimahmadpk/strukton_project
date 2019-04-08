@@ -117,7 +117,7 @@ for table, group in dfgrouped:
         plt.title('Crack Evolution - ' + tname)
         plt.xlabel('Position (km)')
         plt.ylabel('Crack size (mm)')
-        plt.ylim(0, 6)
+        plt.ylim(0, 5)
 
         plt.setp(stemlines, linewidth=2, color=c)  # set stems to random colors
         plt.setp(markerline, 'markerfacecolor')  # make points blue
