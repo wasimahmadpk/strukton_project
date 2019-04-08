@@ -15,7 +15,7 @@ def get_spaced_colors(n):
 #########################################################################
 
 
-df = pd.read_excel(r'F:\strukton_project\USECT\US_TOTAL.xlsx')
+df = pd.read_excel(r'F:\strukton_project\ECT\ExportFile20190404120229.xlsx')
 df = df[(df['UIC foutcode'] == 2223) & (df['Been'] == 'L')]
 df_tracks = df.groupby('ObjectOms', as_index=False).count().sort_values('Been', ascending=False).head(10)
 toptentracks = df_tracks['ObjectOms'].iloc[0:-1].tolist()
@@ -38,7 +38,7 @@ for i in range(len(us_rap_nummer)):
 
 dfmodified = dfmodified.assign(USRapNumCode=us_rap_nummer_list)
 # Processed file saved to local directory
-dfmodified.to_excel(r'F:\strukton_project\USECT\US_TOTAL_PROCESSED.xlsx')
+dfmodified.to_excel(r'F:\strukton_project\ECT\ExportFile20190404120229_Processed.xlsx')
 
 dfgrouped = dfmodified.groupby('ObjectOms', as_index=False)
 dfgrouped = dfmodified.groupby('ObjectOms', as_index=False)
@@ -135,7 +135,7 @@ for table, group in dfgrouped:
     plt.tick_params(axis='x', rotation=80)
     for h in proxies:
         h.set_visible(False)
-    plt.savefig(r'F:\strukton_project\USECT\{}.png'.format(tname), dpi=300)
+    plt.savefig(r'F:\strukton_project\ECT\{}.png'.format(tname), dpi=300)
     plt.show()
     plt.clf()
     plt.close()
