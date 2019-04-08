@@ -124,7 +124,7 @@ for table, group in dfgrouped:
         plt.setp(markerline, 'markerfacecolor')  # make points blue
 
         # plot proxy artist
-        h, = plt.plot(1, 1, color=c, zorder=count*5)
+        h, = plt.plot(1, 1, color=c, zorder=25-count*5)
         proxies.append(h)
     # hide proxies
     plt.legend(proxies, yrlist, loc='best', numpoints=1)
