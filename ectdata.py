@@ -21,28 +21,22 @@ df_tracks = df.groupby('spoortak', as_index=False).count().sort_values('km van',
 toptentracks = df_tracks['spoortak'].iloc[0:-1].tolist()
 dframe = df[df['spoortak'].isin(toptentracks)]
 dframe = dframe.sort_values('spoortak')
-dfsorted = dframe.groupby('spoortak', as_index=False).apply(lambda x: x.sort_values(['Datum']))
-#
-# track_name = dfsorted['ObjectOms'].iloc[0]
-# year_list = []
-# for idx, row in dfsorted.iterrows():
-#     # print(idx, row['ObjectOms'], row['Datum'])
-#     year_list.append(row['Datum'].year)
-#
-# dfmodified = dfsorted.assign(Year=year_list)
-# us_rap_nummer_list = []
-# us_rap_nummer = dfmodified['US_Rap_Nummer (complas)']
-#
-# for i in range(len(us_rap_nummer)):
-#     us_rap_nummer_list.append(us_rap_nummer.iloc[i][0:7])
-#
-# dfmodified = dfmodified.assign(USRapNumCode=us_rap_nummer_list)
+dfsorted = dframe.groupby('spoortak', as_index=False).apply(lambda x: x.sort_values(['datum']))
+
+track_name = dfsorted['spoortak'].iloc[0]
+year_list = []
+for idx, row in dfsorted.iterrows():
+    # print(idx, row['ObjectOms'], row['Datum'])
+    year_list.append(row['datum'].year)
+
+dfmodified = dfsorted.assign(Year=year_list)
+
 # # Processed file saved to local directory
-# dfmodified.to_excel(r'F:\strukton_project\ECT\ExportFile20190404120229_Processed.xlsx')
-#
-# dfgrouped = dfmodified.groupby('ObjectOms', as_index=False)
-# dfgrouped = dfmodified.groupby('ObjectOms', as_index=False)
-# cols = []
+dfmodified.to_excel(r'F:\strukton_project\ECT\ExportFile20190404120229_Processed.xlsx')
+
+dfgrouped = dfmodified.groupby('ObjectOms', as_index=False)
+dfgrouped = dfmodified.groupby('ObjectOms', as_index=False)
+cols = []
 #
 # for c in range(len(dfmodified.columns)):
 #     cols.append(dfmodified.columns[c])

@@ -41,7 +41,6 @@ dfmodified = dfmodified.assign(USRapNumCode=us_rap_nummer_list)
 dfmodified.to_excel(r'F:\strukton_project\UST\US_TOTAL_PROCESSED.xlsx')
 
 dfgrouped = dfmodified.groupby('ObjectOms', as_index=False)
-dfgrouped = dfmodified.groupby('ObjectOms', as_index=False)
 cols = []
 
 for c in range(len(dfmodified.columns)):
