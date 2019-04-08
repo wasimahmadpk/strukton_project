@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 def get_spaced_colors(n):
     max_value = 16581375  # 255**3
     interval = int(max_value / n)
-    colors = [hex(I)[2:].zfill(6) for I in range(0, max_value, interval)]
+    colors = [hex(I)[2:].zfill(6) for I in range(1, max_value, interval)]
 
     return [(int(i[:2], 16), int(i[2:4], 16), int(i[4:], 16)) for i in colors]
 
@@ -108,6 +108,7 @@ for table, group in dfgrouped:
     proxies = []
     colors = get_spaced_colors(len(pxlist))
     counter = 0
+
     for x_var, y_var in zip(pxlist, pylist):
         c = color = random.rand(3)
         markerline, stemlines, baseline = plt.stem(x_var, y_var)
@@ -123,7 +124,7 @@ for table, group in dfgrouped:
         plt.setp(markerline, 'markerfacecolor')  # make points blue
 
         # plot proxy artist
-        h, = plt.plot(1, 1, color=c)
+        h, = plt.plot(1, 1, color=c, zorder=count*5)
         proxies.append(h)
     # hide proxies
     plt.legend(proxies, yrlist, loc='best', numpoints=1)
