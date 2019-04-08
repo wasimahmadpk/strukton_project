@@ -77,11 +77,15 @@ for table, group in dfgrouped:
             row_data = []
         plotlist = []
         pdftrack = pd.DataFrame(data_list, columns=cols)
-        km_position = pdftrack['km tot'].tolist()
+        km_tot = pdftrack['km tot'].tolist()
         crack_size = pdftrack['diepteklasse'].tolist()
+        km_position = []
         crack_depth = []
 
-        for j in range(len(crack_size)):
+        for j in range(len(km_tot)):
+            km_position.append(float(pdftrack['km tot'][0][0:2]) + float(pdftrack['km tot'][0][3:6])/1000)
+
+        for k in range(len(crack_size)):
             crack_depth.append(float(pdftrack['diepteklasse'][0][6]) + float(pdftrack['diepteklasse'][0][6])/10)
 
         year = str(pdftrack['Year'][0])
