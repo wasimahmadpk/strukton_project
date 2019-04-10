@@ -16,11 +16,10 @@ def get_spaced_colors(n):
 
 
 df = pd.read_excel(r'F:\strukton_project\UST\US_TOTAL.xlsx')
-df = df[(df['UIC foutcode'] == 2223) & (df['Been'] == 'L')]
-df_tracks = df.groupby('ObjectOms', as_index=False).count().sort_values('Been', ascending=False).head(10)
+df_filtered = df[(df['UIC foutcode'] == 2223) & (df['Been'] == 'L') & (df['ObjectOms'] != 'LEEG')]
+df_tracks = df_filtered.groupby('ObjectOms', as_index=False).count().sort_values('Been', ascending=False).head(10)
 toptentracks = df_tracks['ObjectOms'].iloc[0:-1].tolist()
-dframe = df[df['ObjectOms'].isin(toptentracks)]
-dframe = dframe[dframe['ObjectOms'] != 'LEEG'].sort_values('ObjectOms')
+dframe = df_filtered[df_filtered['ObjectOms'].isin(toptentracks)]
 dfsorted = dframe.groupby('ObjectOms', as_index=False).apply(lambda x: x.sort_values(['Datum']))
 
 track_name = dfsorted['ObjectOms'].iloc[0]
@@ -37,6 +36,7 @@ for i in range(len(us_rap_nummer)):
     us_rap_nummer_list.append(us_rap_nummer.iloc[i][0:7])
 
 dfmodified = dfmodified.assign(USRapNumCode=us_rap_nummer_list)
+dfusrapnum = dfmodified.groupby('USRapNumCode', as_index=False).count().sort_values('Been', ascending=False).head(10)
 # Processed file saved to local directory
 dfmodified.to_excel(r'F:\strukton_project\UST\US_TOTAL_PROCESSED.xlsx')
 

@@ -16,11 +16,10 @@ def get_spaced_colors(n):
 
 
 df = pd.read_excel(r'F:\strukton_project\ECT\ExportFile20190404120229.xls')
-df = df[(df['diepteklasse'] != 'Geen gebrek') & (df['links/r'] == 'Links')]
-df_tracks = df.groupby('spoortak', as_index=False).count().sort_values('km van', ascending=False).head(10)
+df_filtered = df[(df['diepteklasse'] != 'Geen gebrek') & (df['links/r'] == 'Rechts')]
+df_tracks = df_filtered.groupby('spoortak', as_index=False).count().sort_values('km van', ascending=False).head(10)
 toptentracks = df_tracks['spoortak'].iloc[0:-1].tolist()
-dframe = df[df['spoortak'].isin(toptentracks)]
-dframe = dframe.sort_values('spoortak')
+dframe = df_filtered[df_filtered['spoortak'].isin(toptentracks)]
 dfsorted = dframe.groupby('spoortak', as_index=False).apply(lambda x: x.sort_values(['datum']))
 
 track_name = dfsorted['spoortak'].iloc[0]
@@ -83,10 +82,14 @@ for table, group in dfgrouped:
         crack_depth = []
 
         for j in range(len(km_tot)):
-            km_position.append(float(pdftrack['km tot'][0][0:2]) + float(pdftrack['km tot'][0][3:6])/1000)
+            kmval1 = pdftrack['km tot'][j].split(",")
+            firstval = float(kmval1[0])
+            kmval2 = kmval1[1].split("#")
+            secval = float(kmval2[0])
+            km_position.append(firstval + secval/1000)
 
         for k in range(len(crack_size)):
-            crack_depth.append(float(pdftrack['diepteklasse'][0][6]) + float(pdftrack['diepteklasse'][0][6])/10)
+            crack_depth.append(float(pdftrack['diepteklasse'][k][-6]) + float(pdftrack['diepteklasse'][k][-4])/10)
 
         year = str(pdftrack['Year'][0])
         plotlist.append(km_position)
