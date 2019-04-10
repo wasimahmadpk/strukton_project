@@ -329,13 +329,14 @@ class RailDefects:
 
 
 if __name__ == "__main__":
+
     obj = RailDefects(1)
     headchecks = obj.anomaly_detection(pprocessed_file=data_paths.data_path[4])
     plotlist = []
     plt.figure(15)
     plt.title('Severity Analysis')
     plt.xlabel('No. of anomalies')
-    plt.ylabel('anomaly score and crack depth')
+    plt.ylabel('Anomaly score and Crack depth')
     plt.ylim(0, 2)
     depth = headchecks['depth'].tolist()
     score = headchecks['score'].tolist()
