@@ -9,6 +9,8 @@ import os
 import csv
 import numpy as np
 import pandas as pd
+import seaborn as sns
+from string import ascii_letters
 from gmapplot import gmap_plot
 import matplotlib.pyplot as plt
 from data_paths import data_paths
@@ -348,3 +350,24 @@ if __name__ == "__main__":
     depthlab, = plt.plot(depth, label='crack depth (mm)')
     severity, = plt.plot(score, label='anomaly score (0~1)')
     plt.legend(loc='upper left', handles=[depthlab, severity])
+
+    pltlist_trans = rez = [[plotlist[j][i] for j in range(len(plotlist))] for i in range(len(plotlist[0]))]
+    df = pd.DataFrame(data=pltlist_trans,
+                      columns=['depth', 'score'])
+
+    # Compute the correlation matrix
+    corr = df.corr()
+
+    # Generate a mask for the upper triangle
+    mask = np.zeros_like(corr, dtype=np.bool)
+    mask[np.triu_indices_from(mask)] = True
+
+    # Set up the matplotlib figure
+    f, ax = plt.subplots(figsize=(11, 9))
+
+    # Generate a custom diverging colormap
+    cmap = sns.diverging_palette(220, 10, as_cmap=True)
+
+    # Draw the heatmap with the mask and correct aspect ratio
+    sns.heatmap(corr, mask=mask, cmap=cmap, vmax=.3, center=0,
+                square=True, linewidths=.5, cbar_kws={"shrink": .5})
