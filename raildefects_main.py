@@ -346,5 +346,5 @@ if __name__ == "__main__":
     score = sorted[:, 1]
 
     depthlab, = plt.plot(depth, label='crack depth (mm)')
-    severity, = plt.plot(score, label='anomaly severity')
+    severity, = plt.plot(score, label='anomaly score (0~1)')
     plt.legend(loc='upper left', handles=[depthlab, severity])
