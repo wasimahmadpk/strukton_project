@@ -39,6 +39,7 @@ dfmodified = dfmodified.assign(USRapNumCode=us_rap_nummer_list)
 dfusrapnum = dfmodified.groupby('USRapNumCode', as_index=False).count().sort_values('Been', ascending=False).head(10)
 # Processed file saved to local directory
 dfmodified.to_excel(r'F:\strukton_project\UST\US_TOTAL_PROCESSED.xlsx')
+dfusrapnum.to_excel(r'F:\strukton_project\UST\US_TOTAL_GROUPBY_USRAPNUMMER.xlsx')
 
 dfgrouped = dfmodified.groupby('ObjectOms', as_index=False)
 cols = []
