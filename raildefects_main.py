@@ -183,7 +183,7 @@ class RailDefects:
                     plt.plot(peak_to_peak)
                     plt.show()
 
-                    mylist = np.stack((rms, kurtosis, skewness, peak_to_peak, crest_factor, impulse_factor), axis=-1)
+                    mylist = np.stack((peak_to_peak, peak_to_peak), axis=-1)
                     norm_train, anom_train, norm_test, anom_test, anom_icount, anom_icount_train, anom_score = isolation_forest(
                         mylist, int_count)
 
@@ -329,11 +329,22 @@ class RailDefects:
 if __name__ == "__main__":
     obj = RailDefects(1)
     headchecks = obj.anomaly_detection(pprocessed_file=data_paths.data_path[4])
-
+    plotlist = []
     plt.figure(15)
     plt.title('Severity Analysis')
     plt.xlabel('No. of anomalies')
     plt.ylabel('anomaly score and crack depth')
-    depth, = plt.plot(headchecks['depth'].tolist(), label='crack depth (mm)')
-    severity, = plt.plot(headchecks['score'].tolist(), label='anomaly severity')
-    plt.legend(loc='upper left', handles=[depth, severity])
+    plt.ylim(0, 2)
+    depth = headchecks['depth'].tolist()
+    score = headchecks['score'].tolist()
+    plotlist.append(depth)
+    plotlist.append(score)
+    pltlist = [[plotlist[j][i] for j in range(len(plotlist))] for i in range(len(plotlist[0]))]
+    pltarr = np.array(pltlist)
+    sorted = pltarr[pltarr[:, 1].argsort()]
+    depth = sorted[:, 0]
+    score = sorted[:, 1]
+
+    depthlab, = plt.plot(depth, label='crack depth (mm)')
+    severity, = plt.plot(score, label='anomaly severity')
+    plt.legend(loc='upper left', handles=[depthlab, severity])

@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
 
+
 def match_anomaly(abadata, allxcount, anomxcount, segfile):
 
     print('I am inside compare_anomaly function')
@@ -17,7 +18,7 @@ def match_anomaly(abadata, allxcount, anomxcount, segfile):
             tempStr = ''.join(row)
             if tempStr.startswith('#') or len(tempStr) == 0:
                 continue
-            elif tempStr.startswith('CNT_BGN'):
+            elif tempStr.startswith('PRV10_CNT_BGN'):
                 print(f'Column names are {", ".join(row)}')
                 line_count += 1
             else:
