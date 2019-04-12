@@ -32,7 +32,7 @@ class data_paths:
     # counters_path = 'F:\strukton_project\Flevolijn\Prorail18022036si12\ABA\Prorail18022036si12\counter_data'
 
     # WP_171115 Track
-    data_file = 'F:\strukton_project\WP_171115\ABA\Prorail17111502si12\Prorail17111503si12.time.h5'
+    data_file = 'F:\strukton_project\WP_171115\ABA\Prorail17111502si12\Prorail17111502si12.time.h5'
     sync_file = 'F:\strukton_project\WP_171115\ABA\Prorail17111502si12.sync.'
     seg_file = 'F:\strukton_project\WP_171115\ABA\Routefiles\Prorail17111502si12_seg.csv'
     poi_file = 'F:\strukton_project\WP_171115\ABA\Routefiles\Prorail17111502si12_poi.csv'
