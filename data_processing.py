@@ -14,15 +14,17 @@ import csv
 def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
 
     # read CSV file
+    print('Data pre-processing is running... ')
     route_list = []
     with open(segfile) as csv_file:
         csv_reader = csv.reader(csv_file)
         line_count = 0
+        prefixes = ["CNT_BGN", "PRV10_CNT_BGN"]
         for row in csv_reader:
             tempStr = ''.join(row)
             if tempStr.startswith('#') or len(tempStr) == 0:
                 continue
-            elif tempStr.startswith('PRV10_CNT_BGN'):
+            elif tempStr.startswith(tuple(prefixes)):
                 print(f'Column names are {", ".join(row)}')
                 line_count += 1
             else:
