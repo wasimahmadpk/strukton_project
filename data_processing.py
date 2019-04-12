@@ -65,19 +65,18 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
 
     # read Sync CSV file
 
-    sync_data = pd.read_excel(syncfile)
+    # sync_data = pd.read_excel(syncfile)
 
     # documented in time tdms file
     
-    # syncdat = pd.read_hdf(syncfile, 'sync', mode='r')
-    # where='INTCNT >= syncdat.IntCnt.iloc[3] and INTCNT <= syncdat.IntCnt.iloc[-1]
-    timedat = pd.read_hdf(datafile, 'time', mode='r')
-    # get_xcount = interp1d(syncdat.IntCnt[3:-2], syncdat.ExtCnt[3:-2], fill_value='extrapolate')
-    # get_icount = interp1d(syncdat.ExtCnt[3:-2], syncdat.IntCnt[3:-2], fill_value='extrapolate')
+    syncdat = pd.read_hdf(syncfile, 'sync', mode='r')
+    timedat = pd.read_hdf(datafile, 'time', mode='r', where='INTCNT >= syncdat.IntCnt.iloc[3] and INTCNT <= syncdat.IntCnt.iloc[-1]')
+    get_xcount = interp1d(syncdat.IntCnt[3:-2], syncdat.ExtCnt[3:-2], fill_value='extrapolate')
+    get_icount = interp1d(syncdat.ExtCnt[3:-2], syncdat.IntCnt[3:-2], fill_value='extrapolate')
 
-    xcounters = timedat.ExtCnt
-    # xcounters = np.array(get_xcount(timedat.INTCNT))
-    # timedat = timedat.assign(EXTCNT=xcounters)
+    # xcounters = timedat.ExtCnt
+    xcounters = np.array(get_xcount(timedat.INTCNT))
+    timedat = timedat.assign(EXTCNT=xcounters)
     
     # newext = np.arange(np.ceil(timedat.EXTCNT[0]/10)*10,np.floor(timedat.EXTCNT[-1]/10)*10,100)
     # distsamp = interp1d(timedat.EXTCNT,dispchab3)
