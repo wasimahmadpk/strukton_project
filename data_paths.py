@@ -32,10 +32,10 @@ class data_paths:
     # counters_path = 'F:\strukton_project\Flevolijn\Prorail18022036si12\ABA\Prorail18022036si12\counter_data'
 
     # WP_171115 Track
-    data_file = 'F:\strukton_project\WP_171115\ABA\Prorail17111503si12\Prorail17111503si12.time.h5'
-    sync_file = 'F:\strukton_project\WP_171115\ABA\Prorail17111503si12.sync.'
-    seg_file = 'F:\strukton_project\WP_171115\ABA\Routefiles\Prorail17111503si12_seg.csv'
-    poi_file = 'F:\strukton_project\WP_171115\ABA\Routefiles\Prorail17111503si12_poi.csv'
-    processed_file = 'F:\strukton_project\WP_171115\ABA\Prorail17111503si12\Prorail17111503si12.processed.h5'
-    counters_path = 'F:\strukton_project\WP_171115\ABA\Prorail17111503si12\counter_data'
+    data_file = 'F:\strukton_project\WP_171115\ABA\Prorail17111502si12\Prorail17111503si12.time.h5'
+    sync_file = 'F:\strukton_project\WP_171115\ABA\Prorail17111502si12.sync.'
+    seg_file = 'F:\strukton_project\WP_171115\ABA\Routefiles\Prorail17111502si12_seg.csv'
+    poi_file = 'F:\strukton_project\WP_171115\ABA\Routefiles\Prorail17111502si12_poi.csv'
+    processed_file = 'F:\strukton_project\WP_171115\ABA\Prorail17111502si12\Prorail17111502si12.processed.h5'
+    counters_path = 'F:\strukton_project\WP_171115\ABA\Prorail17111502si12\counter_data'
     data_path = [data_file, sync_file, seg_file, poi_file, processed_file, counters_path]
