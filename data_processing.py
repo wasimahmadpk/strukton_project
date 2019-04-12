@@ -19,7 +19,7 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
     with open(segfile) as csv_file:
         csv_reader = csv.reader(csv_file)
         line_count = 0
-        prefixes = ["CNT_BGN", "PRV10_CNT_BGN"]
+        prefixes = ["CNT_BGN", "PRV10_CNT_BGN", "PRV9_CNT_BGN"]
         for row in csv_reader:
             tempStr = ''.join(row)
             if tempStr.startswith('#') or len(tempStr) == 0:
