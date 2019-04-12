@@ -69,7 +69,7 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
 
     # documented in time tdms file
     
-    syncdat = pd.read_hdf(syncfile, 'sync', mode='r')
+    syncdat = pd.read_hdf(datafile, 'sync', mode='r')
     timedat = pd.read_hdf(datafile, 'time', mode='r', where='INTCNT >= syncdat.IntCnt.iloc[3] and INTCNT <= syncdat.IntCnt.iloc[-1]')
     get_xcount = interp1d(syncdat.IntCnt[3:-2], syncdat.ExtCnt[3:-2], fill_value='extrapolate')
     get_icount = interp1d(syncdat.ExtCnt[3:-2], syncdat.IntCnt[3:-2], fill_value='extrapolate')
