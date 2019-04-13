@@ -72,7 +72,7 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
     syncdat = pd.read_hdf(datafile, 'sync', mode='r')
     timedat = pd.read_hdf(datafile, 'time', mode='r', where='INTCNT >= syncdat.IntCnt.iloc[3] and INTCNT <= syncdat.IntCnt.iloc[-1]')
     get_xcount = interp1d(syncdat.IntCnt[3:-2], syncdat.ExtCnt[3:-2], fill_value='extrapolate')
-    get_icount = interp1d(syncdat.ExtCnt[3:-2], syncdat.IntCnt[3:-2], fill_value='extrapolate')
+    # get_icount = interp1d(syncdat.ExtCnt[3:-2], syncdat.IntCnt[3:-2], fill_value='extrapolate')
 
     # xcounters = timedat.ExtCnt
     xcounters = np.array(get_xcount(timedat.INTCNT))
@@ -144,13 +144,13 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
     
     timedat = timedat.assign(TRACK_DIR=TRACK_DIR, ERS_DIR=ERS_DIR)
     
-    CHA1 = np.array(timedat.CHA1)
+    # CHA1 = np.array(timedat.CHA1)
     # CHA2 = np.array(timedat.CHA2)
-    CHA3 = np.array(timedat.CHA3)
+    # CHA3 = np.array(timedat.CHA3)
     
-    CHB1 = np.array(timedat.CHB1)
+    # CHB1 = np.array(timedat.CHB1)
     # CHB2 = np.array(timedat.CHB2)
-    CHB3 = np.array(timedat.CHB3)
+    # CHB3 = np.array(timedat.CHB3)
 
     # # 2. Transformmed channels
     # CHC1 = np.empty(len(tdir), dtype=object)
@@ -194,13 +194,13 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
     # LAT = np.array(get_lat(xcounters))
     # LON = np.array(get_long(xcounters))
 
-    timedat = timedat.drop(['CHA2', 'CHB2'], axis=1)
+    # timedat = timedat.drop(['CHA2', 'CHB2'], axis=1)
     # timedat = timedat.assign(CHC1=CHC1, CHC3=CHC3, CHD1=CHD1, CHD3=CHD3)
     
     switch_counters = np.array([])
     
     for z in range(len(switch_start)):
-        temparr = np.array(timedat[(timedat.ExtCnt >= switch_start[z]) & (timedat.ExtCnt <= switch_end[z])].index)
+        temparr = np.array(timedat[(timedat.EXTCNT >= switch_start[z]) & (timedat.EXTCNT <= switch_end[z])].index)
         switch_counters = np.concatenate((switch_counters, temparr), axis=0)
 
     # chc1_mean = np.mean(timedat.CHC1)
@@ -217,11 +217,16 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
     # timedat.CHC3[list(switch_counters)] = chc3_mean
     # timedat.CHD1[list(switch_counters)] = chd1_mean
     # timedat.CHD3[list(switch_counters)] = chd3_mean
+    switch_counters = list(set(switch_counters))
+    # timedat.CHA1[switch_counters] = cha1_mean
+    # timedat.CHA3[switch_counters] = cha3_mean
+    # timedat.CHB1[switch_counters] = chb1_mean
+    # timedat.CHB3[switch_counters] = chb3_mean
 
-    timedat.CHA1[list(set(switch_counters))] = cha1_mean
-    timedat.CHA3[list(set(switch_counters))] = cha3_mean
-    timedat.CHB1[list(set(switch_counters))] = chb1_mean
-    timedat.CHB3[list(set(switch_counters))] = chb3_mean
+    timedat.at[[switch_counters], 'CHA1'] = cha1_mean
+    timedat.at[[switch_counters], 'CHA3'] = cha3_mean
+    timedat.at[[switch_counters], 'CHB1'] = chb1_mean
+    timedat.at[[switch_counters], 'CHB3'] = chb3_mean
 
     # for z in range(len(cntstart)):
     #     temparr = np.array(timedat[(timedat.EXTCNT >= cntstart[z]) & (timedat.EXTCNT <= cntstop[z])].index)
