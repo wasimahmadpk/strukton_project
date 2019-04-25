@@ -65,14 +65,43 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
 
     # read Sync CSV file
 
-    # sync_data = pd.read_excel(syncfile)
+    syncdat = []
+    with open(syncfile) as csv_file:
+        csv_reader = csv.reader(csv_file)
+        line_count = 0
+        for row in csv_reader:
+            tempStr = ''.join(row)
+            if tempStr.startswith('#') or len(tempStr) == 0:
+                line_count += 1
+                continue
+            elif tempStr.startswith('Type'):
+                print(f'Column names are {", ".join(row)}')
+                line_count += 1
+            elif line_count < 5:
+                line_count +=1
+                continue
+            else:
+                # print(f'\t{row[0]} works in the {row[1]} department, and was born in {row[2]}.')
+                line_count += 1
+                tlist = tempStr.split(";")
+                ttlist = []
+                ttlist.append(tlist[1])
+                ttlist.append(tlist[3])
+                ttlist = [float(x) for x in ttlist if len(x) > 0]
+                syncdat.append(ttlist)
+        print(f'Processed {line_count} lines in POI file.')
+        print("Program is running...")
+        syncdat = np.array(syncdat)
 
     # documented in time tdms file
     
-    syncdat = pd.read_hdf(datafile, 'sync', mode='r')
-    timedat = pd.read_hdf(datafile, 'time', mode='r', where='INTCNT >= syncdat.IntCnt.iloc[3] and INTCNT <= syncdat.IntCnt.iloc[-1]')
-    get_xcount = interp1d(syncdat.IntCnt[3:-2], syncdat.ExtCnt[3:-2], fill_value='extrapolate')
-    # get_icount = interp1d(syncdat.ExtCnt[3:-2], syncdat.IntCnt[3:-2], fill_value='extrapolate')
+    # syncdat = pd.read_hdf(datafile, 'sync', mode='r')
+    # timedat = pd.read_hdf(datafile, 'time', mode='r', where='INTCNT >= syncdat.IntCnt.iloc[3] and INTCNT <= syncdat.IntCnt.iloc[-1]')
+    timedat = pd.read_hdf(datafile, 'time', mode='r')
+    # timedat = timedat[timedat['INTCNT'] >= syncdat[0, 0] & timedat['INTCNT'] <= syncdat[-1, 0]]
+    # get_xcount = interp1d(syncdat.IntCnt[3:-2], syncdat.ExtCnt[3:-2], fill_value='extrapolate')
+    get_xcount = interp1d(syncdat[:, 0], syncdat[:, 1], fill_value='extrapolate')
+        # get_icount = interp1d(syncdat.ExtCnt[3:-2], syncdat.IntCnt[3:-2], fill_value='extrapolate')
 
     # xcounters = timedat.ExtCnt
     xcounters = np.array(get_xcount(timedat.INTCNT))

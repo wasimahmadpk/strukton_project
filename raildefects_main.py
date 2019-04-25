@@ -297,15 +297,15 @@ class RailDefects:
             return anomaly_positions
             # ///////////////////////////////////////////
 
-            # anom_pos_cha = np.array(anomaly_positions[0] + anomaly_positions[2])
-            # anom_xcount_cha = np.concatenate((anom_xcount_mode[0][0], anom_xcount_mode[0][1]), axis=0)
-            # anom_score_cha = np.concatenate((anom_score_mode[0][0], anom_score_mode[0][1]), axis=0)
-            # anom_pos_xcount = np.stack((anom_pos_cha, anom_xcount_cha, anom_score_cha), axis=-1)
-            # anom_pos_xcount_sorted = anom_pos_xcount[anom_pos_xcount[:, 0].argsort()]
-            # anom_pos_cha = list(anom_pos_xcount_sorted[:, 0])
-            # anom_xcount_cha = list(anom_pos_xcount_sorted[:, 1])
-            # anom_score_cha = list(anom_pos_xcount_sorted[:, 2])
-            #
+            anom_pos_cha = np.array(anomaly_positions[0] + anomaly_positions[2])
+            anom_xcount_cha = np.concatenate((anom_xcount_mode[0][0], anom_xcount_mode[0][1]), axis=0)
+            anom_score_cha = np.concatenate((anom_score_mode[0][0], anom_score_mode[0][1]), axis=0)
+            anom_pos_xcount = np.stack((anom_pos_cha, anom_xcount_cha, anom_score_cha), axis=-1)
+            anom_pos_xcount_sorted = anom_pos_xcount[anom_pos_xcount[:, 0].argsort()]
+            anom_pos_cha = list(anom_pos_xcount_sorted[:, 0])
+            anom_xcount_cha = list(anom_pos_xcount_sorted[:, 1])
+            anom_score_cha = list(anom_pos_xcount_sorted[:, 2])
+
             # # Data-frame for severity analysis
             #
             # dict = {'position': anom_pos_cha, 'counters': anom_xcount_cha, 'score': anom_score_cha}
@@ -313,28 +313,27 @@ class RailDefects:
             # ectpath = r'F:\strukton_project\Flevolijn\ECT\EC_data_2018_FC_FO_L.csv'
             # headchecks = DefectSeverity(df_anom_pos_score, ectpath).get_trend()
             # return headchecks
-            #
-            # ##################################
-            #
-            # write_data = zip(anom_pos_cha, anom_xcount_cha, anom_score_cha)
-            # track_side = 'cha_km'
-            #
-            # with open(self.counters_path + '\Prorail18022101si12_' + track_side + '.csv', 'w',
-            #           newline='') as file:
-            #     try:
-            #         writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-            #         writer.writerow(['positions', 'counters', 'severity'])
-            #         for pos, cnt, sev in write_data:
-            #             writer.writerow([pos, cnt, sev])
-            #     finally:
-            #         file.close()
-            #
+
+            ##################################
+
+            write_data = zip(anom_pos_cha, anom_xcount_cha, anom_score_cha)
+            track_side = 'cha_km'
+
+            with open(self.counters_path + '\Prorail18022101si12_' + track_side + '.csv', 'w',
+                      newline='') as file:
+                try:
+                    writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                    writer.writerow(['positions', 'counters', 'severity'])
+                    for pos, cnt, sev in write_data:
+                        writer.writerow([pos, cnt, sev])
+                finally:
+                    file.close()
 
 
 if __name__ == "__main__":
 
     obj = RailDefects(1)
-    anomaly_positions = obj.anomaly_detection(pprocessed_file=data_paths.data_path[4])
+    headchecks = obj.anomaly_detection(pprocessed_file=data_paths.data_path[4])
 
     # plotlist = []
     # plt.figure(15)
@@ -352,6 +351,12 @@ if __name__ == "__main__":
     # depth = sorted[:, 0]
     # score = sorted[:, 1]
     #
+    # quantile_list = []
+    # quantile_list.append(depth)
+    # quantile_list.append(score)
+    # qval = np.quantile(quantile_list, 0.5)
+    #
+    #
     # depthlab, = plt.plot(depth, label='crack depth (mm)')
     # severity, = plt.plot(score, label='anomaly score (0~1)')
     # plt.legend(loc='upper left', handles=[depthlab, severity])
@@ -359,7 +364,7 @@ if __name__ == "__main__":
     # pltlist_trans = rez = [[plotlist[j][i] for j in range(len(plotlist))] for i in range(len(plotlist[0]))]
     # df = pd.DataFrame(data=pltlist_trans,
     #                   columns=['depth', 'score'])
-    #
+    # #
     # # Compute the correlation matrix
     # corr = df.corr()
     #
