@@ -80,7 +80,7 @@ class RailDefects:
             CHB3 = np.array(processed_data.CHB3)
 
             int_count = np.array(processed_data.INTCNT)
-            ext_count = np.array(processed_data.ExtCnt)
+            ext_count = np.array(processed_data.EXTCNT)
             # date_time = syncdat.DateTime
 
             # Pushing & Pulling ABA data for one side (left or right)
@@ -211,8 +211,9 @@ class RailDefects:
                     for z in range(len(latitude) - 1):
                         point_one = (latitude[z], longitude[z])
                         point_two = (latitude[z + 1], longitude[z + 1])
-                        distance = geodesic(point_one, point_two).km
-                        dist.append(1000 * distance)
+                        # distance = geodesic(point_one, point_two).km
+                        # dist.append(1000 * distance)
+                        dist.append(longitude[z])
 
                     anom_xcount = [str(x) for x in anom_xcount]
                     latitude = [str(x) for x in latitude]

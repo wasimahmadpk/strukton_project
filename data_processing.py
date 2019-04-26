@@ -92,16 +92,13 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
         print(f'Processed {line_count} lines in POI file.')
         print("Program is running...")
         syncdat = np.array(syncdat)
+        syncdat = pd.DataFrame(data=syncdat, columns=['IntCnt', 'ExtCnt'])
 
     # documented in time tdms file
-    
     # syncdat = pd.read_hdf(datafile, 'sync', mode='r')
-    # timedat = pd.read_hdf(datafile, 'time', mode='r', where='INTCNT >= syncdat.IntCnt.iloc[3] and INTCNT <= syncdat.IntCnt.iloc[-1]')
-    timedat = pd.read_hdf(datafile, 'time', mode='r')
-    # timedat = timedat[timedat['INTCNT'] >= syncdat[0, 0] & timedat['INTCNT'] <= syncdat[-1, 0]]
-    # get_xcount = interp1d(syncdat.IntCnt[3:-2], syncdat.ExtCnt[3:-2], fill_value='extrapolate')
-    get_xcount = interp1d(syncdat[:, 0], syncdat[:, 1], fill_value='extrapolate')
-        # get_icount = interp1d(syncdat.ExtCnt[3:-2], syncdat.IntCnt[3:-2], fill_value='extrapolate')
+    timedat = pd.read_hdf(datafile, 'time', mode='r', where='INTCNT >= syncdat.IntCnt.iloc[0] and INTCNT <= syncdat.IntCnt.iloc[-1]')
+    get_xcount = interp1d(syncdat.IntCnt[0:-2], syncdat.ExtCnt[0:-2], fill_value='extrapolate')
+    # get_icount = interp1d(syncdat.ExtCnt[3:-2], syncdat.IntCnt[3:-2], fill_value='extrapolate')
 
     # xcounters = timedat.ExtCnt
     xcounters = np.array(get_xcount(timedat.INTCNT))
@@ -223,7 +220,7 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
     # LAT = np.array(get_lat(xcounters))
     # LON = np.array(get_long(xcounters))
 
-    # timedat = timedat.drop(['CHA2', 'CHB2'], axis=1)
+    timedat = timedat.drop(['CHA2', 'CHB2'], axis=1)
     # timedat = timedat.assign(CHC1=CHC1, CHC3=CHC3, CHD1=CHD1, CHD3=CHD3)
     
     switch_counters = np.array([])
