@@ -45,7 +45,11 @@ def isolation_forest(my_data, int_count):
     ZZ = clf.decision_function(my_data)
     y_pred = np.concatenate((y_pred_train, y_pred_test), axis=0)
     anomalies = ZZ[(y_pred == -1)]
-    anom_scores = 1 - normalize(anomalies)
+    # anom_scores = 1 - normalize(anomalies)
+
+    adjusted_anom_scores = [-1 * s - .5 for s in anomalies]
+    anom_scores = 1 - normalize(adjusted_anom_scores)
+
     plt.figure(3)
     plt.plot(anom_scores)
 
