@@ -225,7 +225,7 @@ class RailDefects:
                     track_side = 'chb' if i else 'cha'
                     train_mode = 'pushing' if j else 'pulling'
 
-                    with open(self.counters_path + '\Prorail18022101si12_' + track_side + '_' + train_mode + '.csv', 'w',
+                    with open(self.counters_path + '\Prorail18030614si12_' + track_side + '_' + train_mode + '.csv', 'w',
                               newline='') as file:
                         try:
                             writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
@@ -320,7 +320,7 @@ class RailDefects:
             write_data = zip(anom_pos_cha, anom_xcount_cha, anom_score_cha)
             track_side = 'cha_km'
 
-            with open(self.counters_path + '\Prorail18022101si12_' + track_side + '.csv', 'w',
+            with open(self.counters_path + '\Prorail18030614si12_' + track_side + '.csv', 'w',
                       newline='') as file:
                 try:
                     writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
