@@ -313,7 +313,6 @@ class RailDefects:
             df_anom_pos_score = pd.DataFrame(data=dict)
             ectpath = r'F:\strukton_project\WP_180306\ECT\EC_data_2018_FC_FO_LR.csv'
             headchecks = DefectSeverity(df_anom_pos_score, ectpath).get_trend()
-            return anomaly_positions, headchecks
 
             ##################################
 
@@ -329,6 +328,8 @@ class RailDefects:
                         writer.writerow([pos, cnt, sev])
                 finally:
                     file.close()
+
+            return anomaly_positions, headchecks
 
 
 if __name__ == "__main__":
