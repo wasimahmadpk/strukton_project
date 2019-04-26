@@ -34,14 +34,14 @@ class DefectSeverity:
 
             crack_depth_list = []
             tlist = []
-            headcheck = pd.DataFrame()
+            headchecks = pd.DataFrame()
             for i in range(len(ect_list)):
                 km_from, km_to, crack_depth = float(ect_list[i, 3]), float(ect_list[i, 4]), float(ect_list[i, 8])
                 tempdf = self.severity_data[(self.severity_data.position >= km_from) & (self.severity_data.position <= km_to)]
                 if tempdf.shape[0] > 0:
                     tempdf['score'] = max(tempdf.score)
                     crack_depth_list = crack_depth_list + [crack_depth] * tempdf.shape[0]
-                    headcheck = headcheck.append(tempdf)
+                    headchecks = headchecks.append(tempdf)
 
-            headcheck = headcheck.assign(depth=crack_depth_list)
-        return headcheck
+            headchecks = headchecks.assign(depth=crack_depth_list)
+        return headchecks

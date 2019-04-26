@@ -14,6 +14,7 @@ from string import ascii_letters
 from gmapplot import gmap_plot
 import matplotlib.pyplot as plt
 from data_paths import data_paths
+from normalization import normalize
 from geopy.distance import geodesic
 from scipy.interpolate import interp1d
 from compare_anomaly import match_anomaly
@@ -295,7 +296,6 @@ class RailDefects:
 
             # function call: compare anomalies in ABA on both channels i.e. CHA and CHB and return anomaly_positions
             anomaly_positions = match_anomaly(rail_data, rail_xcounters, anom_xcount_mode, self.seg_file)
-            # return anomaly_positions
             # ///////////////////////////////////////////
 
             anom_pos_cha = np.array(anomaly_positions[0] + anomaly_positions[2])
@@ -313,7 +313,7 @@ class RailDefects:
             df_anom_pos_score = pd.DataFrame(data=dict)
             ectpath = r'F:\strukton_project\WP_180306\ECT\EC_data_2018_FC_FO_LR.csv'
             headchecks = DefectSeverity(df_anom_pos_score, ectpath).get_trend()
-            return headchecks
+            return anomaly_positions, headchecks
 
             ##################################
 
@@ -334,33 +334,33 @@ class RailDefects:
 if __name__ == "__main__":
 
     obj = RailDefects(1)
-    headchecks = obj.anomaly_detection(pprocessed_file=data_paths.data_path[4])
+    anomaly_positions, headchecks = obj.anomaly_detection(pprocessed_file=data_paths.data_path[4])
 
-    # plotlist = []
-    # plt.figure(15)
-    # plt.title('Severity Analysis')
-    # plt.xlabel('No. of anomalies')
-    # plt.ylabel('Anomaly score and Crack depth')
-    # plt.ylim(0, 2)
-    # depth = headchecks['depth'].tolist()
-    # score = headchecks['score'].tolist()
-    # plotlist.append(depth)
-    # plotlist.append(score)
-    # pltlist = [[plotlist[j][i] for j in range(len(plotlist))] for i in range(len(plotlist[0]))]
-    # pltarr = np.array(pltlist)
-    # sorted = pltarr[pltarr[:, 1].argsort()]
-    # depth = sorted[:, 0]
-    # score = sorted[:, 1]
-    #
-    # quantile_list = []
-    # quantile_list.append(depth)
-    # quantile_list.append(score)
-    # qval = np.quantile(quantile_list, 0.5)
-    #
-    #
-    # depthlab, = plt.plot(depth, label='crack depth (mm)')
-    # severity, = plt.plot(score, label='anomaly score (0~1)')
-    # plt.legend(loc='upper left', handles=[depthlab, severity])
+    plotlist = []
+    plt.figure(15)
+    plt.title('Severity Analysis')
+    plt.xlabel('No. of anomalies')
+    plt.ylabel('Anomaly score and Crack depth')
+    plt.ylim(0, 2)
+    depth = headchecks['depth'].tolist()
+    score = headchecks['score'].tolist()
+    plotlist.append(depth)
+    plotlist.append(score)
+    pltlist = [[plotlist[j][i] for j in range(len(plotlist))] for i in range(len(plotlist[0]))]
+    pltarr = np.array(pltlist)
+    sorted = pltarr[pltarr[:, 1].argsort()]
+    depth = sorted[:, 0]
+    score = sorted[:, 1]
+
+    quantile_list = []
+    quantile_list.append(depth)
+    quantile_list.append(score)
+    qval = np.quantile(quantile_list, 0.5)
+
+    depth = normalize(depth)
+    depthlab, = plt.plot(depth, label='crack depth (mm)')
+    severity, = plt.plot(score, label='anomaly score (0~1)')
+    plt.legend(loc='upper left', handles=[depthlab, severity])
     #
     # pltlist_trans = rez = [[plotlist[j][i] for j in range(len(plotlist))] for i in range(len(plotlist[0]))]
     # df = pd.DataFrame(data=pltlist_trans,
