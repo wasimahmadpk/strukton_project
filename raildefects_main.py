@@ -81,7 +81,7 @@ class RailDefects:
             CHB3 = np.array(processed_data.CHB3)
 
             int_count = np.array(processed_data.INTCNT)
-            ext_count = np.array(processed_data.EXTCNT)
+            ext_count = np.array(processed_data.ExtCnt)
             # date_time = syncdat.DateTime
 
             # Pushing & Pulling ABA data for one side (left or right)
@@ -343,43 +343,18 @@ if __name__ == "__main__":
     plt.xlabel('No. of anomalies')
     plt.ylabel('Anomaly score and Crack depth')
     plt.ylim(0, 2)
-    depth = headchecks['depth'].tolist()
+    depth = normalize(headchecks['depth'].tolist())
     score = headchecks['score'].tolist()
     plotlist.append(depth)
     plotlist.append(score)
     pltlist = [[plotlist[j][i] for j in range(len(plotlist))] for i in range(len(plotlist[0]))]
     pltarr = np.array(pltlist)
     sorted = pltarr[pltarr[:, 1].argsort()]
-    depth = sorted[:, 0]
-    score = sorted[:, 1]
 
-    quantile_list = []
-    quantile_list.append(depth)
-    quantile_list.append(score)
-    qval = np.quantile(quantile_list, 0.5)
-
-    depth = normalize(depth)
-    depthlab, = plt.plot(depth, label='crack depth (mm)')
-    severity, = plt.plot(score, label='anomaly score (0~1)')
+    depthlab, = plt.plot(sorted[:, 0], label='crack depth')
+    severity, = plt.plot(sorted[:, 1], label='anomaly score')
     plt.legend(loc='upper left', handles=[depthlab, severity])
     #
     # pltlist_trans = rez = [[plotlist[j][i] for j in range(len(plotlist))] for i in range(len(plotlist[0]))]
     # df = pd.DataFrame(data=pltlist_trans,
     #                   columns=['depth', 'score'])
-    # #
-    # # Compute the correlation matrix
-    # corr = df.corr()
-    #
-    # # Generate a mask for the upper triangle
-    # mask = np.zeros_like(corr, dtype=np.bool)
-    # mask[np.triu_indices_from(mask)] = True
-    #
-    # # Set up the matplotlib figure
-    # f, ax = plt.subplots(figsize=(11, 9))
-    #
-    # # Generate a custom diverging colormap
-    # cmap = sns.diverging_palette(220, 10, as_cmap=True)
-    #
-    # # Draw the heatmap with the mask and correct aspect ratio
-    # sns.heatmap(corr, mask=mask, cmap=cmap, vmax=.3, center=0,
-    #             square=True, linewidths=.5, cbar_kws={"shrink": .5})
