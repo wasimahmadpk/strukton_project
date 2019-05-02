@@ -225,7 +225,7 @@ class RailDefects:
                     track_side = 'chb' if i else 'cha'
                     train_mode = 'pushing' if j else 'pulling'
 
-                    with open(self.counters_path + '\Prorail18030614si12_' + track_side + '_' + train_mode + '.csv', 'w',
+                    with open(self.counters_path + '\Prorail18022036si12_' + track_side + '_' + train_mode + '.csv', 'w',
                               newline='') as file:
                         try:
                             writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
