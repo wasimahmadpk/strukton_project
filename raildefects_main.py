@@ -96,6 +96,9 @@ class RailDefects:
             pull_ext_count = ext_count[(EDIR == 1)]
             push_ext_count = ext_count[(EDIR == -1)]
 
+            if len(push_ext_count) == 0:
+                push_ext_count = pull_ext_count
+
             pull_data = np.power((np.power(pull_data_cha1, 2) + np.power(pull_data_cha3, 2)), 1 / 2)
             push_data = np.power((np.power(push_data_cha1, 2) + np.power(push_data_cha3, 2)), 1 / 2)
 
@@ -109,6 +112,7 @@ class RailDefects:
 
             pull_data2 = np.power((np.power(pull_data_chb1, 2) + np.power(pull_data_chb3, 2)), 1 / 2)
             push_data2 = np.power((np.power(push_data_chb1, 2) + np.power(push_data_chb3, 2)), 1 / 2)
+
             ########################################
             rail_data = []
             rail_counters = []
@@ -117,15 +121,18 @@ class RailDefects:
             counters_list = []
             xcounters_list = []
             data_list.append(pull_data)
-            data_list.append(push_data)
+            if len(push_data) != 0:
+                data_list.append(push_data)
             counters_list.append(pull_int_count)
             counters_list.append(push_int_count)
             xcounters_list.append(pull_ext_count)
-            xcounters_list.append(push_ext_count)
+            if len(push_ext_count) != 0:
+                xcounters_list.append(push_ext_count)
             ########################################
             data_list2 = []
             data_list2.append(pull_data2)
-            data_list2.append(push_data2)
+            if len(push_data2) != 0:
+                data_list2.append(push_data2)
             rail_data.append(data_list)
             rail_data.append(data_list2)
             rail_counters.append(counters_list)
@@ -133,10 +140,6 @@ class RailDefects:
             rail_xcounters.append(xcounters_list)
             rail_xcounters.append(xcounters_list)
             ########################################
-
-            anom_xcount_list = []
-            anom_score_list = []
-            anom_xcount_train_list = []
 
             get_xcount = interp1d(int_count, ext_count, fill_value='extrapolate')
             get_icount = interp1d(ext_count, int_count, fill_value='extrapolate')
@@ -252,32 +255,6 @@ class RailDefects:
                     # lat_list_train = [float(i) for i in lat_list_train]
                     # long_list_train = [float(j) for j in lon_list_train]
 
-                    # Calculation of time of data acquisition
-
-                    # geo_xcount = geo_list[:,0]
-                    # geo_icount = get_icount(geo_xcount)
-                    # geo_icount[np.isnan(geo_icount)] = 0
-
-                    # dlist = []
-                    # dtval = []
-
-                    # for j in range(len(geo_icount)):
-                    #    tval1 = geo_icount[j]
-                    #    for k in range(len(int_count2)):
-                    #        tval2 = int(int_count2[k])
-                    #        diff = abs(tval2 - tval1)
-                    #        dlist.append(diff)
-                    #    dlist = np.array(dlist)
-                    #    indmin = np.unravel_index(np.argmin(dlist, axis=None), dlist.shape)
-                    #    datetime = date_time[indmin[0]].tolist()
-                    #    xval = geo_list[indmin[0],[0]].tolist()
-                    #    dtval.append(datetime[0])
-                    #    dlist = []
-                    #    xcgcode = []
-                    #
-                    # dtval = np.array(dtval)
-                    # unique_dtval = np.unique(dtval, axis=0)
-
                     gmap_plot(lat_list_train + lat_list, long_list_train + long_list)
 
                     # ///// Plot Confusion Matrix /////////////
@@ -298,9 +275,15 @@ class RailDefects:
             anomaly_positions = match_anomaly(rail_data, rail_xcounters, anom_xcount_mode, self.seg_file)
             # ///////////////////////////////////////////
 
-            anom_pos_cha = np.array(anomaly_positions[0] + anomaly_positions[2])
-            anom_xcount_cha = np.concatenate((anom_xcount_mode[0][0], anom_xcount_mode[0][1]), axis=0)
-            anom_score_cha = np.concatenate((anom_score_mode[0][0], anom_score_mode[0][1]), axis=0)
+            if len(anomaly_positions) > 2:
+                anom_pos_cha = np.array(anomaly_positions[0] + anomaly_positions[2])
+                anom_xcount_cha = np.concatenate((anom_xcount_mode[0][0], anom_xcount_mode[0][1]), axis=0)
+                anom_score_cha = np.concatenate((anom_score_mode[0][0], anom_score_mode[0][1]), axis=0)
+            else:
+                anom_pos_cha = np.array(anomaly_positions[0])
+                anom_xcount_cha = anom_xcount_mode[0][0]
+                anom_score_cha = anom_score_mode[0][0]
+
             anom_pos_xcount = np.stack((anom_pos_cha, anom_xcount_cha, anom_score_cha), axis=-1)
             anom_pos_xcount_sorted = anom_pos_xcount[anom_pos_xcount[:, 0].argsort()]
             anom_pos_cha = list(anom_pos_xcount_sorted[:, 0])
@@ -337,6 +320,7 @@ if __name__ == "__main__":
     obj = RailDefects(1)
     anomaly_positions, headchecks = obj.anomaly_detection(pprocessed_file=data_paths.data_path[4])
 
+    # plotting crack depth vs anomaly score
     plotlist = []
     plt.figure(15)
     plt.title('Severity Analysis')
@@ -349,7 +333,7 @@ if __name__ == "__main__":
     plotlist.append(score)
     pltlist = [[plotlist[j][i] for j in range(len(plotlist))] for i in range(len(plotlist[0]))]
     pltarr = np.array(pltlist)
-    sorted = pltarr[pltarr[:, 1].argsort()]
+    sorted = pltarr[pltarr[:, 0].argsort()]
 
     depthlab, = plt.plot(sorted[:, 0], label='crack depth')
     severity, = plt.plot(sorted[:, 1], label='anomaly score')
