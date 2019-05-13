@@ -297,6 +297,30 @@ class RailDefects:
             ectpath = r'F:\strukton_project\WP_180306\ECT\EC_data_2018_FC_FO_LR.csv'
             headchecks = DefectSeverity(df_anom_pos_score, ectpath).get_trend()
 
+            plotlist = []
+            depth = normalize(headchecks['depth'].tolist())
+            score = headchecks['score'].tolist()
+            plotlist.append(depth)
+            plotlist.append(score)
+            pltlist = [[plotlist[j][i] for j in range(len(plotlist))] for i in range(len(plotlist[0]))]
+            pltarr = np.array(pltlist)
+            sorted = pltarr[pltarr[:, 0].argsort()]
+            cracksize = sorted[:, 0]
+            anomscore = sorted[:, 1]
+
+            write_data = zip(cracksize, anomscore)
+            track_side = 'cha_crack_anom'
+
+            with open(self.counters_path + '\Prorail18030614si12_' + track_side + '.csv', 'w',
+                      newline='') as file:
+                try:
+                    writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                    writer.writerow(['crack_depth', 'anom_severity'])
+                    for crack, sev in write_data:
+                        writer.writerow([crack, sev])
+                finally:
+                    file.close()
+
             ##################################
 
             write_data = zip(anom_pos_cha, anom_xcount_cha, anom_score_cha)
