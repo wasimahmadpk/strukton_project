@@ -8,7 +8,6 @@ Created on Fri Apr 27 00:27:42 2018
 
 import numpy as np
 from normalization import normalize
-from histogram import plot_hist
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
