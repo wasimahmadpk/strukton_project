@@ -78,7 +78,7 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
                 print(f'Column names are {", ".join(row)}')
                 line_count += 1
             elif line_count < 5:
-                line_count +=1
+                line_count += 1
                 continue
             else:
                 # print(f'\t{row[0]} works in the {row[1]} department, and was born in {row[2]}.')
