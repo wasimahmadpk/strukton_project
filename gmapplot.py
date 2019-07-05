@@ -36,9 +36,10 @@ def gmap_plot(lat_list, long_list):
     # points on the Google map 
     gmap2.heatmap(lat_list, long_list) 
   
-    gmap1.draw("F:\\strukton_project\\figures\\track_groningen1.html") 
-    gmap2.draw("F:\\strukton_project\\figures\\track_groningen2.html") 
-    
+    gmap1.draw("D:\\strukton_project\\figures\\track_groningen1.html")
+    gmap2.draw("D:\\strukton_project\\figures\\track_groningen2.html")
+
+
 if __name__ == '__main__':
     
     lats = [53.327376, 53.32739, 53.327405, 53.327419, 53.327434, 53.327448, 53.32746, 53.327474, 53.327488, 53.327494, 53.327507, 53.327521, 53.327534, 53.327541,53.327554, 53.327561, 53.327573] 

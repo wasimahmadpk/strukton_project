@@ -18,7 +18,7 @@ def match_anomaly(abadata, allxcount, anomxcount, segfile):
             tempStr = ''.join(row)
             if tempStr.startswith('#') or len(tempStr) == 0:
                 continue
-            elif tempStr.startswith('PRV10_CNT_BGN'):
+            elif tempStr.startswith('PRV9_CNT_BGN'):
                 print(f'Column names are {", ".join(row)}')
                 line_count += 1
             else:
@@ -136,7 +136,7 @@ def match_anomaly(abadata, allxcount, anomxcount, segfile):
                     plt.plot(counters, data_chb)
                     for xc in winanomb:
                         plt.axvline(x=xc, color='r', linestyle='--')
-                    plt.savefig(r'F:\strukton_project\Flevolijn\Prorail18022101si12\ABA\Prorail18022101si12\channel_comparison\{}.png'.format(fname))
+                    plt.savefig(r'D:\strukton_project\Flevolijn\Prorail18022101si12\ABA\Prorail18022101si12\channel_comparison\{}.png'.format(fname))
                     plt.clf()
 
             anomaly_positions.append(anom_pos_listA)

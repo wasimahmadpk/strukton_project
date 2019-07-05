@@ -80,7 +80,7 @@ class RailDefects:
             CHB3 = np.array(processed_data.CHB3)
 
             int_count = np.array(processed_data.INTCNT)
-            ext_count = np.array(processed_data.ExtCnt)
+            ext_count = np.array(processed_data.EXTCNT)
             # date_time = syncdat.DateTime
 
             # Pushing & Pulling ABA data for one side (left or right)
@@ -293,7 +293,7 @@ class RailDefects:
 
             dict = {'position': anom_pos_cha, 'counters': anom_xcount_cha, 'score': anom_score_cha}
             df_anom_pos_score = pd.DataFrame(data=dict)
-            ectpath = r'F:\strukton_project\WP_180306\ECT\EC_data_2018_FC_FO_LR.csv'
+            ectpath = r'D:\strukton_project\WP_180306\ECT\EC_data_2018_FC_FO_LR.csv'
             headchecks = DefectSeverity(df_anom_pos_score, ectpath).get_trend()
 
             plotlist = []
@@ -343,25 +343,21 @@ if __name__ == "__main__":
     obj = RailDefects(1)
     anomaly_positions, headchecks = obj.anomaly_detection(pprocessed_file=data_paths.data_path[4])
 
-    # plotting crack depth vs anomaly score
-    plotlist = []
-    plt.figure(15)
-    plt.title('Severity Analysis')
-    plt.xlabel('No. of anomalies')
-    plt.ylabel('Anomaly score and Crack depth')
-    plt.ylim(0, 2)
-    depth = normalize(headchecks['depth'].tolist())
-    score = headchecks['score'].tolist()
-    plotlist.append(depth)
-    plotlist.append(score)
-    pltlist = [[plotlist[j][i] for j in range(len(plotlist))] for i in range(len(plotlist[0]))]
-    pltarr = np.array(pltlist)
-    sorted = pltarr[pltarr[:, 1].argsort()]
-
-    depthlab, = plt.plot(sorted[:, 0], label='crack depth')
-    severity, = plt.plot(sorted[:, 1], label='anomaly score')
-    plt.legend(loc='upper left', handles=[depthlab, severity])
+    # # plotting crack depth vs anomaly score
+    # plotlist = []
+    # plt.figure(15)
+    # plt.title('Severity Analysis')
+    # plt.xlabel('No. of anomalies')
+    # plt.ylabel('Anomaly score and Crack depth')
+    # plt.ylim(0, 2)
+    # depth = normalize(headchecks['depth'].tolist())
+    # score = headchecks['score'].tolist()
+    # plotlist.append(depth)
+    # plotlist.append(score)
+    # pltlist = [[plotlist[j][i] for j in range(len(plotlist))] for i in range(len(plotlist[0]))]
+    # pltarr = np.array(pltlist)
+    # sorted = pltarr[pltarr[:, 1].argsort()]
     #
-    # pltlist_trans = rez = [[plotlist[j][i] for j in range(len(plotlist))] for i in range(len(plotlist[0]))]
-    # df = pd.DataFrame(data=pltlist_trans,
-    #                   columns=['depth', 'score'])
+    # depthlab, = plt.plot(sorted[:, 0], label='crack depth')
+    # severity, = plt.plot(sorted[:, 1], label='anomaly score')
+    # plt.legend(loc='upper left', handles=[depthlab, severity])
