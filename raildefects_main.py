@@ -9,7 +9,6 @@ import os
 import csv
 import numpy as np
 import pandas as pd
-import seaborn as sns
 from string import ascii_letters
 from gmapplot import gmap_plot
 import matplotlib.pyplot as plt

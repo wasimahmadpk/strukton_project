@@ -5,6 +5,7 @@ Created on Wed Dec  5 14:42:01 2018
 @author: Waseem
 """
 
+import codecs
 import numpy as np
 import pandas as pd
 from scipy.interpolate import interp1d
