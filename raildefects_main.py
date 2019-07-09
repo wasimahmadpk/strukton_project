@@ -143,6 +143,10 @@ class RailDefects:
             get_xcount = interp1d(int_count, ext_count, fill_value='extrapolate')
             get_icount = interp1d(ext_count, int_count, fill_value='extrapolate')
 
+            # ///////////// Extract Train Speed /////////////
+            # ze = Zedf(rp.run.paths['default'].parent.joinpath('ZOES'), rp.run.name)
+            # vel = int(ze.ze_get(np.mean([data.loc[k]['CNT_BGN'], data.loc[k]['CNT_END']]), 'velocity') * 3.6)
+
             # ///////////// Feature Extraction //////////////
             aba_data_side = []
             all_xcount_mode = []
@@ -227,7 +231,7 @@ class RailDefects:
                     track_side = 'chb' if i else 'cha'
                     train_mode = 'pushing' if j else 'pulling'
 
-                    with open(self.counters_path + '\Prorail18022036si12_' + track_side + '_' + train_mode + '.csv', 'w',
+                    with open(self.counters_path + '\Prorail17112805si12_' + track_side + '_' + train_mode + '.csv', 'w',
                               newline='') as file:
                         try:
                             writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
@@ -243,29 +247,8 @@ class RailDefects:
                     lat_list_train = get_lat(anom_xcount_train).tolist()
                     long_list_train = get_long(anom_xcount_train).tolist()
 
-                    #    dlist = []
-                    #    xcgcode = []
-
-                    # geocodes_train = np.array(geocode)
-                    # unique_gcodes_train = np.unique(geocodes_train, axis = 0)
-                    # lat_list_train = unique_gcodes_train[:, 1].tolist()
-                    # long_list_train = unique_gcodes_train[:, 2].tolist()
-
-                    # lat_list_train = [float(i) for i in lat_list_train]
-                    # long_list_train = [float(j) for j in lon_list_train]
-
                     gmap_plot(lat_list_train + lat_list, long_list_train + long_list)
 
-                    # ///// Plot Confusion Matrix /////////////
-
-                    # YTrue = np.concatenate((X_true_test, X_true_outliers), axis=0)
-                    # YPred = np.concatenate((y_pred_test, y_pred_outliers), axis=0)
-
-                    # conf_mat = confusion_matrix(YTrue, YPred)
-                    # Plot non-normalized confusion matrix
-                    # plt.figure()
-                    # plot_confusion_matrix(conf_mat, classes= ['Normal', 'Anomaly'],
-                    #                      title='Confusion matrix')
                 aba_data_side.append(aba_data_mode)
                 anom_xcount_mode.append(anom_xcount_list)
                 anom_score_mode.append(anom_score_list)
@@ -291,41 +274,41 @@ class RailDefects:
 
             # # Data-frame for severity analysis
 
-            dict = {'position': anom_pos_cha, 'counters': anom_xcount_cha, 'score': anom_score_cha}
-            df_anom_pos_score = pd.DataFrame(data=dict)
-            ectpath = r'D:\strukton_project\WP_180306\ECT\EC_data_2018_FC_FO_LR.csv'
-            headchecks = DefectSeverity(df_anom_pos_score, ectpath).get_trend()
-
-            plotlist = []
-            depth = normalize(headchecks['depth'].tolist())
-            score = headchecks['score'].tolist()
-            plotlist.append(depth)
-            plotlist.append(score)
-            pltlist = [[plotlist[j][i] for j in range(len(plotlist))] for i in range(len(plotlist[0]))]
-            pltarr = np.array(pltlist)
-            sorted = pltarr[pltarr[:, 0].argsort()]
-            cracksize = sorted[:, 0]
-            anomscore = sorted[:, 1]
-
-            write_data = zip(cracksize, anomscore)
-            track_side = 'cha_crack_anom'
-
-            with open(self.counters_path + '\Prorail18030614si12_' + track_side + '.csv', 'w',
-                      newline='') as file:
-                try:
-                    writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                    writer.writerow(['crack_depth', 'anom_severity'])
-                    for crack, sev in write_data:
-                        writer.writerow([crack, sev])
-                finally:
-                    file.close()
-
-            ##################################
+            # dict = {'position': anom_pos_cha, 'counters': anom_xcount_cha, 'score': anom_score_cha}
+            # df_anom_pos_score = pd.DataFrame(data=dict)
+            # ectpath = r'D:\strukton_project\WP_180306\ECT\EC_data_2018_FC_FO_LR.csv'
+            # headchecks = DefectSeverity(df_anom_pos_score, ectpath).get_trend()
+            #
+            # plotlist = []
+            # depth = normalize(headchecks['depth'].tolist())
+            # score = headchecks['score'].tolist()
+            # plotlist.append(depth)
+            # plotlist.append(score)
+            # pltlist = [[plotlist[j][i] for j in range(len(plotlist))] for i in range(len(plotlist[0]))]
+            # pltarr = np.array(pltlist)
+            # sorted = pltarr[pltarr[:, 0].argsort()]
+            # cracksize = sorted[:, 0]
+            # anomscore = sorted[:, 1]
+            #
+            # write_data = zip(cracksize, anomscore)
+            # track_side = 'cha_crack_anom'
+            #
+            # with open(self.counters_path + '\Prorail18030614si12_' + track_side + '.csv', 'w',
+            #           newline='') as file:
+            #     try:
+            #         writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            #         writer.writerow(['crack_depth', 'anom_severity'])
+            #         for crack, sev in write_data:
+            #             writer.writerow([crack, sev])
+            #     finally:
+            #         file.close()
+            #
+            # ##################################
 
             write_data = zip(anom_pos_cha, anom_xcount_cha, anom_score_cha)
             track_side = 'cha_km'
 
-            with open(self.counters_path + '\Prorail18030614si12_' + track_side + '.csv', 'w',
+            with open(self.counters_path + '\Prorail17112805si12_' + track_side + '.csv', 'w',
                       newline='') as file:
                 try:
                     writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
@@ -335,13 +318,13 @@ class RailDefects:
                 finally:
                     file.close()
 
-            return anomaly_positions, headchecks
+            return anomaly_positions
 
 
 if __name__ == "__main__":
 
     obj = RailDefects(1)
-    anomaly_positions, headchecks = obj.anomaly_detection(pprocessed_file=data_paths.data_path[4])
+    anomaly_positions = obj.anomaly_detection(pprocessed_file=data_paths.data_path[4])
 
     # # plotting crack depth vs anomaly score
     # plotlist = []
