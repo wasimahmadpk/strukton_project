@@ -105,12 +105,26 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
     # xcounters = timedat.ExtCnt
     xcounters = np.array(get_xcount(timedat.INTCNT))
     timedat = timedat.assign(EXTCNT=xcounters)
-    
     # newext = np.arange(np.ceil(timedat.EXTCNT[0]/10)*10,np.floor(timedat.EXTCNT[-1]/10)*10,100)
     # distsamp = interp1d(timedat.EXTCNT,dispchab3)
     # newdisp = distsamp(newext)
 
+    # Train speed calculation
+
+    num_speed_win = round(len(timedat)/100)
+    start_idx = 0
+    inc_win = 100
+    train_speed = []
+    for s in range(num_speed_win):
+
+        diff_idx = timedat.index.values[start_idx + inc_win] - timedat.index.values[start_idx]
+        diff_ict = timedat['INTCNT'].iloc[start_idx + inc_win] - timedat['INTCNT'].iloc[start_idx]
+        vel = (diff_ict/diff_idx) * 23.04
+        start_idx = start_idx + inc_win
+        train_speed = train_speed + [vel]*100
+
     # Get rail objects location
+
     # obj_counters = np.array([])
     # cntval = []
     # cntstart = []
