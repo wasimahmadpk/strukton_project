@@ -8,6 +8,7 @@ Created on Wed Dec  5 14:42:01 2018
 import codecs
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
 import csv
 
@@ -113,7 +114,7 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
 
     num_speed_win = round(len(timedat)/100)
     start_idx = 0
-    inc_win = 1000
+    inc_win = 10
     train_speed = []
     for s in range(num_speed_win):
 
@@ -122,9 +123,12 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
             diff_ict = timedat['INTCNT'].iloc[start_idx + inc_win] - timedat['INTCNT'].iloc[start_idx]
             vel = (diff_ict/diff_idx) * 23.04
             start_idx = start_idx + inc_win
-            train_speed = train_speed + [vel]*1000
+            train_speed = train_speed + [vel]*10
 
     train_speed = pd.DataFrame(train_speed)
+    plt.plot(train_speed)
+    plt.xlabel('Data Counters')
+    plt.xlabel('Train Speed (km/h)')
 
     # Get rail objects location
 
