@@ -155,8 +155,7 @@ for i in range(len(tree_list)):
         for w in range(len(d_spots)):
             hit_container.append(abs(a_spots[s] - d_spots[w]))
         if any(np.array(hit_container) < 5000):
-            # continue
-            hit_rate = hit_rate + 1
+            continue
         else:
             false_alarms = false_alarms + 1
 
@@ -166,11 +165,10 @@ for i in range(len(tree_list)):
         for w in range(len(a_spots)):
             hit_container.append(abs(a_spots[w] - d_spots[s]))
         if any(np.array(hit_container) < 5000):
-            # hit_rate = hit_rate + 1
-            continue
+            hit_rate = hit_rate + 1
         else:
             false_negatives = false_negatives + 1
 
 # Model performance in terms of hit rate, false alarms and miss rate
-print('Anomalies: {}, Hits: {}, False Alarms: {}, Misses: {}'.format(anomalies, hit_rate, false_alarms,                                                                           false_negatives))
+print('Anomalies: {}, Hits: {}, False Alarms: {}, Misses: {}'.format(hit_rate+false_alarms, hit_rate, false_alarms,                                                                           false_negatives))
 print('All defects: ', len(all_defects_spots))

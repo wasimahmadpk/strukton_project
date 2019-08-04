@@ -165,7 +165,7 @@ class RailDefects:
                     if len(in_data) == 0:
                         continue
                     counters = counters_list[j]
-                    list_of_features = extract_features(in_data, counters, 2000)
+                    list_of_features = extract_features(in_data, counters, 1500)
 
                     rms = np.array(list_of_features[:, 0])
                     kurtosis = np.array(list_of_features[:, 2])
@@ -203,7 +203,7 @@ class RailDefects:
                     # plt.plot(list(range(391000, 401000, 2000)), rms[195:200], '*')
                     # plt.show()
 
-                    mylist = np.stack((kurtosis, peak_to_peak), axis=-1)
+                    mylist = np.stack((rms, kurtosis, skewness, peak_to_peak, crest_factor, impulse_factor), axis=-1)
                     norm_train, anom_train, norm_test, anom_test, anom_icount, anom_icount_train, anom_score = isolation_forest(
                         mylist, int_count)
 
