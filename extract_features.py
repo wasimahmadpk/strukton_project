@@ -24,13 +24,13 @@ def extract_features(vibration_data, int_counter, window_size):
         #  adjust internal counter while sampling ABA data
         int_count = int_counter[sr_counter:sr_counter + window_size]
         avg_icount = round(np.mean(int_count))
-        sr_counter = sr_counter + round(window_size/1.25)
+        sr_counter = sr_counter + round(window_size/1)
         
         fvl1 = []
         window = np.array(vibration_data[s_idx:s_idx + window_size], dtype=np.float32)
 
         # list of extracted features from ABA signal
-        s_idx = s_idx + round(window_size/1.25)                   # start index for i-th window
+        s_idx = s_idx + round(window_size/1)                   # start index for i-th window
         xavp = sum(pow(window, 2))/window_size                    # Average power
         xrms = math.sqrt(sum((pow(window, 2)))/window_size)       # RMS
         xsra = pow((sum(np.sqrt(abs(window)))/window_size), 2)    # Square root of amplitude

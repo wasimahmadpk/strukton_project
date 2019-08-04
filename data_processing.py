@@ -112,23 +112,23 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
 
     # Train speed calculation
 
-    num_speed_win = round(len(timedat)/100)
-    start_idx = 0
-    inc_win = 10
-    train_speed = []
-    for s in range(num_speed_win):
-
-        if start_idx + inc_win < len(timedat):
-            diff_idx = timedat.index.values[start_idx + inc_win] - timedat.index.values[start_idx]
-            diff_ict = timedat['INTCNT'].iloc[start_idx + inc_win] - timedat['INTCNT'].iloc[start_idx]
-            vel = (diff_ict/diff_idx) * 23.04
-            start_idx = start_idx + inc_win
-            train_speed = train_speed + [vel]*10
-
-    train_speed = pd.DataFrame(train_speed)
-    plt.plot(train_speed)
-    plt.xlabel('Data Counters')
-    plt.xlabel('Train Speed (km/h)')
+    # inc_win = 1000
+    # num_speed_win = round(len(timedat)/inc_win)
+    # start_idx = 0
+    # train_speed = []
+    # for s in range(num_speed_win):
+    #
+    #     if start_idx + inc_win < len(timedat):
+    #         diff_idx = timedat.index.values[start_idx + inc_win] - timedat.index.values[start_idx]
+    #         diff_ict = timedat['INTCNT'].iloc[start_idx + inc_win] - timedat['INTCNT'].iloc[start_idx]
+    #         vel = (diff_ict/diff_idx) * 23.04
+    #         start_idx = start_idx + inc_win
+    #         train_speed = train_speed + [vel]*inc_win
+    #
+    # train_speed = pd.DataFrame(train_speed)
+    # plt.plot(train_speed)
+    # plt.xlabel('Data Counters')
+    # plt.xlabel('Train Speed (km/h)')
 
     # Get rail objects location
 

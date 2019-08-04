@@ -51,23 +51,23 @@ with open(
     print(f'Processed {line_count} lines in push-counters file.')
     print("Program is running...")
 
-with open(
-        'D:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\counter_data\prorail17112805si12_cha_pulling.csv') as csv_file:
-    csv_reader = csv.reader(csv_file)
-    line_count = 0
-    for row in csv_reader:
-        tempStr = ''.join(row)
-        if tempStr.startswith('#') or len(tempStr) == 0:
-            continue
-        elif tempStr.startswith('counters'):
-            print(f'Column names are {", ".join(row)}')
-            line_count += 1
-        else:
-            # print(f'\t{row[0]} works in the {row[1]} department, and was born in {row[2]}.')
-            line_count += 1
-            tlist = tempStr.split(",")
-            counters_pull.append(float(row[0]))
-    print(f'Processed {line_count} lines in pull-counters file.')
+# with open(
+#         'D:\strukton_project\Groningen\Prorail17112805si12\ABA\Prorail17112805si12\counter_data\prorail17112805si12_cha_pulling.csv') as csv_file:
+#     csv_reader = csv.reader(csv_file)
+#     line_count = 0
+#     for row in csv_reader:
+#         tempStr = ''.join(row)
+#         if tempStr.startswith('#') or len(tempStr) == 0:
+#             continue
+#         elif tempStr.startswith('counters'):
+#             print(f'Column names are {", ".join(row)}')
+#             line_count += 1
+#         else:
+#             # print(f'\t{row[0]} works in the {row[1]} department, and was born in {row[2]}.')
+#             line_count += 1
+#             tlist = tempStr.split(",")
+#             counters_pull.append(float(row[0]))
+#     print(f'Processed {line_count} lines in pull-counters file.')
 
 all_counters = np.array(counters_push + counters_pull)
 next_spots = []
@@ -76,15 +76,18 @@ all_spots = []
 all_defects_spots = []
 defect_track = []
 anom_track = []
+anomalies = 0
 
-for y in range(len(all_counters)):
-    num = all_counters[y]
-    tnum = list(str(int(num)))
-    cnt_signum = int(tnum[0] + tnum[1] + tnum[2])
-    if any(np.array(cnt_signum) == np.array(lab_list)):
-        continue
-    else:
-        false_alarms = false_alarms + 1
+# for y in range(len(all_counters)):
+#     num = all_counters[y]
+#     tnum = list(str(int(num)))
+#     cnt_signum = int(tnum[0] + tnum[1] + tnum[2])
+#     if any(np.array(cnt_signum) == np.array(lab_list)):
+#         continue
+#     elif any(np.array(cnt_signum) == np.array(lab_list)):
+#         continue
+#     else:
+#         false_alarms = false_alarms + 1
 
 
 for i in range(len(tree_list)):
@@ -116,18 +119,19 @@ for i in range(len(tree_list)):
     # anom_spots = anom_spots + prev_spots
     next_spots = []
 
-    for j in range(len(all_counters) - 1):
+    for j in range(len(all_counters)):
         num = all_counters[j]
         tnum = list(str(int(num)))
         cnt_signum = int(tnum[0] + tnum[1] + tnum[2])
         itlist2.append(cnt_signum)
 
         if j < len(counters_push):
-            anom_num = int(tnum[3]+tnum[4]+tnum[5]+tnum[6])*4 + 3150*4
+            anom_num = int(tnum[3] + tnum[4]+tnum[5] + tnum[6])*4 + 3150*4   # plus
         else:
-            anom_num = int(tnum[3]+tnum[4]+tnum[5]+tnum[6])*4 - 3150*4
+            anom_num = int(tnum[3] + tnum[4]+tnum[5] + tnum[6])*4 - 3150*4   # minus
 
-        if label_signum == cnt_signum:
+        if label_signum == cnt_signum & cnt_signum < 634:
+            anomalies = anomalies + 1
             if anom_num >= 40000:
                 next_spots.append(abs(40000 - anom_num))
             elif anom_num < 0:
@@ -141,47 +145,32 @@ for i in range(len(tree_list)):
         a_spots = anom_track[i-1] + prev_spots
         d_spots = defect_track[i-1]
         prev_spots = []
-
-        # compare anomalies
-        hit_container = []
-        for s in range(len(a_spots)):
-            for w in range(len(d_spots)):
-                hit_container.append(abs(a_spots[s] - d_spots[w]))
-            if any(np.array(hit_container) < 6000):
-                hit_rate = hit_rate + 1
-            else:
-                false_alarms = false_alarms + 1
-        # compare actual defects
-        hit_container = []
-        for s in range(len(d_spots)):
-            for w in range(len(a_spots)):
-                hit_container.append(abs(a_spots[w] - d_spots[s]))
-            if any(np.array(hit_container) < 6000):
-                continue
-            else:
-                false_negatives = false_negatives + 1
-
-a_spots = anom_track[i] + prev_spots
-d_spots = defect_track[i]
-
-# compare anomalies
-hit_container = []
-for s in range(len(a_spots)):
-    for w in range(len(d_spots)):
-        hit_container.append(abs(a_spots[s] - d_spots[w]))
-    if any(np.array(hit_container) < 4000):
-        hit_rate = hit_rate + 1
     else:
-        false_alarms = false_alarms + 1
-        # compare actual defects
-hit_container = []
-for s in range(len(d_spots)):
-    for w in range(len(a_spots)):
-        hit_container.append(abs(a_spots[w] - d_spots[s]))
-    if any(np.array(hit_container) < 4000):
-        continue
-    else:
-        false_negatives = false_negatives + 1
+        a_spots = anom_track[i] + prev_spots
+        d_spots = defect_track[i]
+
+    # compare anomalies
+    hit_container = []
+    for s in range(len(a_spots)):
+        for w in range(len(d_spots)):
+            hit_container.append(abs(a_spots[s] - d_spots[w]))
+        if any(np.array(hit_container) < 5000):
+            # continue
+            hit_rate = hit_rate + 1
+        else:
+            false_alarms = false_alarms + 1
+
+    # compare actual defects
+    hit_container = []
+    for s in range(len(d_spots)):
+        for w in range(len(a_spots)):
+            hit_container.append(abs(a_spots[w] - d_spots[s]))
+        if any(np.array(hit_container) < 5000):
+            # hit_rate = hit_rate + 1
+            continue
+        else:
+            false_negatives = false_negatives + 1
 
 # Model performance in terms of hit rate, false alarms and miss rate
-print('Hits: {} , False Alarms: {}, Misses: {}'.format(hit_rate, false_alarms, false_negatives))
+print('Anomalies: {}, Hits: {}, False Alarms: {}, Misses: {}'.format(anomalies, hit_rate, false_alarms,                                                                           false_negatives))
+print('All defects: ', len(all_defects_spots))
