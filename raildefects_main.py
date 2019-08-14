@@ -165,7 +165,7 @@ class RailDefects:
                     if len(in_data) == 0:
                         continue
                     counters = counters_list[j]
-                    list_of_features = extract_features(in_data, counters, 1500)
+                    list_of_features = extract_features(in_data, counters, 2000)
 
                     rms = np.array(list_of_features[:, 0])
                     kurtosis = np.array(list_of_features[:, 2])
@@ -178,30 +178,31 @@ class RailDefects:
 
                     # # features comparison
                     # plt.figure(2)
-                    # plt.subplot(411)
+                    # plt.subplot(211)
                     # plt.ylabel('ABA')
                     # plt.plot(list(range(0, 401000)), in_data[:401000])
-                    # plt.subplot(412)
-                    # plt.ylabel('RMS')
-                    # plt.plot(list(range(1000, 401000, 2000)), rms[:200], '*')
-                    # plt.subplot(413)
-                    # plt.ylabel('Kurtosis')
-                    # plt.plot(list(range(1000, 401000, 2000)), kurtosis[:200], '*')
-                    # plt.subplot(414)
+                    # # plt.subplot(212)
+                    # # plt.ylabel('RMS')
+                    # # plt.plot(list(range(1000, 401000, 2000)), rms[:200], '*')
+                    # # plt.subplot(413)
+                    # # plt.ylabel('Kurtosis')
+                    # # plt.plot(list(range(1000, 401000, 2000)), kurtosis[:200], '*')
+                    # plt.subplot(212)
                     # plt.ylabel('Peak to peak')
                     # plt.xlabel('Data Samples')
                     # plt.plot(list(range(1000, 401000, 2000)), peak_to_peak[:200], '*')
                     # plt.show()
 
-                    # plt.figure(2)
-                    # plt.subplot(211)
-                    # plt.ylabel('ABA')
-                    # plt.plot(list(range(390000, 401000)), in_data[390000:401000])
-                    # plt.subplot(212)
-                    # plt.ylabel('RMS')
-                    # plt.xlabel('Samples')
-                    # plt.plot(list(range(391000, 401000, 2000)), rms[195:200], '*')
-                    # plt.show()
+                    plt.figure(2)
+                    plt.subplot(211)
+                    plt.ylabel('ABA')
+                    plt.plot(list(range(390000, 400000)), in_data[390000:400000])
+                    plt.subplot(212)
+                    plt.ylabel('RMS')
+                    plt.xlabel('Samples')
+                    plt.plot(list(range(391000, 401000, 2000)), rms[195:200], 'r*')
+                    plt.xlim(390000, 400000)
+                    plt.show()
 
                     mylist = np.stack((rms, kurtosis, skewness, peak_to_peak, crest_factor, impulse_factor), axis=-1)
                     norm_train, anom_train, norm_test, anom_test, anom_icount, anom_icount_train, anom_score = isolation_forest(
