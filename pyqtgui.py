@@ -31,15 +31,15 @@ class App(QWidget):
 
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
-        self.browse_btn = QPushButton('Browse', self)
-        self.detect_btn = QPushButton('Detect', self)
+        self.browse_btn = QPushButton('Pre-process data', self)
+        self.detect_btn = QPushButton('Detect anomalies', self)
         self.browse_btn.clicked.connect(self.browse_file)
-        self.browse_btn.resize(100, 32)
+        self.browse_btn.resize(130, 32)
         self.browse_btn.move(50, 50)
         self.detect_btn.clicked.connect(self.detect_anomalies)
-        self.detect_btn.resize(100, 32)
+        self.detect_btn.resize(130, 32)
         self.detect_btn.move(200, 50)
-        self.detect_btn.setVisible(False)
+        self.detect_btn.setVisible(True)
 
         # self.openFileNameDialog()
         # self.openFileNamesDialog()
@@ -55,9 +55,10 @@ class App(QWidget):
         anomaly_positions = obj.anomaly_detection(self.fileName)
         passage_1 = anomaly_positions[0]
         passage_2 = anomaly_positions[1]
-        plt.figure(9)
-        plt.plot(passage_1, 'r*')
-        plt.plot(passage_2, 'g*')
+        print("Passage:", len(passage_1))
+        # plt.figure(9)
+        # plt.plot(passage_1, 'r*')
+        # plt.plot(passage_2, 'g*')
 
     def openFileNameDialog(self):
 
