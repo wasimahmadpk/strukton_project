@@ -193,16 +193,16 @@ class RailDefects:
                     # plt.plot(list(range(1000, 401000, 2000)), peak_to_peak[:200], '*')
                     # plt.show()
 
-                    plt.figure(2)
-                    plt.subplot(211)
-                    plt.ylabel('ABA')
-                    plt.plot(list(range(390000, 400000)), in_data[390000:400000])
-                    plt.subplot(212)
-                    plt.ylabel('RMS')
-                    plt.xlabel('Samples')
-                    plt.plot(list(range(391000, 401000, 2000)), rms[195:200], 'r*')
-                    plt.xlim(390000, 400000)
-                    plt.show()
+                    # plt.figure(2)
+                    # plt.subplot(211)
+                    # plt.ylabel('ABA')
+                    # plt.plot(list(range(390000, 400000)), in_data[390000:400000])
+                    # plt.subplot(212)
+                    # plt.ylabel('RMS')
+                    # plt.xlabel('Samples')
+                    # plt.plot(list(range(391000, 401000, 2000)), rms[195:200], 'r*')
+                    # plt.xlim(390000, 400000)
+                    # plt.show()
 
                     mylist = np.stack((rms, kurtosis, skewness, peak_to_peak, crest_factor, impulse_factor), axis=-1)
                     norm_train, anom_train, norm_test, anom_test, anom_icount, anom_icount_train, anom_score = isolation_forest(
@@ -318,25 +318,26 @@ class RailDefects:
             # ##################################
 
             write_data = zip(anom_pos_cha, anom_xcount_cha, anom_score_cha)
-            track_side = 'cha_km'
+        return anom_pos_xcount_sorted
 
-            with open(self.counters_path + '\Prorail17112805si12_' + track_side + '.csv', 'w',
-                      newline='') as file:
-                try:
-                    writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                    writer.writerow(['positions', 'counters', 'severity'])
-                    for pos, cnt, sev in write_data:
-                        writer.writerow([pos, cnt, sev])
-                finally:
-                    file.close()
+    def save_output(self, write_data):
 
-            return anomaly_positions
+        track_side = 'cha_km'
+        with open(self.counters_path + '\Prorail17112805si12_' + track_side + '.csv', 'w',
+                  newline='') as file:
+            try:
+                writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                writer.writerow(['positions', 'counters', 'severity'])
+                for pos, cnt, sev in write_data:
+                    writer.writerow([pos, cnt, sev])
+            finally:
+                file.close()
 
 
 if __name__ == "__main__":
 
     obj = RailDefects(1)
-    anomaly_positions = obj.anomaly_detection(pprocessed_file=data_paths.data_path[4])
+    model_outcome = obj.anomaly_detection(pprocessed_file=data_paths.data_path[4])
 
     # # plotting crack depth vs anomaly score
     # plotlist = []

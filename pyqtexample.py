@@ -47,15 +47,22 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
         QDial, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit,
         QProgressBar, QPushButton, QRadioButton, QScrollBar, QSizePolicy,
         QSlider, QSpinBox, QStyleFactory, QTableWidget, QTableWidgetItem, QTabWidget, QTextEdit,
-        QVBoxLayout, QWidget)
+        QVBoxLayout, QWidget, QFileDialog)
+
+from raildefects_main import RailDefects
 
 
 class WidgetGallery(QDialog):
     def __init__(self, parent=None):
         super(WidgetGallery, self).__init__(parent)
         self.resize(1000, 750)
-        self.originalPalette = QApplication.palette()
+        self.fileName = 0
+        self.output = []
+        self.initUI()
 
+    def initUI(self):
+
+        self.originalPalette = QApplication.palette()
         styleComboBox = QComboBox()
         styleComboBox.addItems(QStyleFactory.keys())
         styleLabel = QLabel("&Style:")
@@ -68,7 +75,7 @@ class WidgetGallery(QDialog):
 
         self.createTopLeftGroupBox()
         self.createTopRightGroupBox()
-        self.createBottomLeftTabWidget()
+        self.createBottomLeftTabWidget(output=self.output)
         self.createBottomRightGroupBox()
         self.createProgressBar()
 
@@ -102,6 +109,7 @@ class WidgetGallery(QDialog):
         self.setWindowTitle("RAIL CONDITION MONITORING SYSTEM")
         self.changeStyle('Fusion')
         self.setWindowFlags(Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
+
 
     def changeStyle(self, styleName):
         QApplication.setStyle(QStyleFactory.create(styleName))
@@ -141,33 +149,36 @@ class WidgetGallery(QDialog):
         self.topLeftGroupBox.setLayout(layout)
 
     def createTopRightGroupBox(self):
+
         self.topRightGroupBox = QGroupBox("Anomaly detection")
 
+        loadpfileButton = QPushButton("Load Pre-processed File")
+        loadpfileButton.setDefault(True)
+        loadpfileButton.clicked.connect(self.browse_file)
 
-        defaultPushButton = QPushButton("Load Pre-processed File")
-        defaultPushButton.setDefault(True)
+        detectanomButton = QPushButton("Detect Anomalies")
+        detectanomButton.setCheckable(True)
+        detectanomButton.setChecked(True)
+        detectanomButton.clicked.connect(self.detect_anomalies)
 
-        togglePushButton = QPushButton("Detect Anomalies")
-        togglePushButton.setCheckable(True)
-        togglePushButton.setChecked(True)
 
         flatPushButton = QPushButton("Flat Push Button")
         flatPushButton.setFlat(True)
 
         layout = QVBoxLayout()
 
-        label = QLabel(self)
+        siglabel = QLabel(self)
         pixmap = QPixmap('waveform.png')
-        label.setPixmap(pixmap)
+        siglabel.setPixmap(pixmap)
 
-        # layout.addWidget(label)
-        layout.addWidget(defaultPushButton)
-        layout.addWidget(togglePushButton)
+        # layout.addWidget(siglabel)
+        layout.addWidget(loadpfileButton)
+        layout.addWidget(detectanomButton)
         layout.addWidget(flatPushButton)
         layout.addStretch(1)
         self.topRightGroupBox.setLayout(layout)
 
-    def createBottomLeftTabWidget(self):
+    def createBottomLeftTabWidget(self, output):
         self.bottomLeftTabWidget = QTabWidget()
         self.bottomLeftTabWidget.setSizePolicy(QSizePolicy.Preferred,
                 QSizePolicy.Ignored)
@@ -176,12 +187,11 @@ class WidgetGallery(QDialog):
         tableWidget = QTableWidget(100, 3)
         tableWidget.setHorizontalHeaderLabels(['Counter', 'Location', 'Severity'])
 
-        tableWidget.setItem(0, 0, QTableWidgetItem("Cell (1,1)"))
-        tableWidget.setItem(0, 1, QTableWidgetItem("Cell (1,2)"))
-        tableWidget.setItem(0, 2, QTableWidgetItem("Cell (2,1)"))
-        tableWidget.setItem(1, 0, QTableWidgetItem("Cell (2,2)"))
-        tableWidget.setItem(1, 1, QTableWidgetItem("Cell (3,1)"))
-        tableWidget.setItem(1, 2, QTableWidgetItem("Cell (3,1)"))
+        # # Populate the table
+        if len(output) > 0:
+            for i in range(10):
+                for j in range(3):
+                    tableWidget.setItem(i, j, QTableWidgetItem(output[i, j]))
 
         tab1hbox = QHBoxLayout()
         tab1hbox.setContentsMargins(5, 5, 5, 5)
@@ -205,6 +215,7 @@ class WidgetGallery(QDialog):
 
         self.bottomLeftTabWidget.addTab(tab1, "&Table")
         self.bottomLeftTabWidget.addTab(tab2, "Text &Edit")
+
 
     def createBottomRightGroupBox(self):
         self.bottomRightGroupBox = QGroupBox("Settings parameters")
@@ -248,6 +259,61 @@ class WidgetGallery(QDialog):
         timer = QTimer(self)
         timer.timeout.connect(self.advanceProgressBar)
         timer.start(1000)
+
+# ///////////////////// System functions /////////////////////////
+
+    def openFileNameDialog(self):
+
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", "",
+                                          "All Files (*);;Python Files (*.py)", options=options)
+
+        if fileName:
+            print(fileName)
+            self.fileName = fileName
+            # self.close()
+
+
+    def openFileNamesDialog(self):
+
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        files, _ = QFileDialog.getOpenFileNames(self, "QFileDialog.getOpenFileNames()", "",
+                                        "All Files (*);;Python Files (*.py)", options=options)
+
+        if files:
+            print(files)
+            self.close()
+
+
+    def saveFileDialog(self):
+
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getSaveFileName(self, "QFileDialog.getSaveFileName()", "",
+                                          "All Files (*);;Text Files (*.txt)", options=options)
+
+        if fileName:
+            print(fileName)
+            self.close()
+
+    def detect_anomalies(self):
+
+        obj = RailDefects(1)
+        self.output = obj.anomaly_detection(self.fileName)
+        loc = self.output[0, 0]
+        cnt = self.output[0, 1]
+        sev = self.output[0, 2]
+        print("First Anomaly: ", loc, cnt, sev)
+        self.createBottomLeftTabWidget(output=self.output)
+        # plt.figure(9)
+        # plt.plot(passage_1, 'r*')
+        # plt.plot(passage_2, 'g*')
+
+    def browse_file(self):
+
+        self.openFileNameDialog()
 
 
 if __name__ == '__main__':
