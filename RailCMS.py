@@ -41,14 +41,16 @@
 ##
 #############################################################################
 
+
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import QDateTime, Qt, QTimer
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
         QDial, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit,
         QProgressBar, QPushButton, QRadioButton, QScrollBar, QSizePolicy,
         QSlider, QSpinBox, QStyleFactory, QTableWidget, QTableWidgetItem, QTabWidget, QTextEdit,
-        QVBoxLayout, QWidget, QFileDialog)
+        QVBoxLayout, QWidget, QFileDialog, QMessageBox)
 
+import numpy as np
 from raildefects_main import RailDefects
 
 
@@ -57,7 +59,8 @@ class WidgetGallery(QDialog):
         super(WidgetGallery, self).__init__(parent)
         self.resize(1000, 750)
         self.fileName = 0
-        self.output = []
+        self.output = np.array([])
+        self.counter = 0
         self.initUI()
 
     def initUI(self):
@@ -75,7 +78,7 @@ class WidgetGallery(QDialog):
 
         self.createTopLeftGroupBox()
         self.createTopRightGroupBox()
-        self.createBottomLeftTabWidget(output=self.output)
+        self.createBottomLeftTabWidget(self.output)
         self.createBottomRightGroupBox()
         self.createProgressBar()
 
@@ -184,18 +187,20 @@ class WidgetGallery(QDialog):
                 QSizePolicy.Ignored)
 
         tab1 = QWidget()
-        tableWidget = QTableWidget(100, 3)
-        tableWidget.setHorizontalHeaderLabels(['Counter', 'Location', 'Severity'])
+        self.tableWidget = QTableWidget(100, 3)
+        self.tableWidget.setHorizontalHeaderLabels(['Counter', 'Location', 'Severity'])
 
         # # Populate the table
         if len(output) > 0:
-            for i in range(10):
+            for i in range(1):
                 for j in range(3):
-                    tableWidget.setItem(i, j, QTableWidgetItem(output[i, j]))
+                    val = output[i, j]
+                    print("Value:", val)
+                    self.tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
 
         tab1hbox = QHBoxLayout()
         tab1hbox.setContentsMargins(5, 5, 5, 5)
-        tab1hbox.addWidget(tableWidget)
+        tab1hbox.addWidget(self.tableWidget)
         tab1.setLayout(tab1hbox)
 
         tab2 = QWidget()
@@ -203,8 +208,6 @@ class WidgetGallery(QDialog):
 
         textEdit.setPlainText("Twinkle, twinkle, little star,\n"
                               "How I wonder what you are.\n" 
-                              "Up above the world so high,\n"
-                              "Like a diamond in the sky.\n"
                               "Twinkle, twinkle, little star,\n" 
                               "How I wonder what you are!\n")
 
@@ -222,8 +225,9 @@ class WidgetGallery(QDialog):
         self.bottomRightGroupBox.setCheckable(True)
         self.bottomRightGroupBox.setChecked(True)
 
-        lineEdit = QLineEdit('s3cRe7')
-        lineEdit.setEchoMode(QLineEdit.Password)
+        self.lineEdit = QLineEdit('s3cRe7')
+        # lineEdit.setEchoMode(QLineEdit.Password)
+        self.lineEdit.setText(str(self.fileName))
 
         spinBox = QSpinBox(self.bottomRightGroupBox)
         spinBox.setValue(50)
@@ -233,6 +237,7 @@ class WidgetGallery(QDialog):
 
         slider = QSlider(Qt.Horizontal, self.bottomRightGroupBox)
         slider.setValue(40)
+        slider.show()
 
         scrollBar = QScrollBar(Qt.Horizontal, self.bottomRightGroupBox)
         scrollBar.setValue(60)
@@ -242,7 +247,7 @@ class WidgetGallery(QDialog):
         dial.setNotchesVisible(True)
 
         layout = QGridLayout()
-        layout.addWidget(lineEdit, 0, 0, 1, 2)
+        layout.addWidget(self.lineEdit, 0, 0, 1, 2)
         layout.addWidget(spinBox, 1, 0, 1, 2)
         layout.addWidget(dateTimeEdit, 2, 0, 1, 2)
         layout.addWidget(slider, 3, 0)
@@ -270,9 +275,18 @@ class WidgetGallery(QDialog):
                                           "All Files (*);;Python Files (*.py)", options=options)
 
         if fileName:
-            print(fileName)
-            self.fileName = fileName
-            # self.close()
+            if not str(fileName).endswith('.h5'):
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Critical)
+                msg.setText("File Error")
+                msg.setInformativeText('Please select the right file!')
+                msg.setWindowTitle("Error")
+                msg.exec_()
+            else:
+                print(fileName)
+                self.fileName = fileName
+                self.lineEdit.setText(str(fileName))
+                # self.close()
 
 
     def openFileNamesDialog(self):
@@ -300,13 +314,14 @@ class WidgetGallery(QDialog):
 
     def detect_anomalies(self):
 
-        obj = RailDefects(1)
-        self.output = obj.anomaly_detection(self.fileName)
-        loc = self.output[0, 0]
-        cnt = self.output[0, 1]
-        sev = self.output[0, 2]
-        print("First Anomaly: ", loc, cnt, sev)
-        self.createBottomLeftTabWidget(output=self.output)
+        # obj = RailDefects(1)
+        # self.output = obj.anomaly_detection(self.fileName)
+        # loc = self.output[0, 0]
+        # cnt = self.output[0, 1]
+        # sev = self.output[0, 2]
+        # print("First Anomaly: ", loc, cnt, sev)
+        self.output = np.array([[2], [3], [5]])
+        self.initUI()
         # plt.figure(9)
         # plt.plot(passage_1, 'r*')
         # plt.plot(passage_2, 'g*')
