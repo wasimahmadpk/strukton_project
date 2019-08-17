@@ -188,15 +188,7 @@ class WidgetGallery(QDialog):
 
         tab1 = QWidget()
         self.tableWidget = QTableWidget(100, 3)
-        self.tableWidget.setHorizontalHeaderLabels(['Counter', 'Location', 'Severity'])
-
-        # # Populate the table
-        if len(output) > 0:
-            for i in range(1):
-                for j in range(3):
-                    val = output[i, j]
-                    print("Value:", val)
-                    self.tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
+        self.tableWidget.setHorizontalHeaderLabels(['Position(km)', 'Counter', 'Severity'])
 
         tab1hbox = QHBoxLayout()
         tab1hbox.setContentsMargins(5, 5, 5, 5)
@@ -286,6 +278,7 @@ class WidgetGallery(QDialog):
                 print(fileName)
                 self.fileName = fileName
                 self.lineEdit.setText(str(fileName))
+                # self.tableWidget.setItem(0, 1, QTableWidgetItem(str(123)))
                 # self.close()
 
 
@@ -314,17 +307,21 @@ class WidgetGallery(QDialog):
 
     def detect_anomalies(self):
 
-        # obj = RailDefects(1)
-        # self.output = obj.anomaly_detection(self.fileName)
-        # loc = self.output[0, 0]
-        # cnt = self.output[0, 1]
-        # sev = self.output[0, 2]
-        # print("First Anomaly: ", loc, cnt, sev)
-        self.output = np.array([[2], [3], [5]])
-        self.initUI()
-        # plt.figure(9)
-        # plt.plot(passage_1, 'r*')
-        # plt.plot(passage_2, 'g*')
+        obj = RailDefects(1)
+        self.output = obj.anomaly_detection(self.fileName)
+        loc = self.output[0, 0]
+        cnt = self.output[0, 1]
+        sev = self.output[0, 2]
+        print("First Anomaly: ", loc, cnt, sev)
+        # self.output = np.array([[2], [3], [5]])
+
+        # Populate the table
+        if len(self.output) > 0:
+            for i in range(50):
+                for j in range(3):
+                    val = self.output[i, j]
+                    print("Value:", val)
+                    self.tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
 
     def browse_file(self):
 
