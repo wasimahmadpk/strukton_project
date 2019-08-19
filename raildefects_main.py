@@ -204,7 +204,7 @@ class RailDefects:
                     # plt.xlim(390000, 400000)
                     # plt.show()
 
-                    mylist = np.stack((rms, kurtosis, skewness, peak_to_peak, crest_factor, impulse_factor), axis=-1)
+                    mylist = np.stack((kurtosis, peak_to_peak), axis=-1)
                     norm_train, anom_train, norm_test, anom_test, anom_icount, anom_icount_train, anom_score = isolation_forest(
                         mylist, int_count)
 

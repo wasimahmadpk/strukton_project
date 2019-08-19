@@ -48,7 +48,7 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
         QDial, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit,
         QProgressBar, QPushButton, QRadioButton, QScrollBar, QSizePolicy,
         QSlider, QSpinBox, QStyleFactory, QTableWidget, QTableWidgetItem, QTabWidget, QTextEdit,
-        QVBoxLayout, QWidget, QFileDialog, QMessageBox)
+        QVBoxLayout, QWidget, QFileDialog, QMessageBox, QFormLayout, QDialogButtonBox)
 
 import numpy as np
 from raildefects_main import RailDefects
@@ -155,30 +155,29 @@ class WidgetGallery(QDialog):
 
         self.topRightGroupBox = QGroupBox("Anomaly detection")
 
-        loadpfileButton = QPushButton("Load Pre-processed File")
+        loadpfileButton = QPushButton("Pre-processed File")
         loadpfileButton.setDefault(True)
         loadpfileButton.clicked.connect(self.browse_file)
+
+        self.processedEdit = QLineEdit()
+        # lineEdit.setEchoMode(QLineEdit.Password)
+        self.processedEdit.setText("Click to browse file")
 
         detectanomButton = QPushButton("Detect Anomalies")
         detectanomButton.setCheckable(True)
         detectanomButton.setChecked(True)
         detectanomButton.clicked.connect(self.detect_anomalies)
 
+        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
 
-        flatPushButton = QPushButton("Flat Push Button")
-        flatPushButton.setFlat(True)
+        layout = QFormLayout()
+        layout.addRow(loadpfileButton, self.processedEdit)
+        layout.addRow(QLabel("Country:"), QComboBox())
+        layout.addRow(QLabel("Age:"), QSpinBox())
+        layout.addWidget(buttonBox)
 
-        layout = QVBoxLayout()
-
-        siglabel = QLabel(self)
-        pixmap = QPixmap('waveform.png')
-        siglabel.setPixmap(pixmap)
-
-        # layout.addWidget(siglabel)
-        layout.addWidget(loadpfileButton)
-        layout.addWidget(detectanomButton)
-        layout.addWidget(flatPushButton)
-        layout.addStretch(1)
         self.topRightGroupBox.setLayout(layout)
 
     def createBottomLeftTabWidget(self, output):
@@ -217,10 +216,6 @@ class WidgetGallery(QDialog):
         self.bottomRightGroupBox.setCheckable(True)
         self.bottomRightGroupBox.setChecked(True)
 
-        self.lineEdit = QLineEdit('s3cRe7')
-        # lineEdit.setEchoMode(QLineEdit.Password)
-        self.lineEdit.setText(str(self.fileName))
-
         spinBox = QSpinBox(self.bottomRightGroupBox)
         spinBox.setValue(50)
 
@@ -239,7 +234,6 @@ class WidgetGallery(QDialog):
         dial.setNotchesVisible(True)
 
         layout = QGridLayout()
-        layout.addWidget(self.lineEdit, 0, 0, 1, 2)
         layout.addWidget(spinBox, 1, 0, 1, 2)
         layout.addWidget(dateTimeEdit, 2, 0, 1, 2)
         layout.addWidget(slider, 3, 0)
@@ -277,7 +271,7 @@ class WidgetGallery(QDialog):
             else:
                 print(fileName)
                 self.fileName = fileName
-                self.lineEdit.setText(str(fileName))
+                self.processedEdit.setText(str(fileName))
                 # self.tableWidget.setItem(0, 1, QTableWidgetItem(str(123)))
                 # self.close()
 

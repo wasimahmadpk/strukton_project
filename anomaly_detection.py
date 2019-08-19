@@ -29,7 +29,7 @@ def isolation_forest(my_data, int_count):
     xtest_count = int_count[round(len(int_count)/3):len(int_count)]
 
     # fit the model
-    clf = IsolationForest(max_samples=128, max_features=my_data.shape[1], contamination=0.1, random_state=rng)
+    clf = IsolationForest(max_samples=128, max_features=my_data.shape[1], contamination=0.05, random_state=rng)
     clf.fit(X_train)
     y_pred_train = clf.predict(X_train)
     y_pred_test = clf.predict(X_test)
@@ -52,14 +52,14 @@ def isolation_forest(my_data, int_count):
 
     # plt.figure(3)
     # plt.plot(anom_scores)
-
-    # Contour plot of normal and anomalous samples in train and test set
+    #
+    # # Contour plot of normal and anomalous samples in train and test set
     # aa, bb = np.meshgrid(np.linspace(np.min(my_data[:, 0])-1, 40, 40),
     #                      np.linspace(np.min(my_data[:, 1])-1, 40, 40))
     # decision = clf.decision_function(np.c_[aa.ravel(), bb.ravel()])
     # Z = decision.reshape(aa.shape)
-
-    # plt.figure(4)
+    #
+    # plt.figure(4, figsize=(10, 6), dpi=100)
     # plt.cla()
     # # plt.title("Anomaly detection-iForest")
     # cb = plt.contourf(aa, bb, Z, cmap=plt.cm.Blues_r)
