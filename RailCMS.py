@@ -133,11 +133,10 @@ class WidgetGallery(QDialog):
         self.topLeftGroupBox = QGroupBox("Pre-processing")
 
         radioButton1 = QRadioButton("Radio button 1")
-        loadabaButton = QPushButton("...")
-        loadabaButton.resize(32, 32)
-        loadsyncButton = QPushButton("...")
-        loadsegButton = QPushButton("...")
-        loadpoiButton = QPushButton("...")
+        loadabaButton = QPushButton("Browse")
+        loadsyncButton = QPushButton("Browse")
+        loadsegButton = QPushButton("Browse")
+        loadpoiButton = QPushButton("Browse")
         radioButton1.setChecked(True)
 
         checkBox = QCheckBox("Tri-state check box")
@@ -147,32 +146,28 @@ class WidgetGallery(QDialog):
         loadabaButton.clicked.connect(self.browse_file)
 
         self.abaEdit = QLineEdit()
-        self.abaEdit.setText("ABA file")
+        self.abaEdit.setText("Load ABA file")
+        self.abaEdit.setReadOnly(True)
         self.syncEdit = QLineEdit()
-        self.syncEdit.setText("SYNC file")
+        self.syncEdit.setReadOnly(True)
+        self.syncEdit.setText("Load SYNC file")
         self.segEdit = QLineEdit()
-        self.segEdit.setText("SEG file")
+        self.segEdit.setText("Load SEG file")
+        self.segEdit.setReadOnly(True)
         self.poiEdit = QLineEdit()
-        self.poiEdit.setText("POI file")
+        self.poiEdit.setText("Load POI file")
+        self.poiEdit.setReadOnly(True)
 
         pprocessButton = QPushButton("Start")
         pprocessButton.setStyleSheet("height: 15px;width: 24px;")
         pprocessButton.clicked.connect(self.browse_file)
         pprocessButton.setToolTip('Click to start pre-processing')
 
-        fqbox = QComboBox()
-        fqbox.addItems(['1', '2', '3', '4', '5', 'All'])
-
-        swinsbox = QSpinBox()
-        swinsbox.setRange(1000, 6000)
-
         layout = QFormLayout()
-        layout.addRow(self.abaEdit, loadabaButton)
-        layout.addRow(self.syncEdit, loadsyncButton)
-        layout.addRow(self.segEdit, loadsegButton)
-        layout.addRow(self.poiEdit, loadpoiButton)
-        layout.addRow(QLabel("No. of features:"), fqbox)
-        layout.addRow(QLabel("Sliding window:"), swinsbox)
+        layout.addRow(loadabaButton, self.abaEdit)
+        layout.addRow(loadsyncButton, self.syncEdit)
+        layout.addRow(loadsegButton, self.segEdit)
+        layout.addRow(loadpoiButton, self.poiEdit)
         layout.addWidget(pprocessButton)
 
         self.topLeftGroupBox.setLayout(layout)
@@ -182,12 +177,20 @@ class WidgetGallery(QDialog):
 
         self.topRightGroupBox = QGroupBox("Anomaly detection")
 
-        loadpfileButton = QPushButton("...")
+        loadpfileButton = QPushButton("Browse")
         loadpfileButton.clicked.connect(self.browse_file)
 
         self.processedEdit = QLineEdit()
-        self.processedEdit.setText("Pre-processed file")
+        self.processedEdit.setText("Load pre-processed file")
+        self.processedEdit.setReadOnly(True)
 
+        fqbox = QComboBox()
+        fqbox.addItems(['1', '2', '3', '4', '5', 'All'])
+
+        swinsbox = QSpinBox()
+        swinsbox.stepBy(1000)
+        swinsbox.setMinimum(1000)
+        swinsbox.setMaximum(6000)
 
         detectanomButton = QPushButton("Start")
         detectanomButton.setStyleSheet("height: 15px;width: 24px;")
@@ -201,10 +204,9 @@ class WidgetGallery(QDialog):
         self.saveButton.setVisible(False)
 
         layout = QFormLayout()
-        layout.addRow(QLabel("Processed file:"))
-        layout.addRow(self.processedEdit, loadpfileButton)
-        layout.addRow(QLabel("Country:"), QComboBox())
-        layout.addRow(QLabel("Age:"), QSpinBox())
+        layout.addRow(loadpfileButton, self.processedEdit)
+        layout.addRow(QLabel("No. of features:"), fqbox)
+        layout.addRow(QLabel("Sliding window:"), swinsbox)
         layout.addWidget(detectanomButton)
         layout.addWidget(self.saveButton)
 
@@ -221,7 +223,7 @@ class WidgetGallery(QDialog):
         self.tableWidget.setHorizontalHeaderLabels(['Position(km)', 'Counter', 'Severity'])
 
         tab1hbox = QHBoxLayout()
-        tab1hbox.setContentsMargins(5, 5, 5, 5)
+        tab1hbox.setContentsMargins(3, 3, 3, 3)
         tab1hbox.addWidget(self.tableWidget)
         tab1.setLayout(tab1hbox)
 
@@ -265,11 +267,11 @@ class WidgetGallery(QDialog):
         dial.setNotchesVisible(True)
 
         layout = QGridLayout()
-        layout.addWidget(spinBox, 1, 0, 1, 2)
-        layout.addWidget(dateTimeEdit, 2, 0, 1, 2)
-        layout.addWidget(slider, 3, 0)
-        layout.addWidget(scrollBar, 4, 0)
-        layout.addWidget(dial, 3, 1, 2, 1)
+        layout.addWidget(spinBox, 0, 0, 1, 1)
+        layout.addWidget(dateTimeEdit, 1, 0, 1, 1)
+        layout.addWidget(slider, 2, 0)
+        layout.addWidget(scrollBar, 3, 0)
+        layout.addWidget(dial, 0, 1, 2, 1)
         layout.setRowStretch(5, 1)
         self.bottomRightGroupBox.setLayout(layout)
 
