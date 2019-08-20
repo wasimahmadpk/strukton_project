@@ -43,7 +43,7 @@
 
 
 from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtCore import QDateTime, Qt, QTimer
+from PyQt5.QtCore import QDateTime, Qt, QTimer, QSize
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
         QDial, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit,
         QProgressBar, QPushButton, QRadioButton, QScrollBar, QSizePolicy,
@@ -133,54 +133,85 @@ class WidgetGallery(QDialog):
         self.topLeftGroupBox = QGroupBox("Pre-processing")
 
         radioButton1 = QRadioButton("Radio button 1")
-        ababtn = QPushButton("Load ABA data")
-        syncbtn = QPushButton("Load sync file")
-        segbtn = QPushButton("Load Seg file")
-        poibtn = QPushButton("Load Poi file")
+        loadabaButton = QPushButton("...")
+        loadabaButton.resize(32, 32)
+        loadsyncButton = QPushButton("...")
+        loadsegButton = QPushButton("...")
+        loadpoiButton = QPushButton("...")
         radioButton1.setChecked(True)
 
         checkBox = QCheckBox("Tri-state check box")
         checkBox.setTristate(True)
         checkBox.setCheckState(Qt.PartiallyChecked)
 
-        layout = QVBoxLayout()
-        layout.addWidget(radioButton1)
-        layout.addWidget(ababtn, 5)
-        layout.addWidget(syncbtn, 5)
-        layout.addWidget(checkBox)
-        layout.addStretch(1)
+        loadabaButton.clicked.connect(self.browse_file)
+
+        self.abaEdit = QLineEdit()
+        self.abaEdit.setText("ABA file")
+        self.syncEdit = QLineEdit()
+        self.syncEdit.setText("SYNC file")
+        self.segEdit = QLineEdit()
+        self.segEdit.setText("SEG file")
+        self.poiEdit = QLineEdit()
+        self.poiEdit.setText("POI file")
+
+        pprocessButton = QPushButton("Start")
+        pprocessButton.setStyleSheet("height: 15px;width: 24px;")
+        pprocessButton.clicked.connect(self.browse_file)
+        pprocessButton.setToolTip('Click to start pre-processing')
+
+        fqbox = QComboBox()
+        fqbox.addItems(['1', '2', '3', '4', '5', 'All'])
+
+        swinsbox = QSpinBox()
+        swinsbox.setRange(1000, 6000)
+
+        layout = QFormLayout()
+        layout.addRow(self.abaEdit, loadabaButton)
+        layout.addRow(self.syncEdit, loadsyncButton)
+        layout.addRow(self.segEdit, loadsegButton)
+        layout.addRow(self.poiEdit, loadpoiButton)
+        layout.addRow(QLabel("No. of features:"), fqbox)
+        layout.addRow(QLabel("Sliding window:"), swinsbox)
+        layout.addWidget(pprocessButton)
+
         self.topLeftGroupBox.setLayout(layout)
+
 
     def createTopRightGroupBox(self):
 
         self.topRightGroupBox = QGroupBox("Anomaly detection")
 
-        loadpfileButton = QPushButton("Pre-processed File")
-        loadpfileButton.setDefault(True)
+        loadpfileButton = QPushButton("...")
         loadpfileButton.clicked.connect(self.browse_file)
 
         self.processedEdit = QLineEdit()
-        # lineEdit.setEchoMode(QLineEdit.Password)
-        self.processedEdit.setText("Click to browse file")
+        self.processedEdit.setText("Pre-processed file")
 
-        detectanomButton = QPushButton("Detect Anomalies")
-        detectanomButton.setCheckable(True)
-        detectanomButton.setChecked(True)
+
+        detectanomButton = QPushButton("Start")
+        detectanomButton.setStyleSheet("height: 15px;width: 24px;")
         detectanomButton.clicked.connect(self.detect_anomalies)
+        detectanomButton.setToolTip("Click to start anomaly detection")
 
-        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        buttonBox.accepted.connect(self.accept)
-        buttonBox.rejected.connect(self.reject)
+        self.saveButton = QPushButton("Start")
+        self.saveButton.setStyleSheet("height: 15px;width: 24px;")
+        self.saveButton.clicked.connect(self.save_results)
+        self.saveButton.setToolTip("Click to save the results")
+        self.saveButton.setVisible(False)
 
         layout = QFormLayout()
-        layout.addRow(loadpfileButton, self.processedEdit)
+        layout.addRow(QLabel("Processed file:"))
+        layout.addRow(self.processedEdit, loadpfileButton)
         layout.addRow(QLabel("Country:"), QComboBox())
         layout.addRow(QLabel("Age:"), QSpinBox())
-        layout.addWidget(buttonBox)
+        layout.addWidget(detectanomButton)
+        layout.addWidget(self.saveButton)
 
         self.topRightGroupBox.setLayout(layout)
 
     def createBottomLeftTabWidget(self, output):
+
         self.bottomLeftTabWidget = QTabWidget()
         self.bottomLeftTabWidget.setSizePolicy(QSizePolicy.Preferred,
                 QSizePolicy.Ignored)
@@ -207,12 +238,12 @@ class WidgetGallery(QDialog):
         tab2hbox.addWidget(textEdit)
         tab2.setLayout(tab2hbox)
 
-        self.bottomLeftTabWidget.addTab(tab1, "&Table")
-        self.bottomLeftTabWidget.addTab(tab2, "Text &Edit")
+        self.bottomLeftTabWidget.addTab(tab1, "&Results")
+        self.bottomLeftTabWidget.addTab(tab2, "Description")
 
 
     def createBottomRightGroupBox(self):
-        self.bottomRightGroupBox = QGroupBox("Settings parameters")
+        self.bottomRightGroupBox = QGroupBox("Model parameters")
         self.bottomRightGroupBox.setCheckable(True)
         self.bottomRightGroupBox.setChecked(True)
 
@@ -297,6 +328,7 @@ class WidgetGallery(QDialog):
 
         if fileName:
             print(fileName)
+            return fileName
             self.close()
 
     def detect_anomalies(self):
@@ -308,6 +340,7 @@ class WidgetGallery(QDialog):
         sev = self.output[0, 2]
         print("First Anomaly: ", loc, cnt, sev)
         # self.output = np.array([[2], [3], [5]])
+        self.saveButton.setVisible(True)
 
         # Populate the table
         if len(self.output) > 0:
@@ -320,6 +353,12 @@ class WidgetGallery(QDialog):
     def browse_file(self):
 
         self.openFileNameDialog()
+
+    def save_results(self):
+
+        savefile = self.saveFileDialog()
+        obj = RailDefects(1)
+        obj.save_output(self.output, savefile)
 
 
 if __name__ == '__main__':
