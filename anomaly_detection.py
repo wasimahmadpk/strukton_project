@@ -18,7 +18,7 @@ from sklearn.ensemble import IsolationForest
 print(__doc__)
 
 
-def isolation_forest(my_data, int_count):
+def isolation_forest(my_data, int_count, sub_sampling, impurity, num_trees):
 
     rng = np.random.RandomState(42)
 
@@ -27,9 +27,10 @@ def isolation_forest(my_data, int_count):
     X_test = my_data[round(len(my_data)/3):len(my_data), :]
     xtrain_count = int_count[0:round(len(int_count)/3)]
     xtest_count = int_count[round(len(int_count)/3):len(int_count)]
-
+    print("Before iforest:", sub_sampling, impurity)
     # fit the model
-    clf = IsolationForest(max_samples=128, max_features=my_data.shape[1], contamination=0.05, random_state=rng)
+    clf = IsolationForest(max_samples=sub_sampling, max_features=my_data.shape[1], contamination=impurity, random_state=rng)
+    print("After iforest:", sub_sampling, impurity)
     clf.fit(X_train)
     y_pred_train = clf.predict(X_train)
     y_pred_test = clf.predict(X_test)

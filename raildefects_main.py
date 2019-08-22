@@ -35,7 +35,7 @@ class RailDefects:
         self.processed_file = fpaths.data_path[4]
         self.counters_path = fpaths.data_path[5]
 
-    def anomaly_detection(self, pprocessed_file):
+    def anomaly_detection(self, pprocessed_file, features='RMS', sliding_window=1000, sub_sampling=128, impurity=0.05, num_trees=100):
 
         self.processed_file = pprocessed_file
         if not os.path.isfile(self.processed_file):
@@ -165,7 +165,7 @@ class RailDefects:
                     if len(in_data) == 0:
                         continue
                     counters = counters_list[j]
-                    list_of_features = extract_features(in_data, counters, 2000)
+                    list_of_features = extract_features(in_data, counters, sliding_window)
 
                     rms = np.array(list_of_features[:, 0])
                     kurtosis = np.array(list_of_features[:, 2])
@@ -204,9 +204,24 @@ class RailDefects:
                     # plt.xlim(390000, 400000)
                     # plt.show()
 
-                    mylist = np.stack((kurtosis, peak_to_peak), axis=-1)
+                    if features=='RMS':
+                        mylist = np.stack((rms, rms), axis=-1)
+                    if features == 'Kurtosis':
+                        mylist = np.stack((kurtosis, kurtosis), axis=-1)
+                    if features == 'Crest factor':
+                        mylist = np.stack((crest_factor, crest_factor), axis=-1)
+                    if features == 'Impulse factor':
+                        mylist = np.stack((impulse_factor, impulse_factor), axis=-1)
+                    if features == 'Skewness':
+                        mylist = np.stack((skewness, skewness), axis=-1)
+                    if features == 'Peak-to-peak':
+                        mylist = np.stack((peak_to_peak, peak_to_peak), axis=-1)
+                    if features == 'All':
+                        mylist = np.stack((rms, kurtosis, peak_to_peak, crest_factor, impulse_factor, skewness), axis=-1)
+
+
                     norm_train, anom_train, norm_test, anom_test, anom_icount, anom_icount_train, anom_score = isolation_forest(
-                        mylist, int_count)
+                        mylist, int_count, sub_sampling, impurity, num_trees)
 
                     # norm_train = np.concatenate(norm_train.tolist())
                     # anom_train = np.concatenate(anom_train.tolist())
@@ -270,13 +285,13 @@ class RailDefects:
             # ///////////////////////////////////////////
 
             if len(anomaly_positions) > 2:
-                anom_pos_cha = np.array(anomaly_positions[0] + anomaly_positions[2])
-                anom_xcount_cha = np.concatenate((anom_xcount_mode[0][0], anom_xcount_mode[0][1]), axis=0)
-                anom_score_cha = np.concatenate((anom_score_mode[0][0], anom_score_mode[0][1]), axis=0)
+                anom_pos_cha = np.round(anomaly_positions[0] + anomaly_positions[2], 2)
+                anom_xcount_cha = np.round(np.concatenate((anom_xcount_mode[0][0], anom_xcount_mode[0][1]), axis=0), 2)
+                anom_score_cha = np.round(np.concatenate((anom_score_mode[0][0], anom_score_mode[0][1]), axis=0), 3)
             else:
-                anom_pos_cha = np.array(anomaly_positions[0])
-                anom_xcount_cha = anom_xcount_mode[0][0]
-                anom_score_cha = anom_score_mode[0][0]
+                anom_pos_cha = np.round(anomaly_positions[0], 2)
+                anom_xcount_cha = np.round(anom_xcount_mode[0][0], 2)
+                anom_score_cha = np.round(anom_score_mode[0][0], 3)
 
             anom_pos_xcount = np.stack((anom_pos_cha, anom_xcount_cha, anom_score_cha), axis=-1)
             anom_pos_xcount_sorted = anom_pos_xcount[anom_pos_xcount[:, 0].argsort()]

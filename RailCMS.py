@@ -58,7 +58,7 @@ class WidgetGallery(QDialog):
     def __init__(self, parent=None):
         super(WidgetGallery, self).__init__(parent)
         self.resize(1000, 750)
-        self.fileName = 0
+        self.fileName = None
         self.output = np.array([])
         self.counter = 0
         self.initUI()
@@ -146,16 +146,16 @@ class WidgetGallery(QDialog):
         loadabaButton.clicked.connect(self.browse_file)
 
         self.abaEdit = QLineEdit()
-        self.abaEdit.setText("Load ABA file")
+        self.abaEdit.setText("ABA file")
         self.abaEdit.setReadOnly(True)
         self.syncEdit = QLineEdit()
         self.syncEdit.setReadOnly(True)
-        self.syncEdit.setText("Load SYNC file")
+        self.syncEdit.setText("SYNC file")
         self.segEdit = QLineEdit()
-        self.segEdit.setText("Load SEG file")
+        self.segEdit.setText("SEG file")
         self.segEdit.setReadOnly(True)
         self.poiEdit = QLineEdit()
-        self.poiEdit.setText("Load POI file")
+        self.poiEdit.setText("POI file")
         self.poiEdit.setReadOnly(True)
 
         pprocessButton = QPushButton("Start")
@@ -163,12 +163,19 @@ class WidgetGallery(QDialog):
         pprocessButton.clicked.connect(self.browse_file)
         pprocessButton.setToolTip('Click to start pre-processing')
 
+        self.savefileButton = QPushButton("Start")
+        self.savefileButton.setStyleSheet("height: 15px;width: 24px;")
+        self.savefileButton.clicked.connect(self.save_results)
+        self.savefileButton.setToolTip("Click to save the results")
+        self.savefileButton.setVisible(False)
+
         layout = QFormLayout()
         layout.addRow(loadabaButton, self.abaEdit)
         layout.addRow(loadsyncButton, self.syncEdit)
         layout.addRow(loadsegButton, self.segEdit)
         layout.addRow(loadpoiButton, self.poiEdit)
         layout.addWidget(pprocessButton)
+        layout.addWidget(self.savefileButton)
 
         self.topLeftGroupBox.setLayout(layout)
 
@@ -181,23 +188,30 @@ class WidgetGallery(QDialog):
         loadpfileButton.clicked.connect(self.browse_file)
 
         self.processedEdit = QLineEdit()
-        self.processedEdit.setText("Load pre-processed file")
+        self.processedEdit.setText("Pre-processed file")
         self.processedEdit.setReadOnly(True)
 
-        fqbox = QComboBox()
-        fqbox.addItems(['1', '2', '3', '4', '5', 'All'])
+        self.fqbox = QComboBox()
+        self.fqbox.addItems(['RMS', 'Kurtosis', 'Crest factor', 'Impulse factor', 'Skewness', 'Peak-to-peak', 'All'])
+        self.fqbox.currentIndexChanged.connect(self.selection_change)
+
+        self.swinqbox = QComboBox()
+        self.swinqbox.addItems(['500', '1000', '1500', '2000', '5200', '3000', '3500', '4000', '5000', '500'])
+        self.swinqbox.currentIndexChanged.connect(self.selection_change)
+
+
 
         swinsbox = QSpinBox()
         swinsbox.stepBy(1000)
         swinsbox.setMinimum(1000)
         swinsbox.setMaximum(6000)
 
-        detectanomButton = QPushButton("Start")
-        detectanomButton.setStyleSheet("height: 15px;width: 24px;")
-        detectanomButton.clicked.connect(self.detect_anomalies)
-        detectanomButton.setToolTip("Click to start anomaly detection")
+        self.detectanomButton = QPushButton("Start")
+        self.detectanomButton.setStyleSheet("height: 15px;width: 24px;")
+        self.detectanomButton.clicked.connect(self.detect_anomalies)
+        self.detectanomButton.setToolTip("Click to start anomaly detection")
 
-        self.saveButton = QPushButton("Start")
+        self.saveButton = QPushButton("Save")
         self.saveButton.setStyleSheet("height: 15px;width: 24px;")
         self.saveButton.clicked.connect(self.save_results)
         self.saveButton.setToolTip("Click to save the results")
@@ -205,9 +219,9 @@ class WidgetGallery(QDialog):
 
         layout = QFormLayout()
         layout.addRow(loadpfileButton, self.processedEdit)
-        layout.addRow(QLabel("No. of features:"), fqbox)
-        layout.addRow(QLabel("Sliding window:"), swinsbox)
-        layout.addWidget(detectanomButton)
+        layout.addRow(QLabel("No. of features:"), self.fqbox)
+        layout.addRow(QLabel("Sliding window:"), self.swinqbox)
+        layout.addWidget(self.detectanomButton)
         layout.addWidget(self.saveButton)
 
         self.topRightGroupBox.setLayout(layout)
@@ -249,30 +263,34 @@ class WidgetGallery(QDialog):
         self.bottomRightGroupBox.setCheckable(True)
         self.bottomRightGroupBox.setChecked(True)
 
-        spinBox = QSpinBox(self.bottomRightGroupBox)
-        spinBox.setValue(50)
+        self.tbox = QComboBox()
+        self.tbox.addItems(['25', '50', '100', '150', '200', '250'])
+        self.tbox.currentIndexChanged.connect(self.selection_change)
 
-        dateTimeEdit = QDateTimeEdit(self.bottomRightGroupBox)
-        dateTimeEdit.setDateTime(QDateTime.currentDateTime())
+        self.ispinBox = QSpinBox(self.bottomRightGroupBox)
+        self.ispinBox.setValue(0)
+        self.ispinBox.setMinimum(0)
+        self.ispinBox.setMaximum(15)
+        self.ispinBox.valueChanged.connect(self.selection_change)
+
+        self.stbox = QComboBox()
+        self.stbox.addItems(['16', '32', '64', '128', '256', '512'])
+        self.stbox.currentIndexChanged.connect(self.selection_change)
+
 
         slider = QSlider(Qt.Horizontal, self.bottomRightGroupBox)
         slider.setValue(40)
         slider.show()
 
-        scrollBar = QScrollBar(Qt.Horizontal, self.bottomRightGroupBox)
-        scrollBar.setValue(60)
-
-        dial = QDial(self.bottomRightGroupBox)
-        dial.setValue(30)
-        dial.setNotchesVisible(True)
-
         layout = QGridLayout()
-        layout.addWidget(spinBox, 0, 0, 1, 1)
-        layout.addWidget(dateTimeEdit, 1, 0, 1, 1)
-        layout.addWidget(slider, 2, 0)
-        layout.addWidget(scrollBar, 3, 0)
-        layout.addWidget(dial, 0, 1, 2, 1)
-        layout.setRowStretch(5, 1)
+        layout.addWidget(QLabel("Impurity ratio (%):"), 0, 0, 1, 3)
+        layout.addWidget(self.ispinBox, 0, 1, 1, 3)
+        layout.addWidget(QLabel("Sub-sampling size:"), 1, 0, 1, 3)
+        layout.addWidget(self.stbox, 1, 1, 1, 3)
+        layout.addWidget(QLabel("No. of trees:"), 2, 0, 1, 3)
+        layout.addWidget(self.tbox, 2, 1, 1, 3)
+        layout.addWidget(slider, 3, 0, 1, 4)
+        # layout.setRowStretch(5, 1)
         self.bottomRightGroupBox.setLayout(layout)
 
     def createProgressBar(self):
@@ -326,31 +344,50 @@ class WidgetGallery(QDialog):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getSaveFileName(self, "QFileDialog.getSaveFileName()", "",
-                                          "All Files (*);;Text Files (*.txt)", options=options)
+                                          "All Files (*); MS Excel Files (*.csv); ; hdf5 (*.h5)", options=options)
 
         if fileName:
             print(fileName)
             return fileName
             self.close()
 
+    def selection_change(self):
+
+        self.feature = self.fqbox.currentText()
+        print(self.feature)
+        self.swin = int(self.swinqbox.currentText())
+        self.impurity = float(self.ispinBox.value() / 100)
+        print(self.impurity)
+        self.sssize = int(self.stbox.currentText())
+        self.trees = int(self.tbox.currentText())
+
     def detect_anomalies(self):
 
-        obj = RailDefects(1)
-        self.output = obj.anomaly_detection(self.fileName)
-        loc = self.output[0, 0]
-        cnt = self.output[0, 1]
-        sev = self.output[0, 2]
-        print("First Anomaly: ", loc, cnt, sev)
-        # self.output = np.array([[2], [3], [5]])
-        self.saveButton.setVisible(True)
+        if self.fileName == None:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText("File Error")
+            msg.setInformativeText('Please select the right file!')
+            msg.setWindowTitle("Error")
+            msg.exec_()
+        else:
+            obj = RailDefects(1)
+            self.output = obj.anomaly_detection(self.fileName, self.feature, self.swin, self.sssize, self.impurity)
+            loc = self.output[0, 0]
+            cnt = self.output[0, 1]
+            sev = self.output[0, 2]
+            print("First Anomaly: ", loc, cnt, sev)
+            # self.output = np.array([[2], [3], [5]])
+            self.saveButton.setVisible(True)
+            self.detectanomButton.setVisible(False)
 
-        # Populate the table
-        if len(self.output) > 0:
-            for i in range(50):
-                for j in range(3):
-                    val = self.output[i, j]
-                    print("Value:", val)
-                    self.tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
+            # Populate the table
+            if len(self.output) > 0:
+                for i in range(75):
+                    for j in range(3):
+                        val = self.output[i, j]
+                        print("Value:", val)
+                        self.tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
 
     def browse_file(self):
 
@@ -361,6 +398,8 @@ class WidgetGallery(QDialog):
         savefile = self.saveFileDialog()
         obj = RailDefects(1)
         obj.save_output(self.output, savefile)
+        self.detectanomButton.setVisible(True)
+        self.saveButton.setVisible(False)
 
 
 if __name__ == '__main__':
