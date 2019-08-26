@@ -143,7 +143,10 @@ class WidgetGallery(QDialog):
         checkBox.setTristate(True)
         checkBox.setCheckState(Qt.PartiallyChecked)
 
-        loadabaButton.clicked.connect(self.browse_file)
+        loadabaButton.clicked.connect(self.browse_aba)
+        loadsyncButton.clicked.connect(self.browse_sync)
+        loadsegButton.clicked.connect(self.browse_seg)
+        loadpoiButton.clicked.connect(self.browse_poi)
 
         self.abaEdit = QLineEdit()
         self.abaEdit.setText("ABA file")
@@ -199,8 +202,6 @@ class WidgetGallery(QDialog):
         self.swinqbox.addItems(['500', '1000', '1500', '2000', '5200', '3000', '3500', '4000', '5000', '500'])
         self.swinqbox.currentIndexChanged.connect(self.selection_change)
 
-
-
         swinsbox = QSpinBox()
         swinsbox.stepBy(1000)
         swinsbox.setMinimum(1000)
@@ -244,10 +245,9 @@ class WidgetGallery(QDialog):
         tab2 = QWidget()
         textEdit = QTextEdit()
 
-        textEdit.setPlainText("Twinkle, twinkle, little star,\n"
-                              "How I wonder what you are.\n" 
-                              "Twinkle, twinkle, little star,\n" 
-                              "How I wonder what you are!\n")
+        textEdit.setPlainText("Train axle-box acceleration data\n"
+                              "has been used to find incipient defects\n" 
+                              "rail defects.\n")
 
         tab2hbox = QHBoxLayout()
         tab2hbox.setContentsMargins(5, 5, 5, 5)
@@ -304,7 +304,7 @@ class WidgetGallery(QDialog):
 
 # ///////////////////// System functions /////////////////////////
 
-    def openFileNameDialog(self):
+    def openFileNameDialog(self, type=None):
 
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
@@ -312,19 +312,45 @@ class WidgetGallery(QDialog):
                                           "All Files (*);;Python Files (*.py)", options=options)
 
         if fileName:
-            if not str(fileName).endswith('.h5'):
+            if type == 'anomaly' and not str(fileName).endswith('.h5'):
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Critical)
                 msg.setText("File Error")
-                msg.setInformativeText('Please select the right file!')
+                msg.setInformativeText('Please select the file with .h5 format!')
                 msg.setWindowTitle("Error")
                 msg.exec_()
-            else:
+            elif type != 'anomaly' and not str(fileName).endswith('.csv'):
+
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Critical)
+                msg.setText("File Error")
+                msg.setInformativeText('Please select the file with .csv format!')
+                msg.setWindowTitle("Error")
+                msg.exec_()
+
+            elif type == 'anomaly':
                 print(fileName)
                 self.fileName = fileName
                 self.processedEdit.setText(str(fileName))
+
+            elif type == 'aba':
+                print(fileName)
+                self.fileName = fileName
+                self.abaEdit.setText(str(fileName))
                 # self.tableWidget.setItem(0, 1, QTableWidgetItem(str(123)))
                 # self.close()
+            elif type == 'sync':
+                print(fileName)
+                self.fileName = fileName
+                self.syncEdit.setText(str(fileName))
+            elif type == 'poi':
+                print(fileName)
+                self.fileName = fileName
+                self.poiEdit.setText(str(fileName))
+            else:
+                print(fileName)
+                self.fileName = fileName
+                self.segEdit.setText(str(fileName))
 
 
     def openFileNamesDialog(self):
@@ -389,9 +415,30 @@ class WidgetGallery(QDialog):
                         print("Value:", val)
                         self.tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
 
+    def browse_aba(self):
+
+        self.type = 'aba'
+        self.openFileNameDialog(self.type)
+
+    def browse_sync(self):
+
+        self.type = 'sync'
+        self.openFileNameDialog(self.type)
+
+    def browse_poi(self):
+
+        self.type = 'poi'
+        self.openFileNameDialog(self.type)
+
+    def browse_seg(self):
+
+        self.type = 'seg'
+        self.openFileNameDialog(self.type)
+
     def browse_file(self):
 
-        self.openFileNameDialog()
+        self.type = 'anomaly'
+        self.openFileNameDialog(self.type)
 
     def save_results(self):
 
