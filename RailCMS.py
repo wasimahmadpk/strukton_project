@@ -51,7 +51,9 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
         QVBoxLayout, QWidget, QFileDialog, QMessageBox, QFormLayout, QDialogButtonBox)
 
 import numpy as np
+import csv
 from raildefects_main import RailDefects
+from data_processing import pre_processing
 
 
 class WidgetGallery(QDialog):
@@ -59,6 +61,13 @@ class WidgetGallery(QDialog):
         super(WidgetGallery, self).__init__(parent)
         self.resize(1000, 750)
         self.fileName = None
+        self.ppfile = None
+        self.abafile = None
+        self.syncfile = None
+        self.segfile = None
+        self.poifile = None
+        self.key = None
+        self.ppdata = 0
         self.output = np.array([])
         self.counter = 0
         self.initUI()
@@ -161,14 +170,14 @@ class WidgetGallery(QDialog):
         self.poiEdit.setText("POI file")
         self.poiEdit.setReadOnly(True)
 
-        pprocessButton = QPushButton("Start")
-        pprocessButton.setStyleSheet("height: 15px;width: 24px;")
-        pprocessButton.clicked.connect(self.browse_file)
-        pprocessButton.setToolTip('Click to start pre-processing')
+        self.pprocessButton = QPushButton("Start")
+        self.pprocessButton.setStyleSheet("height: 15px;width: 24px;")
+        self.pprocessButton.clicked.connect(self.processing)
+        self.pprocessButton.setToolTip('Click to start pre-processing')
 
-        self.savefileButton = QPushButton("Start")
+        self.savefileButton = QPushButton("Save")
         self.savefileButton.setStyleSheet("height: 15px;width: 24px;")
-        self.savefileButton.clicked.connect(self.save_results)
+        self.savefileButton.clicked.connect(self.save_pdata)
         self.savefileButton.setToolTip("Click to save the results")
         self.savefileButton.setVisible(False)
 
@@ -177,11 +186,10 @@ class WidgetGallery(QDialog):
         layout.addRow(loadsyncButton, self.syncEdit)
         layout.addRow(loadsegButton, self.segEdit)
         layout.addRow(loadpoiButton, self.poiEdit)
-        layout.addWidget(pprocessButton)
+        layout.addWidget(self.pprocessButton)
         layout.addWidget(self.savefileButton)
 
         self.topLeftGroupBox.setLayout(layout)
-
 
     def createTopRightGroupBox(self):
 
@@ -319,37 +327,45 @@ class WidgetGallery(QDialog):
                 msg.setInformativeText('Please select the file with .h5 format!')
                 msg.setWindowTitle("Error")
                 msg.exec_()
+
             elif type != 'anomaly' and not str(fileName).endswith('.csv'):
+                if type == 'aba' and not str(fileName).endswith('.h5'):
+                    msg = QMessageBox()
+                    msg.setIcon(QMessageBox.Critical)
+                    msg.setText("File Error")
+                    msg.setInformativeText('Please select the file with .h5 format!')
+                    msg.setWindowTitle("Error")
+                    msg.exec_()
+                elif type!= 'aba':
+                    msg = QMessageBox()
+                    msg.setIcon(QMessageBox.Critical)
+                    msg.setText("File Error")
+                    msg.setInformativeText('Please select the file with .csv format!')
+                    msg.setWindowTitle("Error")
+                    msg.exec_()
 
-                msg = QMessageBox()
-                msg.setIcon(QMessageBox.Critical)
-                msg.setText("File Error")
-                msg.setInformativeText('Please select the file with .csv format!')
-                msg.setWindowTitle("Error")
-                msg.exec_()
-
-            elif type == 'anomaly':
+        if type == 'anomaly':
                 print(fileName)
-                self.fileName = fileName
+                self.ppfile = fileName
                 self.processedEdit.setText(str(fileName))
 
-            elif type == 'aba':
+        elif type == 'aba':
                 print(fileName)
-                self.fileName = fileName
+                self.abafile = fileName
                 self.abaEdit.setText(str(fileName))
                 # self.tableWidget.setItem(0, 1, QTableWidgetItem(str(123)))
                 # self.close()
-            elif type == 'sync':
+        elif type == 'sync':
                 print(fileName)
-                self.fileName = fileName
+                self.syncfile = fileName
                 self.syncEdit.setText(str(fileName))
-            elif type == 'poi':
+        elif type == 'poi':
                 print(fileName)
-                self.fileName = fileName
+                self.poifile = fileName
                 self.poiEdit.setText(str(fileName))
-            else:
+        else:
                 print(fileName)
-                self.fileName = fileName
+                self.segfile = fileName
                 self.segEdit.setText(str(fileName))
 
 
@@ -374,8 +390,8 @@ class WidgetGallery(QDialog):
 
         if fileName:
             print(fileName)
-            return fileName
-            self.close()
+            self.savefile = fileName
+
 
     def selection_change(self):
 
@@ -387,18 +403,40 @@ class WidgetGallery(QDialog):
         self.sssize = int(self.stbox.currentText())
         self.trees = int(self.tbox.currentText())
 
-    def detect_anomalies(self):
 
-        if self.fileName == None:
+    def processing(self):
+
+        if self.abafile and self.syncfile and self.segfile and self.poifile:
+
+           self.ppdata = pre_processing(self.abafile, self.syncfile, self.segfile, self.poifile, None)
+           self.savefileButton.setVisible(True)
+           self.pprocessButton.setVisible(False)
+           self.abaEdit.setText("ABA file")
+           self.syncEdit.setText("SYNC file")
+           self.segEdit.setText("SEG file")
+           self.poiEdit.setText("POI file")
+
+        else:
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Critical)
             msg.setText("File Error")
-            msg.setInformativeText('Please select the right file!')
+            msg.setInformativeText('Please load all the required files...')
+            msg.setWindowTitle("File missing!")
+            msg.exec_()
+
+    def detect_anomalies(self):
+
+        if self.ppfile == None:
+
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText("File Error")
+            msg.setInformativeText('Please load the pre-processed file!')
             msg.setWindowTitle("Error")
             msg.exec_()
         else:
             obj = RailDefects(1)
-            self.output = obj.anomaly_detection(self.fileName, self.feature, self.swin, self.sssize, self.impurity)
+            self.output = obj.anomaly_detection(self.ppfile, self.feature, self.swin, self.sssize, self.impurity)
             loc = self.output[0, 0]
             cnt = self.output[0, 1]
             sev = self.output[0, 2]
@@ -406,6 +444,7 @@ class WidgetGallery(QDialog):
             # self.output = np.array([[2], [3], [5]])
             self.saveButton.setVisible(True)
             self.detectanomButton.setVisible(False)
+            self.processedEdit.setText("Pre-processed file")
 
             # Populate the table
             if len(self.output) > 0:
@@ -442,11 +481,29 @@ class WidgetGallery(QDialog):
 
     def save_results(self):
 
-        savefile = self.saveFileDialog()
-        obj = RailDefects(1)
-        obj.save_output(self.output, savefile)
+        self.key = None
+        self.saveFileDialog()
+
+        with open(self.savefile + '.csv', 'w', newline='') as file:
+            try:
+                writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                writer.writerow(['positions', 'counters', 'severity'])
+                for pos, cnt, sev in self.output:
+                    writer.writerow([pos, cnt, sev])
+            finally:
+                file.close()
+
         self.detectanomButton.setVisible(True)
         self.saveButton.setVisible(False)
+        self.tableWidget.clearContents()
+
+    def save_pdata(self):
+
+        self.key = 'processed'
+        self.saveFileDialog()
+        self.ppdata.to_hdf(self.savefile + '.h5', key='processed', mode='w')
+        self.pprocessButton.setVisible(True)
+        self.savefileButton.setVisible(False)
 
 
 if __name__ == '__main__':

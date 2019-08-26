@@ -292,4 +292,6 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
     # timedat.CHB3[list(obj_counters)] = chb3_mean
 
     # timedat = timedat.drop(list(switch_counters), axis=0)
-    timedat.to_hdf(processedfile, key='processed', mode='w')
+    print("Just reached ;) ")
+    return timedat
+    # timedat.to_hdf(processedfile, key='processed', mode='w')

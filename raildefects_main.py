@@ -338,9 +338,9 @@ class RailDefects:
     def save_output(self, write_data, fname):
 
         track_side = 'cha_km'
-        # with open(fname, 'w', newline='') as file:
-        with open(self.counters_path + '\Prorail17112805si12_' + track_side + '.csv', 'w',
-                  newline='') as file:
+        with open(fname + '.csv', 'w', newline='') as file:
+        # with open(self.counters_path + '\Prorail17112805si12_' + track_side + '.csv', 'w',
+        #           newline='') as file:
             try:
                 writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 writer.writerow(['positions', 'counters', 'severity'])
