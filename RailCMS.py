@@ -74,6 +74,7 @@ class WidgetGallery(QDialog):
 
     def initUI(self):
 
+        self.setWindowIcon(QIcon('srail.jpg'))
         self.originalPalette = QApplication.palette()
         styleComboBox = QComboBox()
         styleComboBox.addItems(QStyleFactory.keys())
