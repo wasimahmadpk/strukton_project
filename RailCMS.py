@@ -42,7 +42,7 @@
 #############################################################################
 
 
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtGui import QIcon, QPixmap, QColor
 from PyQt5.QtCore import QDateTime, Qt, QTimer, QSize
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
         QDial, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit,
@@ -122,7 +122,6 @@ class WidgetGallery(QDialog):
         self.setWindowTitle("RAIL CONDITION MONITORING SYSTEM")
         self.changeStyle('Fusion')
         self.setWindowFlags(Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
-
 
     def changeStyle(self, styleName):
         QApplication.setStyle(QStyleFactory.create(styleName))
@@ -253,10 +252,13 @@ class WidgetGallery(QDialog):
 
         tab2 = QWidget()
         textEdit = QTextEdit()
-
+        textEdit.isReadOnly()
         textEdit.setPlainText("Train axle-box acceleration data\n"
                               "has been used to find incipient defects\n" 
-                              "rail defects.\n")
+                              "rail defects.\n\n"
+                              "Blue color in results represents incipient ABA anomaly.\n"
+                              "Yellow color in results represents intermediate ABA anomaly.\n"
+                              "Red color in results represents severe ABA anomaly.\n")
 
         tab2hbox = QHBoxLayout()
         tab2hbox.setContentsMargins(5, 5, 5, 5)
@@ -454,6 +456,13 @@ class WidgetGallery(QDialog):
                         val = self.output[i, j]
                         print("Value:", val)
                         self.tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
+                        if j == 2:
+                            if self.output[i, 2] <= 0.4:
+                                self.tableWidget.item(i, 2).setBackground(QColor(Qt.blue))
+                            elif self.output[i, 2] > 0.4 and self.output[i, 2] <= 0.75:
+                                self.tableWidget.item(i, 2).setBackground(QColor(Qt.yellow))
+                            else:
+                                self.tableWidget.item(i, 2).setBackground(QColor(Qt.red))
 
     def browse_aba(self):
 
