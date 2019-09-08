@@ -35,7 +35,7 @@ class RailDefects:
         self.processed_file = fpaths.data_path[4]
         self.counters_path = fpaths.data_path[5]
 
-    def anomaly_detection(self, pprocessed_file, features='RMS', sliding_window=1000, sub_sampling=128, impurity=0.05, num_trees=100):
+    def anomaly_detection(self, pprocessed_file, seg_file, features='RMS', sliding_window=1000, sub_sampling=128, impurity=0.05, num_trees=100):
 
         self.processed_file = pprocessed_file
         if not os.path.isfile(self.processed_file):
@@ -281,7 +281,7 @@ class RailDefects:
                 anom_score_mode.append(anom_score_list)
 
             # function call: compare anomalies in ABA on both channels i.e. CHA and CHB and return anomaly_positions
-            anomaly_positions = match_anomaly(rail_data, rail_xcounters, anom_xcount_mode, self.seg_file)
+            anomaly_positions = match_anomaly(rail_data, rail_xcounters, anom_xcount_mode, seg_file)
             # ///////////////////////////////////////////
 
             if len(anomaly_positions) > 2:

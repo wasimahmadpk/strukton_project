@@ -202,6 +202,13 @@ class WidgetGallery(QDialog):
         self.processedEdit.setText("Pre-processed file")
         self.processedEdit.setReadOnly(True)
 
+        loadsegButton = QPushButton("Browse")
+        loadsegButton.clicked.connect(self.browse_seg)
+
+        self.segEdit = QLineEdit()
+        self.segEdit.setText("SEG file")
+        self.segEdit.setReadOnly(True)
+
         self.fqbox = QComboBox()
         self.fqbox.addItems(['RMS', 'Kurtosis', 'Crest factor', 'Impulse factor', 'Skewness', 'Peak-to-peak', 'All'])
         self.fqbox.currentIndexChanged.connect(self.selection_change)
@@ -228,6 +235,7 @@ class WidgetGallery(QDialog):
 
         layout = QFormLayout()
         layout.addRow(loadpfileButton, self.processedEdit)
+        layout.addRow(loadsegButton, self.segEdit)
         layout.addRow(QLabel("No. of features:"), self.fqbox)
         layout.addRow(QLabel("Sliding window:"), self.swinqbox)
         layout.addWidget(self.detectanomButton)
@@ -439,7 +447,7 @@ class WidgetGallery(QDialog):
             msg.exec_()
         else:
             obj = RailDefects(1)
-            self.output = obj.anomaly_detection(self.ppfile, self.feature, self.swin, self.sssize, self.impurity)
+            self.output = obj.anomaly_detection(self.ppfile, self.segfile, self.feature, self.swin, self.sssize, self.impurity)
             loc = self.output[0, 0]
             cnt = self.output[0, 1]
             sev = self.output[0, 2]
@@ -448,6 +456,7 @@ class WidgetGallery(QDialog):
             self.saveButton.setVisible(True)
             self.detectanomButton.setVisible(False)
             self.processedEdit.setText("Pre-processed file")
+            self.segEdit.setText("SEG file")
 
             # Populate the table
             if len(self.output) > 0:
