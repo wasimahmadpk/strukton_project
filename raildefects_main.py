@@ -218,8 +218,9 @@ class RailDefects:
                         mylist = np.stack((peak_to_peak, peak_to_peak), axis=-1)
                     if features == 'All':
                         mylist = np.stack((rms, kurtosis, peak_to_peak, crest_factor, impulse_factor, skewness), axis=-1)
-
-
+                    else:
+                        mylist = np.stack((kurtosis, peak_to_peak),
+                                          axis=-1)
                     norm_train, anom_train, norm_test, anom_test, anom_icount, anom_icount_train, anom_score = isolation_forest(
                         mylist, int_count, sub_sampling, impurity, num_trees)
 
@@ -353,7 +354,7 @@ class RailDefects:
 if __name__ == "__main__":
 
     obj = RailDefects(1)
-    model_outcome = obj.anomaly_detection(pprocessed_file=data_paths.data_path[4])
+    model_outcome = obj.anomaly_detection(pprocessed_file=data_paths.data_path[4], seg_file=data_paths.data_path[2], features='RMS', sliding_window=2000, sub_sampling=128, impurity=0.025, num_trees=100)
 
     # # plotting crack depth vs anomaly score
     # plotlist = []
