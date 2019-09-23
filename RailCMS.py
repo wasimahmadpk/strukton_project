@@ -90,7 +90,7 @@ class WidgetGallery(QDialog):
         self.createTopRightGroupBox()
         self.createBottomLeftTabWidget(self.output)
         self.createBottomRightGroupBox()
-        self.createProgressBar()
+        # self.createProgressBar()
 
         styleComboBox.activated[str].connect(self.changeStyle)
         self.useStylePaletteCheckBox.toggled.connect(self.changePalette)
@@ -112,7 +112,7 @@ class WidgetGallery(QDialog):
         mainLayout.addWidget(self.topRightGroupBox, 1, 1)
         mainLayout.addWidget(self.bottomLeftTabWidget, 2, 0)
         mainLayout.addWidget(self.bottomRightGroupBox, 2, 1)
-        mainLayout.addWidget(self.progressBar, 3, 0, 1, 2)
+        # mainLayout.addWidget(self.progressBar, 3, 0, 1, 2)
         mainLayout.setRowStretch(1, 1)
         mainLayout.setRowStretch(2, 1)
         mainLayout.setColumnStretch(0, 1)
@@ -203,11 +203,11 @@ class WidgetGallery(QDialog):
         self.processedEdit.setReadOnly(True)
 
         loadsegButton = QPushButton("Browse")
-        loadsegButton.clicked.connect(self.browse_seg)
+        loadsegButton.clicked.connect(self.browse_seg1)
 
-        self.segEdit = QLineEdit()
-        self.segEdit.setText("SEG file")
-        self.segEdit.setReadOnly(True)
+        self.segEdit1 = QLineEdit()
+        self.segEdit1.setText("SEG file")
+        self.segEdit1.setReadOnly(True)
 
         self.fqbox = QComboBox()
         self.fqbox.addItems(['RMS', 'Kurtosis', 'Crest factor', 'Impulse factor', 'Skewness', 'Peak-to-peak', 'All'])
@@ -235,7 +235,7 @@ class WidgetGallery(QDialog):
 
         layout = QFormLayout()
         layout.addRow(loadpfileButton, self.processedEdit)
-        layout.addRow(loadsegButton, self.segEdit)
+        layout.addRow(loadsegButton, self.segEdit1)
         layout.addRow(QLabel("No. of features:"), self.fqbox)
         layout.addRow(QLabel("Sliding window:"), self.swinqbox)
         layout.addWidget(self.detectanomButton)
@@ -331,7 +331,7 @@ class WidgetGallery(QDialog):
                                           "All Files (*);;Python Files (*.py)", options=options)
 
         if fileName:
-            if type == 'anomaly' and not str(fileName).endswith('.h5'):
+            if self.type == 'anomaly' and not str(fileName).endswith('.h5'):
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Critical)
                 msg.setText("File Error")
@@ -339,15 +339,15 @@ class WidgetGallery(QDialog):
                 msg.setWindowTitle("Error")
                 msg.exec_()
 
-            elif type != 'anomaly' and not str(fileName).endswith('.csv'):
-                if type == 'aba' and not str(fileName).endswith('.h5'):
+            elif self.type != 'anomaly' and not str(fileName).endswith('.csv'):
+                if self.type == 'aba' and not str(fileName).endswith('.h5'):
                     msg = QMessageBox()
                     msg.setIcon(QMessageBox.Critical)
                     msg.setText("File Error")
                     msg.setInformativeText('Please select the file with .h5 format!')
                     msg.setWindowTitle("Error")
                     msg.exec_()
-                elif type!= 'aba':
+                elif self.type!= 'aba':
                     msg = QMessageBox()
                     msg.setIcon(QMessageBox.Critical)
                     msg.setText("File Error")
@@ -355,29 +355,33 @@ class WidgetGallery(QDialog):
                     msg.setWindowTitle("Error")
                     msg.exec_()
 
-        if type == 'anomaly':
+        if self.type == 'anomaly':
                 print(fileName)
                 self.ppfile = fileName
                 self.processedEdit.setText(str(fileName))
 
-        elif type == 'aba':
+        elif self.type == 'aba':
                 print(fileName)
                 self.abafile = fileName
                 self.abaEdit.setText(str(fileName))
                 # self.tableWidget.setItem(0, 1, QTableWidgetItem(str(123)))
                 # self.close()
-        elif type == 'sync':
+        elif self.type == 'sync':
                 print(fileName)
                 self.syncfile = fileName
                 self.syncEdit.setText(str(fileName))
-        elif type == 'poi':
+        elif self.type == 'poi':
                 print(fileName)
                 self.poifile = fileName
                 self.poiEdit.setText(str(fileName))
-        else:
+        elif self.type == 'seg':
                 print(fileName)
                 self.segfile = fileName
                 self.segEdit.setText(str(fileName))
+        elif self.type == 'seg1':
+                print(fileName)
+                self.segfile = fileName
+                self.segEdit1.setText(str(fileName))
 
 
     def openFileNamesDialog(self):
@@ -491,6 +495,11 @@ class WidgetGallery(QDialog):
     def browse_seg(self):
 
         self.type = 'seg'
+        self.openFileNameDialog(self.type)
+
+    def browse_seg1(self):
+
+        self.type = 'seg1'
         self.openFileNameDialog(self.type)
 
     def browse_file(self):

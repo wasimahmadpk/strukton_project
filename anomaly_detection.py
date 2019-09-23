@@ -54,57 +54,57 @@ def isolation_forest(my_data, int_count, sub_sampling, impurity, num_trees):
     plt.figure(3)
     plt.plot(anom_scores)
 
-    # Contour plot of normal and anomalous samples in train and test set
-    aa, bb = np.meshgrid(np.linspace(np.min(my_data[:, 0])-1, 40, 40),
-                         np.linspace(np.min(my_data[:, 1])-1, 40, 40))
-    decision = clf.decision_function(np.c_[aa.ravel(), bb.ravel()])
-    Z = decision.reshape(aa.shape)
-
-    plt.figure(4, figsize=(10, 6), dpi=100)
-    plt.cla()
-    # plt.title("Anomaly detection-iForest")
-    cb = plt.contourf(aa, bb, Z, cmap=plt.cm.Blues_r)
-    a = plt.scatter(X_train[norm_train, 0], X_train[norm_train, 1], c='white',
-                    s=25, edgecolor='k')
-    d = plt.scatter(X_train[anom_train, 0], X_train[anom_train, 1], c='yellow',
-                    s=25, edgecolor='k')
+    # # Contour plot of normal and anomalous samples in train and test set
+    # aa, bb = np.meshgrid(np.linspace(np.min(my_data[:, 0])-1, 40, 40),
+    #                      np.linspace(np.min(my_data[:, 1])-1, 40, 40))
+    # decision = clf.decision_function(np.c_[aa.ravel(), bb.ravel()])
+    # Z = decision.reshape(aa.shape)
+    #
+    # plt.figure(4, figsize=(10, 6), dpi=100)
+    # plt.cla()
+    # # plt.title("Anomaly detection-iForest")
+    # cb = plt.contourf(aa, bb, Z, cmap=plt.cm.Blues_r)
+    # a = plt.scatter(X_train[norm_train, 0], X_train[norm_train, 1], c='white',
+    #                 s=25, edgecolor='k')
+    # d = plt.scatter(X_train[anom_train, 0], X_train[anom_train, 1], c='yellow',
+    #                 s=25, edgecolor='k')
+    # # b = plt.scatter(X_test[norm_test, 0], X_test[norm_test, 1], c='green',
+    # #                 s=25, edgecolor='k')
+    # # c = plt.scatter(X_test[anom_test, 0], X_test[anom_test, 1], c='red',
+    # #                 s=25, edgecolor='k')
+    # plt.axis('tight')
+    # plt.xlim((np.min(my_data[:, 0])-1, 40))
+    # plt.ylim((np.min(my_data[:, 1])-1, 40))
+    # plt.legend([a, d],
+    #            ["Training Normal", "Training Anomalies"],
+    #            loc="upper")
+    # plt.xlabel('Peak-to-Peak')
+    # plt.ylabel('Kurtosis')
+    # plt.colorbar(cb)
+    # plt.show()
+    #
+    # plt.figure(5, figsize=(10, 6), dpi=100)
+    # plt.cla()
+    # # plt.title("Anomaly detection-iForest")
+    # cb = plt.contourf(aa, bb, Z, cmap=plt.cm.Blues_r)
+    # a = plt.scatter(X_train[norm_train, 0], X_train[norm_train, 1], c='white',
+    #                 s=25, edgecolor='k')
+    # d = plt.scatter(X_train[anom_train, 0], X_train[anom_train, 1], c='yellow',
+    #                 s=25, edgecolor='k')
     # b = plt.scatter(X_test[norm_test, 0], X_test[norm_test, 1], c='green',
     #                 s=25, edgecolor='k')
     # c = plt.scatter(X_test[anom_test, 0], X_test[anom_test, 1], c='red',
     #                 s=25, edgecolor='k')
-    plt.axis('tight')
-    plt.xlim((np.min(my_data[:, 0])-1, 40))
-    plt.ylim((np.min(my_data[:, 1])-1, 40))
-    plt.legend([a, d],
-               ["Training Normal", "Training Anomalies"],
-               loc="upper")
-    plt.xlabel('Peak-to-Peak')
-    plt.ylabel('Kurtosis')
-    plt.colorbar(cb)
-    plt.show()
-
-    plt.figure(5, figsize=(10, 6), dpi=100)
-    plt.cla()
-    # plt.title("Anomaly detection-iForest")
-    cb = plt.contourf(aa, bb, Z, cmap=plt.cm.Blues_r)
-    a = plt.scatter(X_train[norm_train, 0], X_train[norm_train, 1], c='white',
-                    s=25, edgecolor='k')
-    d = plt.scatter(X_train[anom_train, 0], X_train[anom_train, 1], c='yellow',
-                    s=25, edgecolor='k')
-    b = plt.scatter(X_test[norm_test, 0], X_test[norm_test, 1], c='green',
-                    s=25, edgecolor='k')
-    c = plt.scatter(X_test[anom_test, 0], X_test[anom_test, 1], c='red',
-                    s=25, edgecolor='k')
-    plt.axis('tight')
-    plt.xlim((np.min(my_data[:, 0]) - 1, 40))
-    plt.ylim((np.min(my_data[:, 1]) - 1, 40))
-    plt.legend([a, d, b, c],
-               ["Training Normal", "Training Anomalies", "Test Normal", "Test Anomalies"],
-               loc="upper")
-    plt.xlabel('Peak-to-Peak')
-    plt.ylabel('Kurtosis')
-    plt.colorbar(cb)
-    plt.show()
+    # plt.axis('tight')
+    # plt.xlim((np.min(my_data[:, 0]) - 1, 40))
+    # plt.ylim((np.min(my_data[:, 1]) - 1, 40))
+    # plt.legend([a, d, b, c],
+    #            ["Training Normal", "Training Anomalies", "Test Normal", "Test Anomalies"],
+    #            loc="upper")
+    # plt.xlabel('Peak-to-Peak')
+    # plt.ylabel('Kurtosis')
+    # plt.colorbar(cb)
+    # plt.show()
 
 
     norm_train = X_train[norm_train, :]
