@@ -38,6 +38,7 @@ class RailDefects:
     def anomaly_detection(self, pprocessed_file, seg_file, features='RMS', sliding_window=1000, sub_sampling=128, impurity=0.05, num_trees=100):
 
         self.processed_file = pprocessed_file
+        # In case pre-processed file is not available
         if not os.path.isfile(self.processed_file):
             pre_processing(self.data_file, self.sync_file, self.seg_file, self.poi_file, self.processed_file)
         else:
@@ -67,6 +68,7 @@ class RailDefects:
             get_lat = interp1d(geo_list[:, 0], lat, fill_value='extrapolate')
             get_long = interp1d(geo_list[:, 0], lon, fill_value='extrapolate')
 
+            # read pre-processed data in dataframe
             processed_data = pd.read_hdf(self.processed_file, 'processed', mode='r')
 
             # CHC1 = np.array(processed_data.CHC1)
@@ -79,6 +81,7 @@ class RailDefects:
             CHB1 = np.array(processed_data.CHB1)
             CHB3 = np.array(processed_data.CHB3)
 
+            # read internal and external counters
             int_count = np.array(processed_data.INTCNT)
             ext_count = np.array(processed_data.EXTCNT)
             # date_time = syncdat.DateTime
@@ -98,17 +101,18 @@ class RailDefects:
             if len(push_ext_count) == 0:
                 push_ext_count = pull_ext_count
 
+            # transformed data from X and Z axes
             pull_data = np.power((np.power(pull_data_cha1, 2) + np.power(pull_data_cha3, 2)), 1 / 2)
             push_data = np.power((np.power(push_data_cha1, 2) + np.power(push_data_cha3, 2)), 1 / 2)
 
             cha_data = np.power((np.power(CHA1, 2) + np.power(CHA3, 2)), 1 / 2)
 
-            # Second side
+            # Pulling and pushing data for other side of the rail
             pull_data_chb1 = CHB1[(EDIR == 1)]
             push_data_chb1 = CHB1[(EDIR == -1)]
             pull_data_chb3 = CHB3[(EDIR == 1)]
             push_data_chb3 = CHB3[(EDIR == -1)]
-
+            # transformed data from X and Z axes
             pull_data2 = np.power((np.power(pull_data_chb1, 2) + np.power(pull_data_chb3, 2)), 1 / 2)
             push_data2 = np.power((np.power(push_data_chb1, 2) + np.power(push_data_chb3, 2)), 1 / 2)
 
@@ -120,6 +124,8 @@ class RailDefects:
             counters_list = []
             xcounters_list = []
             data_list.append(pull_data)
+
+            # check if data exist for push mode
             if len(push_data) != 0:
                 data_list.append(push_data)
             counters_list.append(pull_int_count)
@@ -130,6 +136,8 @@ class RailDefects:
             ########################################
             data_list2 = []
             data_list2.append(pull_data2)
+
+            # check if data exist for push mode
             if len(push_data2) != 0:
                 data_list2.append(push_data2)
             rail_data.append(data_list)
@@ -138,8 +146,8 @@ class RailDefects:
             rail_counters.append(counters_list)
             rail_xcounters.append(xcounters_list)
             rail_xcounters.append(xcounters_list)
-            ########################################
 
+            # interpolating internal and external counters
             get_xcount = interp1d(int_count, ext_count, fill_value='extrapolate')
             get_icount = interp1d(ext_count, int_count, fill_value='extrapolate')
 
@@ -161,6 +169,7 @@ class RailDefects:
                     if len(in_data) == 0:
                         continue
                     counters = counters_list[j]
+                    # inputs are ABA data, counters and the sliding window size
                     list_of_features = extract_features(in_data, counters, sliding_window)
 
                     rms = np.array(list_of_features[:, 0])
@@ -200,7 +209,7 @@ class RailDefects:
                     # plt.xlim(390000, 400000)
                     # plt.show()
 
-                    if features=='RMS':
+                    if features == 'RMS':
                         mylist = np.stack((rms, rms), axis=-1)
                     if features == 'Kurtosis':
                         mylist = np.stack((kurtosis, kurtosis), axis=-1)
@@ -220,11 +229,6 @@ class RailDefects:
                     norm_train, anom_train, norm_test, anom_test, anom_icount, anom_icount_train, anom_score = isolation_forest(
                         mylist, int_count, sub_sampling, impurity, num_trees)
 
-                    # norm_train = np.concatenate(norm_train.tolist())
-                    # anom_train = np.concatenate(anom_train.tolist())
-                    # norm_test = np.concatenate(norm_test.tolist())
-                    # anom_test = np.concatenate(anom_test.tolist())
-
                     all_xcount_mode.append(get_xcount(int_count))
                     anom_xcount_test = get_xcount(anom_icount)
                     anom_xcount_train = get_xcount(anom_icount_train)
@@ -234,7 +238,7 @@ class RailDefects:
                     anom_xcount_list.append(anom_xcount)
                     anom_score_list.append(anom_score)
 
-                    # new code for validation of anomalies
+                    # validation of anomalies
                     latitude = get_lat(anom_xcount)
                     longitude = get_long(anom_xcount)
                     dist = [0]
@@ -296,7 +300,7 @@ class RailDefects:
             anom_xcount_cha = list(anom_pos_xcount_sorted[:, 1])
             anom_score_cha = list(anom_pos_xcount_sorted[:, 2])
 
-            # # Data-frame for severity analysis
+            # Severity analysis (head-checks vs ABA anomaly severity)
 
             # dict = {'position': anom_pos_cha, 'counters': anom_xcount_cha, 'score': anom_score_cha}
             # df_anom_pos_score = pd.DataFrame(data=dict)
