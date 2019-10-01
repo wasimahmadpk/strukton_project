@@ -13,9 +13,6 @@ def extract_features(vibration_data, int_counter, window_size):
 
     # total windows
     nwindows = math.floor(len(vibration_data)/window_size)
-    
-    # the LBP block label histograms of all the images 
-    #feature_vectors = np.zeros((nwindows,3))
    
     fvl2 = []
     sr_counter = 0
