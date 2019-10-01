@@ -143,10 +143,6 @@ class RailDefects:
             get_xcount = interp1d(int_count, ext_count, fill_value='extrapolate')
             get_icount = interp1d(ext_count, int_count, fill_value='extrapolate')
 
-            # ///////////// Extract Train Speed /////////////
-            # ze = Zedf(rp.run.paths['default'].parent.joinpath('ZOES'), rp.run.name)
-            # vel = int(ze.ze_get(np.mean([data.loc[k]['CNT_BGN'], data.loc[k]['CNT_END']]), 'velocity') * 3.6)
-
             # ///////////// Feature Extraction //////////////
             aba_data_side = []
             all_xcount_mode = []
@@ -176,17 +172,17 @@ class RailDefects:
                     rmsf = np.array(list_of_features[:, 12])
                     int_count = np.array(list_of_features[:, 13])
 
-                    # # features comparison
+                    # features comparison
                     # plt.figure(2)
                     # plt.subplot(211)
                     # plt.ylabel('ABA')
                     # plt.plot(list(range(0, 401000)), in_data[:401000])
-                    # # plt.subplot(212)
-                    # # plt.ylabel('RMS')
-                    # # plt.plot(list(range(1000, 401000, 2000)), rms[:200], '*')
-                    # # plt.subplot(413)
-                    # # plt.ylabel('Kurtosis')
-                    # # plt.plot(list(range(1000, 401000, 2000)), kurtosis[:200], '*')
+                    # plt.subplot(212)
+                    # plt.ylabel('RMS')
+                    # plt.plot(list(range(1000, 401000, 2000)), rms[:200], '*')
+                    # plt.subplot(413)
+                    # plt.ylabel('Kurtosis')
+                    # plt.plot(list(range(1000, 401000, 2000)), kurtosis[:200], '*')
                     # plt.subplot(212)
                     # plt.ylabel('Peak to peak')
                     # plt.xlabel('Data Samples')
