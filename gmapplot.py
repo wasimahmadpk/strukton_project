@@ -25,7 +25,7 @@ def gmap_plot(lat_list, long_list):
   
     # scatter method of map object  
     # scatter points on the google map 
-    gmap1.scatter(lat_list, long_list, '# FF0000', size = 40, marker=True) 
+    gmap1.scatter(lat_list, long_list, '# FF0000', size=40, marker=True)
   
     # Plot method Draw a line in 
     # between given coordinates 
