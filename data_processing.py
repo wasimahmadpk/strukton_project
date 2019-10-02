@@ -18,6 +18,7 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
     # read CSV file
     print('Data pre-processing is running... ')
     route_list = []
+    # get data from SEG file
     with open(segfile) as csv_file:
         csv_reader = csv.reader(csv_file)
         line_count = 0
@@ -37,6 +38,7 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
         print(f'Processed {line_count} lines in SEG file.')
         route_list = np.array(route_list)
 
+    # Get data from POI file
     geo_list = []
     with open(poifile) as csv_file:
         csv_reader = csv.reader(csv_file)
@@ -106,9 +108,6 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
     # xcounters = timedat.ExtCnt
     xcounters = np.array(get_xcount(timedat.INTCNT))
     timedat = timedat.assign(EXTCNT=xcounters)
-    # newext = np.arange(np.ceil(timedat.EXTCNT[0]/10)*10,np.floor(timedat.EXTCNT[-1]/10)*10,100)
-    # distsamp = interp1d(timedat.EXTCNT,dispchab3)
-    # newdisp = distsamp(newext)
 
     # Train speed calculation
 
@@ -159,7 +158,7 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
 
     ################################################################
 
-    # Populating Track and ERS values (Modified)
+    # Populating Track and ERS values
     edir, tdir = 0, 0
     switch_start = []
     switch_end = []
@@ -292,6 +291,5 @@ def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
     # timedat.CHB3[list(obj_counters)] = chb3_mean
 
     # timedat = timedat.drop(list(switch_counters), axis=0)
-    print("Just reached ;) ")
     return timedat
     # timedat.to_hdf(processedfile, key='processed', mode='w')
