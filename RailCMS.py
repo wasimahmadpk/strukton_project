@@ -214,7 +214,7 @@ class WidgetGallery(QDialog):
         self.fqbox.currentIndexChanged.connect(self.selection_change)
 
         self.swinqbox = QComboBox()
-        self.swinqbox.addItems(['500', '1000', '1500', '2000', '5200', '3000', '3500', '4000', '5000', '500'])
+        self.swinqbox.addItems(['500', '1000', '1500', '2000', '2500', '3000', '3500', '4000', '5000', '500'])
         self.swinqbox.currentIndexChanged.connect(self.selection_change)
 
         swinsbox = QSpinBox()
