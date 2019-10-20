@@ -276,7 +276,7 @@ class RailDefects:
                     lat_list_train = get_lat(anom_xcount_train).tolist()
                     long_list_train = get_long(anom_xcount_train).tolist()
 
-                    gmap_plot(lat_list_train + lat_list, long_list_train + long_list)
+                    # gmap_plot(lat_list_train + lat_list, long_list_train + long_list)
 
                 aba_data_side.append(aba_data_mode)
                 anom_xcount_mode.append(anom_xcount_list)

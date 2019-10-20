@@ -136,8 +136,8 @@ def match_anomaly(abadata, allxcount, anomxcount, segfile):
                     plt.plot(counters, data_chb)
                     for xc in winanomb:
                         plt.axvline(x=xc, color='r', linestyle='--')
-                    plt.savefig(r'D:\strukton_project\Flevolijn\Prorail18022101si12\ABA\Prorail18022101si12\channel_comparison\{}.png'.format(fname))
-                    plt.clf()
+                    # plt.savefig(r'D:\strukton_project\Flevolijn\Prorail18022101si12\ABA\Prorail18022101si12\channel_comparison\{}.png'.format(fname))
+                    # plt.clf()
 
             anomaly_positions.append(anom_pos_listA)
             anomaly_positions.append(anom_pos_listB)
