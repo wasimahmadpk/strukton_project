@@ -228,6 +228,7 @@ class RailDefects:
                                           axis=-1)
                     norm_train, anom_train, norm_test, anom_test, anom_icount, anom_icount_train, anom_score = isolation_forest(
                         mylist, int_count, sub_sampling, impurity, num_trees)
+                    print("Return from Anomaly detection")
 
                     all_xcount_mode.append(get_xcount(int_count))
                     anom_xcount_test = get_xcount(anom_icount)

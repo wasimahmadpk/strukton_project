@@ -51,8 +51,8 @@ def isolation_forest(my_data, int_count, sub_sampling, impurity, num_trees):
     adjusted_anom_scores = [-1 * s - .5 for s in anomalies]
     anom_scores = 1 - normalize(adjusted_anom_scores)
 
-    plt.figure(3)
-    plt.plot(anom_scores)
+    # plt.figure(3)
+    # plt.plot(anom_scores)
 
     # # Contour plot of normal and anomalous samples in train and test set
     # aa, bb = np.meshgrid(np.linspace(np.min(my_data[:, 0])-1, 40, 40),
