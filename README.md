@@ -46,3 +46,6 @@ To install them, simply create a new [conda](https://docs.conda.io/en/latest/) e
 pip install -r requirements.txt
 ```
 
+## Acknowledgement
+
+This work is jointly funded and done with the collaboration of the University of Twente (Applied Maintenance Group) and STRUKTON RAIL.
