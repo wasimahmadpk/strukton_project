@@ -31,7 +31,7 @@ We use axel box accelerometer data along with GPS information to identify and lo
 
 
 <p align="center">
-<img src="res/test.png" width="750" height="350" />
+<img src="res/cms.jpg" width="750" height="350" />
 </p>
 
 
