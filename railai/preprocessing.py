@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 from scipy.interpolate import interp1d
 
-from io_utils import read_semicolon_table
+from railai.io_utils import read_semicolon_table
 
 
 def pre_processing(datafile, syncfile, segfile, poifile, processedfile):

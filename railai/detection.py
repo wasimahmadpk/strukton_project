@@ -4,7 +4,7 @@
 import numpy as np
 from sklearn.ensemble import IsolationForest
 
-from normalization import normalize
+from railai.normalize import normalize
 
 
 def isolation_forest(my_data, int_count, sub_sampling, impurity, num_trees):

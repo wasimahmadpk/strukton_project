@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.interpolate import interp1d
 
-from io_utils import read_semicolon_table
+from railai.io_utils import read_semicolon_table
 
 
 def match_anomaly(abadata, allxcount, anomxcount, segfile):

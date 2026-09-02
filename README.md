@@ -26,18 +26,24 @@ Axle-box accelerometer (ABA) recordings and GPS/route files are used to find and
 
 ## Layout
 
-| File | Role |
-| --- | --- |
-| `RailCMS.py` | PyQt5 desktop UI |
-| `raildefects_main.py` | `RailDefects` pipeline (CLI / library) |
-| `data_processing.py` | ABA + route-file pre-processing |
-| `extract_features.py` | sliding-window statistics |
-| `anomaly_detection.py` | Isolation Forest |
-| `compare_anomaly.py` | CHA/CHB matching and kilometre mapping |
-| `data_paths.py` | default Groningen measurement paths |
-| `spot_anomaly.py` | overlay detections on track images |
-| `performance.py` | hit / false-alarm counts vs labelled XML |
-| `severity_analysis.py` | ABA score vs eddy-current crack depth |
+```
+strukton_project/
+├── railai/                 core library
+│   ├── pipeline.py         RailDefects (train / detect / localise)
+│   ├── preprocessing.py    ABA + SEG/POI alignment
+│   ├── features.py         sliding-window statistics
+│   ├── detection.py        Isolation Forest
+│   ├── matching.py         CHA/CHB kilometre mapping
+│   ├── paths.py            measurement locations
+│   └── io_utils.py         route-file readers
+├── ui/                     PyQt5 desktop app
+├── scripts/                camera overlay, scoring, ECT/UST plots
+├── data/                   put local measurements here (not in git)
+├── figures/                maps and plots written at runtime
+└── res/                    thesis figures used in this README
+```
+
+Root launchers `RailCMS.py` and `raildefects_main.py` still work.
 
 ## Installation
 
@@ -47,7 +53,7 @@ conda activate railai
 pip install -r requirements.txt
 ```
 
-Measurement files (HDF5 ABA, SEG/POI CSVs) are not in this repository. Point the code at your local copy:
+Measurement files are not in this repository. Point the code at your local copy (see `data/README.md`):
 
 ```bash
 export STRUKTON_DATA_ROOT=/path/to/Groningen
@@ -58,23 +64,29 @@ If those variables are unset, the original Windows thesis paths under `F:\UTDATA
 
 ## Run
 
-Desktop UI:
+Desktop UI (same as before):
 
 ```bash
 python RailCMS.py
 ```
 
-Command line (uses `data_paths` / the environment variables above):
+Command-line pipeline:
 
 ```bash
 python raildefects_main.py
 ```
 
+Or as a module:
+
+```bash
+python -m railai          # detection
+python -m railai gui      # UI
+```
+
 In Python:
 
 ```python
-from raildefects_main import RailDefects
-from data_paths import data_paths
+from railai import RailDefects, data_paths
 
 paths = data_paths()
 model = RailDefects(1)
@@ -93,7 +105,7 @@ result = model.anomaly_detection(
 
 ## Data
 
-ABA, route files, and track images were provided by ProRail. Eddy-current / ultrasonic scripts (`ectdata.py`, `ustdata.py`) expect the corresponding Excel exports on disk.
+ABA, route files, and track images were provided by ProRail. Extra scripts under `scripts/` expect the corresponding Excel / image exports on disk.
 
 ## Acknowledgement
 

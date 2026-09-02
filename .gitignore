@@ -8,10 +8,15 @@ venv/
 .idea/
 .vscode/
 
-# Measurement data and generated artefacts
+# Measurement data (keep the folder description)
+data/**
+!data/README.md
+
+# Generated artefacts
+figures/*
+!figures/.gitkeep
 *.h5
 *.hdf5
 *.npy
-figures/
 *.html
 *.log

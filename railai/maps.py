@@ -16,7 +16,8 @@ import os
 
 import gmplot
 
-_FIG_DIR = os.environ.get("STRUKTON_FIGURES", os.path.join(os.path.dirname(__file__), "figures"))
+_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_FIG_DIR = os.environ.get("STRUKTON_FIGURES", os.path.join(_REPO_ROOT, "figures"))
 
 
 def gmap_plot(lat_list, long_list):
