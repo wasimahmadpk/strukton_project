@@ -5,60 +5,28 @@ Created on Wed Dec  5 14:42:01 2018
 @author: Waseem
 """
 
-import codecs
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
-import csv
+
+from io_utils import read_semicolon_table
 
 
 def pre_processing(datafile, syncfile, segfile, poifile, processedfile):
 
-    # read CSV file
     print('Data pre-processing is running... ')
-    route_list = []
-    # get data from SEG file
-    with open(segfile) as csv_file:
-        csv_reader = csv.reader(csv_file)
-        line_count = 0
-        prefixes = ["CNT_BGN", "PRV10_CNT_BGN", "PRV9_CNT_BGN"]
-        for row in csv_reader:
-            tempStr = ''.join(row)
-            if tempStr.startswith('#') or len(tempStr) == 0:
-                continue
-            elif tempStr.startswith(tuple(prefixes)):
-                print(f'Column names are {", ".join(row)}')
-                line_count += 1
-            else:
-                # print(f'\t{row[0]} works in the {row[1]} department, and was born in {row[2]}.')
-                line_count += 1
-                tlist = tempStr.split(";")
-                route_list.append(tlist)
-        print(f'Processed {line_count} lines in SEG file.')
-        route_list = np.array(route_list)
+    prefixes = ("CNT_BGN", "PRV10_CNT_BGN", "PRV9_CNT_BGN")
+    route_rows, line_count = read_semicolon_table(segfile, prefixes)
+    print(f'Processed {line_count} lines in SEG file.')
+    route_list = np.array(route_rows)
 
-    # Get data from POI file
+    geo_rows, line_count = read_semicolon_table(poifile, "CNT")
     geo_list = []
-    with open(poifile) as csv_file:
-        csv_reader = csv.reader(csv_file)
-        line_count = 0
-        for row in csv_reader:
-            tempStr = ''.join(row)
-            if tempStr.startswith('#') or len(tempStr) == 0:
-                continue
-            elif tempStr.startswith('CNT'):
-                print(f'Column names are {", ".join(row)}')
-                line_count += 1
-            else:
-                # print(f'\t{row[0]} works in the {row[1]} department, and was born in {row[2]}.')
-                line_count += 1
-                tlist = tempStr.split(";")
-                ttlist = [float(x) for x in tlist if len(x) > 0]
-                geo_list.append(ttlist)
-        print(f'Processed {line_count} lines in POI file.')
-        print("Program is running...")
-        geo_list = np.array(geo_list)
+    for tlist in geo_rows:
+        geo_list.append([float(x) for x in tlist if len(x) > 0])
+    print(f'Processed {line_count} lines in POI file.')
+    print("Program is running...")
+    geo_list = np.array(geo_list)
         
     lat = geo_list[:, 1]
     lon = geo_list[:, 2]

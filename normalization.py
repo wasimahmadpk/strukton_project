@@ -1,18 +1,13 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Tue Dec 18 16:27:50 2018
-
-@author: Waseem
-"""
+"""Min-max normalisation used for Isolation Forest anomaly scores."""
 
 import numpy as np
 
+
 def normalize(data):
-    
-    norm_data = []
     mindata, maxdata = min(data), max(data)
+    span = maxdata - mindata
+    norm_data = []
     for i in range(len(data)):
-        norm_data.append((data[i] - mindata)/(maxdata-mindata))
+        norm_data.append((data[i] - mindata) / span)
     return np.array(norm_data)
-        
-    

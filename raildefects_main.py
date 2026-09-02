@@ -6,21 +6,17 @@ Created on Thu Feb 01 13:21:46 2018
 """
 
 import os
-import csv
+
 import numpy as np
 import pandas as pd
-from string import ascii_letters
-from gmapplot import gmap_plot
-import matplotlib.pyplot as plt
-from data_paths import data_paths
-from normalization import normalize
-from geopy.distance import geodesic
 from scipy.interpolate import interp1d
-from compare_anomaly import match_anomaly
-from data_processing import pre_processing
-from severity_analysis import DefectSeverity
-from extract_features import extract_features
+
 from anomaly_detection import isolation_forest
+from compare_anomaly import match_anomaly
+from data_paths import data_paths
+from data_processing import pre_processing
+from extract_features import extract_features
+from io_utils import read_semicolon_table, write_csv
 
 
 class RailDefects:
@@ -42,24 +38,12 @@ class RailDefects:
         if not os.path.isfile(self.processed_file):
             pre_processing(self.data_file, self.sync_file, self.seg_file, self.poi_file, self.processed_file)
         else:
+            geo_rows, line_count = read_semicolon_table(self.poi_file, "CNT")
             geo_list = []
-            with open(self.poi_file) as csv_file:
-                csv_reader = csv.reader(csv_file)
-                line_count = 0
-                for row in csv_reader:
-                    tempStr = ''.join(row)
-                    if tempStr.startswith('#') or len(tempStr) == 0:
-                        continue
-                    elif tempStr.startswith('CNT'):
-                        print(f'Column names are {", ".join(row)}')
-                        line_count += 1
-                    else:
-                        line_count += 1
-                        tlist = tempStr.split(";")
-                        ttlist = [float(x) for x in tlist if len(x) > 0]
-                        geo_list.append(ttlist)
-                print(f'Processed {line_count} lines in POI file.')
-                geo_list = np.array(geo_list)
+            for tlist in geo_rows:
+                geo_list.append([float(x) for x in tlist if len(x) > 0])
+            print(f'Processed {line_count} lines in POI file.')
+            geo_list = np.array(geo_list)
 
             lat = geo_list[:, 1]
             lon = geo_list[:, 2]
@@ -260,15 +244,12 @@ class RailDefects:
                     track_side = 'chb' if i else 'cha'
                     train_mode = 'pushing' if j else 'pulling'
 
-                    with open(self.counters_path + '\Prorail17112805si12_' + track_side + '_' + train_mode + '.csv', 'w',
-                              newline='') as file:
-                        try:
-                            writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                            writer.writerow(['counters', 'latitude', 'longitude', 'distance'])
-                            for cnt, lat, lon, dist in write_data:
-                                writer.writerow([cnt, lat, lon, dist])
-                        finally:
-                            file.close()
+                    out_name = "Prorail17112805si12_{}_{}.csv".format(track_side, train_mode)
+                    write_csv(
+                        os.path.join(self.counters_path, out_name),
+                        ["counters", "latitude", "longitude", "distance"],
+                        write_data,
+                    )
                     #######################################################
 
                     lat_list = get_lat(anom_xcount).tolist()
@@ -338,18 +319,7 @@ class RailDefects:
         return anom_pos_xcount_sorted
 
     def save_output(self, write_data, fname):
-
-        track_side = 'cha_km'
-        with open(fname + '.csv', 'w', newline='') as file:
-        # with open(self.counters_path + '\Prorail17112805si12_' + track_side + '.csv', 'w',
-        #           newline='') as file:
-            try:
-                writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                writer.writerow(['positions', 'counters', 'severity'])
-                for pos, cnt, sev in write_data:
-                    writer.writerow([pos, cnt, sev])
-            finally:
-                file.close()
+        write_csv(fname + ".csv", ["positions", "counters", "severity"], write_data)
 
 
 if __name__ == "__main__":

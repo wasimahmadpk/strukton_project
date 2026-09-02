@@ -12,8 +12,12 @@ Created on Wed Nov  7 00:49:32 2018
 @author: Waseem
 """
 
-# import gmplot package 
-import gmplot 
+import os
+
+import gmplot
+
+_FIG_DIR = os.environ.get("STRUKTON_FIGURES", os.path.join(os.path.dirname(__file__), "figures"))
+
 
 def gmap_plot(lat_list, long_list):
     
@@ -36,8 +40,9 @@ def gmap_plot(lat_list, long_list):
     # points on the Google map 
     gmap2.heatmap(lat_list, long_list) 
   
-    gmap1.draw("D:\\strukton_project\\figures\\track_groningen1.html")
-    gmap2.draw("D:\\strukton_project\\figures\\track_groningen2.html")
+    os.makedirs(_FIG_DIR, exist_ok=True)
+    gmap1.draw(os.path.join(_FIG_DIR, "track_groningen1.html"))
+    gmap2.draw(os.path.join(_FIG_DIR, "track_groningen2.html"))
 
 
 if __name__ == '__main__':

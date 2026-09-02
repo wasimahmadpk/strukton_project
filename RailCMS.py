@@ -1,16 +1,27 @@
 #!/usr/bin/env python
-from PyQt5.QtGui import QIcon, QPixmap, QColor
-from PyQt5.QtCore import QDateTime, Qt, QTimer, QSize
-from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
-        QDial, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit,
-        QProgressBar, QPushButton, QRadioButton, QScrollBar, QSizePolicy,
-        QSlider, QSpinBox, QStyleFactory, QTableWidget, QTableWidgetItem, QTabWidget, QTextEdit,
-        QVBoxLayout, QWidget, QFileDialog, QMessageBox, QFormLayout, QDialogButtonBox)
+from PyQt5.QtGui import QIcon, QColor
+from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtWidgets import (
+    QApplication, QCheckBox, QComboBox, QDialog, QGridLayout, QGroupBox,
+    QHBoxLayout, QLabel, QLineEdit, QProgressBar, QPushButton, QRadioButton,
+    QSizePolicy, QSlider, QSpinBox, QStyleFactory, QTableWidget, QTableWidgetItem,
+    QTabWidget, QTextEdit, QWidget, QFileDialog, QMessageBox, QFormLayout,
+)
 
 import numpy as np
-import csv
-from raildefects_main import RailDefects
+
 from data_processing import pre_processing
+from io_utils import write_csv
+from raildefects_main import RailDefects
+
+
+def _error(title, text, informative):
+    msg = QMessageBox()
+    msg.setIcon(QMessageBox.Critical)
+    msg.setText(text)
+    msg.setInformativeText(informative)
+    msg.setWindowTitle(title)
+    msg.exec_()
 
 
 class WidgetGallery(QDialog):
@@ -79,6 +90,7 @@ class WidgetGallery(QDialog):
         self.setWindowTitle("RAIL CONDITION MONITORING SYSTEM")
         self.changeStyle('Fusion')
         self.setWindowFlags(Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
+        self.selection_change()
 
     def changeStyle(self, styleName):
         QApplication.setStyle(QStyleFactory.create(styleName))
@@ -289,28 +301,13 @@ class WidgetGallery(QDialog):
 
         if fileName:
             if self.type == 'anomaly' and not str(fileName).endswith('.h5'):
-                msg = QMessageBox()
-                msg.setIcon(QMessageBox.Critical)
-                msg.setText("File Error")
-                msg.setInformativeText('Please select the file with .h5 format!')
-                msg.setWindowTitle("Error")
-                msg.exec_()
+                _error("Error", "File Error", "Please select the file with .h5 format!")
 
             elif self.type != 'anomaly' and not str(fileName).endswith('.csv'):
                 if self.type == 'aba' and not str(fileName).endswith('.h5'):
-                    msg = QMessageBox()
-                    msg.setIcon(QMessageBox.Critical)
-                    msg.setText("File Error")
-                    msg.setInformativeText('Please select the file with .h5 format!')
-                    msg.setWindowTitle("Error")
-                    msg.exec_()
-                elif self.type!= 'aba':
-                    msg = QMessageBox()
-                    msg.setIcon(QMessageBox.Critical)
-                    msg.setText("File Error")
-                    msg.setInformativeText('Please select the file with .csv format!')
-                    msg.setWindowTitle("Error")
-                    msg.exec_()
+                    _error("Error", "File Error", "Please select the file with .h5 format!")
+                elif self.type != 'aba':
+                    _error("Error", "File Error", "Please select the file with .csv format!")
 
         if self.type == 'anomaly':
                 print(fileName)
@@ -366,7 +363,8 @@ class WidgetGallery(QDialog):
 
 
     def selection_change(self):
-
+        if not hasattr(self, "tbox"):
+            return
         self.feature = self.fqbox.currentText()
         print(self.feature)
         self.swin = int(self.swinqbox.currentText())
@@ -389,23 +387,12 @@ class WidgetGallery(QDialog):
            self.poiEdit.setText("POI file")
 
         else:
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Critical)
-            msg.setText("File Error")
-            msg.setInformativeText('Please load all the required files...')
-            msg.setWindowTitle("File missing!")
-            msg.exec_()
+            _error("File missing!", "File Error", "Please load all the required files...")
 
     def detect_anomalies(self):
 
-        if self.ppfile == None:
-
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Critical)
-            msg.setText("File Error")
-            msg.setInformativeText('Please load the pre-processed file!')
-            msg.setWindowTitle("Error")
-            msg.exec_()
+        if self.ppfile is None:
+            _error("Error", "File Error", "Please load the pre-processed file!")
         else:
             obj = RailDefects(1)
             self.output = obj.anomaly_detection(self.ppfile, self.segfile, self.feature, self.swin, self.sssize, self.impurity)
@@ -421,7 +408,8 @@ class WidgetGallery(QDialog):
 
             # Populate the table
             if len(self.output) > 0:
-                for i in range(75):
+                n_rows = min(75, len(self.output))
+                for i in range(n_rows):
                     for j in range(3):
                         val = self.output[i, j]
                         print("Value:", val)
@@ -469,14 +457,7 @@ class WidgetGallery(QDialog):
         self.key = None
         self.saveFileDialog()
 
-        with open(self.savefile + '.csv', 'w', newline='') as file:
-            try:
-                writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                writer.writerow(['positions', 'counters', 'severity'])
-                for pos, cnt, sev in self.output:
-                    writer.writerow([pos, cnt, sev])
-            finally:
-                file.close()
+        write_csv(self.savefile + '.csv', ['positions', 'counters', 'severity'], self.output)
 
         self.detectanomButton.setVisible(True)
         self.saveButton.setVisible(False)

@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+*.so
+.venv/
+venv/
+.env
+.DS_Store
+.idea/
+.vscode/
+
+# Measurement data and generated artefacts
+*.h5
+*.hdf5
+*.npy
+figures/
+*.html
+*.log

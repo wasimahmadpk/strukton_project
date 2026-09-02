@@ -1,33 +1,19 @@
-import csv
 import math
-import numpy as np
+
 import matplotlib.pyplot as plt
+import numpy as np
 from scipy.interpolate import interp1d
+
+from io_utils import read_semicolon_table
 
 
 def match_anomaly(abadata, allxcount, anomxcount, segfile):
 
     print('I am inside compare_anomaly function')
 
-    # read CSV file
-    route_list = []
-    with open(segfile) as csv_file:
-        csv_reader = csv.reader(csv_file)
-        line_count = 0
-        for row in csv_reader:
-            tempStr = ''.join(row)
-            if tempStr.startswith('#') or len(tempStr) == 0:
-                continue
-            elif tempStr.startswith('PRV9_CNT_BGN'):
-                print(f'Column names are {", ".join(row)}')
-                line_count += 1
-            else:
-                # print(f'\t{row[0]} works in the {row[1]} department, and was born in {row[2]}.')
-                line_count += 1
-                tlist = tempStr.split(";")
-                route_list.append(tlist)
-        print(f'Processed {line_count} lines in SEG file.')
-        route_list = np.array(route_list)
+    route_rows, line_count = read_semicolon_table(segfile, "PRV9_CNT_BGN")
+    print(f'Processed {line_count} lines in SEG file.')
+    route_list = np.array(route_rows)
 
     winsize = 10000
     anomaly_positions = []

@@ -1,10 +1,10 @@
-# RailAI
+# RailAI — rail defect detection from axle-box acceleration
 
-The repository contains code for defect identification and localization in railway infrastructure.
+Code from the PhD thesis *Artificial intelligence based condition monitoring of rail infrastructure* (University of Twente, 2019), developed with Strukton Rail.
 
-- The work can be cited using below citation information.
+Axle-box accelerometer (ABA) recordings and GPS/route files are used to find and locate rail defects. Isolation Forest scores sliding-window features; kilometre positions come from the SEG/POI route files.
 
-```
+```bibtex
 @phdthesis{ahmad2019artificial,
   title={Artificial intelligence based condition monitoring of rail infrastructure},
   author={Ahmad, Wasim},
@@ -13,39 +13,88 @@ The repository contains code for defect identification and localization in railw
 }
 ```
 
-## Overview
+## Method
 
-We use axel box accelerometer data along with GPS information to identify and locate rail defects.
-1. Preprocessing: Where we separate the data whether the test train is going forward or back. Also separated the data for left and right side of the track.
-2. Then we apply anomaly detection technique to identify defect in data and localize it by using GPS information.
-3. For evalulation, we obtain camera images for the entire track and couple it with the identified anomalies to see whether the anomalies in accelerometer data actually relate to defects on the track or not.
-
-
-## Code
-`/RailCMS.py` to run the project with user interface.
-
-- `/data_processing.py` for the preprocessing of the axel box accelerometers data.
-- `/extract_features.py` to estimate statistical features from the data which are used for further analysis.
-- `/raildefects_main.py` to run the method from command prompt and analyse intermediate results.
-- `/anomaly_detection.py` for identification and locating the position of defects in rail infrastructure.
-
+1. **Pre-processing** — read the ABA HDF5 file, align internal/external counters, tag travel direction (push/pull) and left/right rail, and replace switch locations with channel means.
+2. **Features** — RMS, kurtosis, crest factor, impulse factor, skewness, peak-to-peak (and others) on a sliding window.
+3. **Detection** — Isolation Forest on the chosen features; anomaly scores are min-max normalised.
+4. **Localization** — map anomaly counters to track kilometres via the SEG file; optional camera overlay for visual checks.
 
 <p align="center">
-<img src="res/cms.jpg" width="750" height="350" />
+<img src="res/cms.jpg" width="750" alt="Rail condition monitoring overview" />
 </p>
 
+## Layout
 
-## Data
-We use axel box accelermeters data, railway images dataset obtained from ProRail. 
+| File | Role |
+| --- | --- |
+| `RailCMS.py` | PyQt5 desktop UI |
+| `raildefects_main.py` | `RailDefects` pipeline (CLI / library) |
+| `data_processing.py` | ABA + route-file pre-processing |
+| `extract_features.py` | sliding-window statistics |
+| `anomaly_detection.py` | Isolation Forest |
+| `compare_anomaly.py` | CHA/CHB matching and kilometre mapping |
+| `data_paths.py` | default Groningen measurement paths |
+| `spot_anomaly.py` | overlay detections on track images |
+| `performance.py` | hit / false-alarm counts vs labelled XML |
+| `severity_analysis.py` | ABA score vs eddy-current crack depth |
 
+## Installation
 
-## Dependencies
-The file `requirements.txt` contains all the packages that are related to the project.
-To install them, simply create a new [conda](https://docs.conda.io/en/latest/) environment and type
-```
+```bash
+conda create -n railai python=3.8
+conda activate railai
 pip install -r requirements.txt
 ```
 
+Measurement files (HDF5 ABA, SEG/POI CSVs) are not in this repository. Point the code at your local copy:
+
+```bash
+export STRUKTON_DATA_ROOT=/path/to/Groningen
+export STRUKTON_COUNTERS=/path/to/counter_data
+```
+
+If those variables are unset, the original Windows thesis paths under `F:\UTDATA3OCT\...` are used.
+
+## Run
+
+Desktop UI:
+
+```bash
+python RailCMS.py
+```
+
+Command line (uses `data_paths` / the environment variables above):
+
+```bash
+python raildefects_main.py
+```
+
+In Python:
+
+```python
+from raildefects_main import RailDefects
+from data_paths import data_paths
+
+paths = data_paths()
+model = RailDefects(1)
+result = model.anomaly_detection(
+    pprocessed_file=paths.processed_file,
+    seg_file=paths.seg_file,
+    features="RMS",
+    sliding_window=2000,
+    sub_sampling=128,
+    impurity=0.025,
+    num_trees=100,
+)
+```
+
+`result` is an array of `[position_km, counter, severity]` rows, sorted by position.
+
+## Data
+
+ABA, route files, and track images were provided by ProRail. Eddy-current / ultrasonic scripts (`ectdata.py`, `ustdata.py`) expect the corresponding Excel exports on disk.
+
 ## Acknowledgement
 
-This work is jointly funded and done with the collaboration of the University of Twente (Applied Maintenance Group) and STRUKTON RAIL.
+This work was funded jointly with the University of Twente (Applied Maintenance Group) and Strukton Rail.
