@@ -21,6 +21,12 @@ Axle-box accelerometer (ABA) recordings and GPS/route files are used to find and
 4. **Localization** — map anomaly counters to track kilometres via the SEG file; optional camera overlay for visual checks.
 
 <p align="center">
+<img src="res/railcms_ui.png" width="750" alt="Rail Condition Monitoring System UI" />
+</p>
+
+The desktop UI (`python RailCMS.py`) loads ABA / route files, runs detection, and lists kilometre position, counter, and severity (blue / yellow / red). The rows in the screenshot are example detections so the Results table is visible.
+
+<p align="center">
 <img src="res/cms.jpg" width="750" alt="Rail condition monitoring overview" />
 </p>
 
