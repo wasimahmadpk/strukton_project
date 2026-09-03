@@ -24,7 +24,7 @@ Axle-box accelerometer (ABA) recordings and GPS/route files are used to find and
 <img src="res/railcms_ui.png" width="900" alt="Rail Condition Monitoring System UI" />
 </p>
 
-The desktop UI (`python RailCMS.py`) is a three-step workspace: pre-process ABA / SYNC / SEG / POI files, run Isolation Forest detection, then review kilometre position, counter, and severity (blue / yellow / red). The rows in the screenshot are example detections so the Results table is visible.
+The desktop UI (`python RailCMS.py`) keeps the workflow on top — pre-processing and detection side by side, model settings in one row — and lists kilometre position, counter, and severity (blue / yellow / red) underneath. The rows in the screenshot are example detections so the Results table is visible.
 
 <p align="center">
 <img src="res/cms.jpg" width="750" alt="Rail condition monitoring overview" />

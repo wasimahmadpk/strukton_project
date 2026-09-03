@@ -9,7 +9,7 @@ if str(_REPO_ROOT) not in sys.path:
 from PyQt5.QtGui import QColor, QFont, QIcon
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QApplication, QComboBox, QDialog, QFileDialog, QFormLayout, QFrame,
+    QApplication, QComboBox, QDialog, QFileDialog, QFrame,
     QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMessageBox, QPushButton,
     QSizePolicy, QSpinBox, QTableWidget, QTableWidgetItem, QVBoxLayout,
     QWidget,
@@ -70,7 +70,8 @@ QLineEdit {
     background: #f6f8fb;
     border: 1px solid #c5d0da;
     border-radius: 4px;
-    padding: 6px 8px;
+    padding: 2px 10px;
+    min-height: 28px;
     color: #1c2b39;
     selection-background-color: #1a6f8b;
 }
@@ -82,8 +83,9 @@ QComboBox, QSpinBox {
     background: #ffffff;
     border: 1px solid #c5d0da;
     border-radius: 4px;
-    padding: 5px 8px;
-    min-height: 22px;
+    padding: 2px 8px;
+    min-height: 28px;
+    min-width: 100px;
 }
 QComboBox:focus, QSpinBox:focus {
     border: 1px solid #1a6f8b;
@@ -92,7 +94,9 @@ QPushButton {
     background: #ffffff;
     border: 1px solid #b7c4d0;
     border-radius: 4px;
-    padding: 6px 12px;
+    padding: 4px 12px;
+    min-height: 28px;
+    max-height: 32px;
     color: #1c2b39;
     font-weight: 600;
 }
@@ -102,6 +106,10 @@ QPushButton:hover {
 }
 QPushButton:pressed {
     background: #e4eef3;
+}
+QPushButton#Primary, QPushButton#Save {
+    min-height: 34px;
+    max-height: 36px;
 }
 QPushButton#Primary {
     background: #1a6f8b;
@@ -194,9 +202,10 @@ def _error(title, text, informative):
 def _card(title, hint=None):
     frame = QFrame()
     frame.setObjectName("Card")
+    frame.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
     layout = QVBoxLayout(frame)
-    layout.setContentsMargins(16, 14, 16, 14)
-    layout.setSpacing(10)
+    layout.setContentsMargins(18, 16, 18, 16)
+    layout.setSpacing(12)
     heading = QLabel(title)
     heading.setObjectName("CardTitle")
     layout.addWidget(heading)
@@ -212,8 +221,8 @@ class WidgetGallery(QDialog):
     def __init__(self, parent=None):
         super(WidgetGallery, self).__init__(parent)
         self.setObjectName("RailCMS")
-        self.resize(1240, 800)
-        self.setMinimumSize(980, 680)
+        self.resize(1320, 840)
+        self.setMinimumSize(1180, 800)
         self.fileName = None
         self.ppfile = None
         self.abafile = None
@@ -238,11 +247,12 @@ class WidgetGallery(QDialog):
         root.addWidget(self._build_header())
 
         body = QWidget()
-        body_layout = QHBoxLayout(body)
-        body_layout.setContentsMargins(16, 16, 16, 16)
-        body_layout.setSpacing(14)
-        body_layout.addWidget(self._build_sidebar(), 0)
-        body_layout.addWidget(self._build_results(), 1)
+        body_layout = QVBoxLayout(body)
+        body_layout.setContentsMargins(16, 14, 16, 14)
+        body_layout.setSpacing(12)
+        body_layout.addWidget(self._build_workflow(), 0)
+        body_layout.addWidget(self._build_results(), 0)
+        body_layout.addStretch(1)
         root.addWidget(body, 1)
 
         self.setWindowTitle("RailCMS — Rail Condition Monitoring")
@@ -277,10 +287,10 @@ class WidgetGallery(QDialog):
         layout.addWidget(badge, 0, Qt.AlignRight | Qt.AlignVCenter)
         return header
 
-    def _build_sidebar(self):
-        sidebar = QWidget()
-        sidebar.setFixedWidth(360)
-        layout = QVBoxLayout(sidebar)
+    def _build_workflow(self):
+        panel = QWidget()
+        panel.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
+        layout = QVBoxLayout(panel)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(12)
 
@@ -288,15 +298,18 @@ class WidgetGallery(QDialog):
         self.createTopRightGroupBox()
         self.createBottomRightGroupBox()
 
-        layout.addWidget(self.topLeftGroupBox)
-        layout.addWidget(self.topRightGroupBox)
+        steps = QHBoxLayout()
+        steps.setSpacing(12)
+        steps.addWidget(self.topLeftGroupBox, 1)
+        steps.addWidget(self.topRightGroupBox, 1)
+        layout.addLayout(steps)
         layout.addWidget(self.bottomRightGroupBox)
-        layout.addStretch(1)
-        return sidebar
+        return panel
 
     def _build_results(self):
         panel = QFrame()
         panel.setObjectName("Card")
+        panel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
         layout = QVBoxLayout(panel)
         layout.setContentsMargins(18, 16, 18, 16)
         layout.setSpacing(10)
@@ -326,7 +339,7 @@ class WidgetGallery(QDialog):
         layout.addLayout(legend)
 
         self.createBottomLeftTabWidget(self.output)
-        layout.addWidget(self.tableWidget, 1)
+        layout.addWidget(self.tableWidget, 0)
 
         note = QLabel(
             "Train axle-box acceleration is used to find incipient rail defects. "
@@ -339,33 +352,54 @@ class WidgetGallery(QDialog):
 
     def _file_field(self, caption, placeholder, on_browse):
         box = QWidget()
-        col = QVBoxLayout(box)
-        col.setContentsMargins(0, 0, 0, 0)
-        col.setSpacing(4)
+        box.setFixedHeight(40)
+        row = QHBoxLayout(box)
+        row.setContentsMargins(0, 0, 0, 0)
+        row.setSpacing(10)
         label = QLabel(caption)
         label.setObjectName("FieldLabel")
+        label.setFixedWidth(132)
+        label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         field = QLineEdit()
         field.setReadOnly(True)
         field.setPlaceholderText(placeholder)
+        field.setFixedHeight(30)
+        field.setClearButtonEnabled(False)
         browse = QPushButton("Browse")
+        browse.setFixedSize(86, 30)
         browse.clicked.connect(on_browse)
-        row = QHBoxLayout()
-        row.setSpacing(8)
+        row.addWidget(label, 0)
         row.addWidget(field, 1)
-        row.addWidget(browse)
-        col.addWidget(label)
-        col.addLayout(row)
+        row.addWidget(browse, 0)
         return box, field
+
+    def _option_field(self, caption, widget):
+        box = QWidget()
+        box.setFixedHeight(40)
+        row = QHBoxLayout(box)
+        row.setContentsMargins(0, 0, 0, 0)
+        row.setSpacing(8)
+        label = QLabel(caption)
+        label.setObjectName("FieldLabel")
+        label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        widget.setFixedHeight(32)
+        row.addWidget(label, 0)
+        row.addWidget(widget, 1)
+        return box
 
     def _primary_row(self, start_button, save_button):
         row = QHBoxLayout()
-        row.setSpacing(8)
+        row.setContentsMargins(0, 6, 0, 0)
+        row.setSpacing(10)
         start_button.setObjectName("Primary")
-        start_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        start_button.setFixedHeight(34)
+        start_button.setMinimumWidth(170)
         save_button.setObjectName("Save")
-        save_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        row.addWidget(start_button)
-        row.addWidget(save_button)
+        save_button.setFixedHeight(34)
+        save_button.setMinimumWidth(170)
+        row.addWidget(start_button, 0)
+        row.addWidget(save_button, 0)
+        row.addStretch(1)
         return row
 
     def createTopLeftGroupBox(self):
@@ -373,6 +407,7 @@ class WidgetGallery(QDialog):
             "1  Pre-processing",
             "Load ABA, SYNC, SEG and POI files, then write a processed HDF5 file.",
         )
+        self.topLeftGroupBox.setMinimumHeight(340)
 
         aba_row, self.abaEdit = self._file_field("ABA measurement", "ABA file (.h5)", self.browse_aba)
         sync_row, self.syncEdit = self._file_field("SYNC counters", "SYNC file (.csv)", self.browse_sync)
@@ -388,10 +423,14 @@ class WidgetGallery(QDialog):
         self.savefileButton.setToolTip("Click to save the results")
         self.savefileButton.setVisible(False)
 
-        layout.addWidget(aba_row)
-        layout.addWidget(sync_row)
-        layout.addWidget(seg_row)
-        layout.addWidget(poi_row)
+        files = QVBoxLayout()
+        files.setContentsMargins(0, 8, 0, 0)
+        files.setSpacing(10)
+        files.addWidget(aba_row)
+        files.addWidget(sync_row)
+        files.addWidget(seg_row)
+        files.addWidget(poi_row)
+        layout.addLayout(files)
         layout.addLayout(self._primary_row(self.pprocessButton, self.savefileButton))
 
     def createTopRightGroupBox(self):
@@ -399,6 +438,7 @@ class WidgetGallery(QDialog):
             "2  Anomaly detection",
             "Score a processed recording and map anomalies to track kilometres.",
         )
+        self.topRightGroupBox.setMinimumHeight(340)
 
         processed_row, self.processedEdit = self._file_field(
             "Processed recording", "Pre-processed file (.h5)", self.browse_file
@@ -417,17 +457,6 @@ class WidgetGallery(QDialog):
         )
         self.swinqbox.currentIndexChanged.connect(self.selection_change)
 
-        options = QFormLayout()
-        options.setContentsMargins(0, 4, 0, 0)
-        options.setSpacing(8)
-        options.setLabelAlignment(Qt.AlignLeft | Qt.AlignVCenter)
-        feat_label = QLabel("Features")
-        feat_label.setObjectName("FieldLabel")
-        win_label = QLabel("Sliding window")
-        win_label.setObjectName("FieldLabel")
-        options.addRow(feat_label, self.fqbox)
-        options.addRow(win_label, self.swinqbox)
-
         self.detectanomButton = QPushButton("Start detection")
         self.detectanomButton.clicked.connect(self.detect_anomalies)
         self.detectanomButton.setToolTip("Click to start anomaly detection")
@@ -437,9 +466,21 @@ class WidgetGallery(QDialog):
         self.saveButton.setToolTip("Click to save the results")
         self.saveButton.setVisible(False)
 
-        layout.addWidget(processed_row)
-        layout.addWidget(seg_row)
-        layout.addLayout(options)
+        files = QVBoxLayout()
+        files.setContentsMargins(0, 8, 0, 0)
+        files.setSpacing(10)
+        files.addWidget(processed_row)
+        files.addWidget(seg_row)
+        options = QHBoxLayout()
+        options.setSpacing(16)
+        feat = self._option_field("Features", self.fqbox)
+        feat.layout().itemAt(0).widget().setFixedWidth(132)
+        win = self._option_field("Sliding window", self.swinqbox)
+        win.layout().itemAt(0).widget().setFixedWidth(110)
+        options.addWidget(feat, 1)
+        options.addWidget(win, 1)
+        files.addLayout(options)
+        layout.addLayout(files)
         layout.addLayout(self._primary_row(self.detectanomButton, self.saveButton))
 
     def createBottomLeftTabWidget(self, output):
@@ -455,12 +496,25 @@ class WidgetGallery(QDialog):
         header.setSectionResizeMode(1, QHeaderView.Stretch)
         header.setSectionResizeMode(2, QHeaderView.ResizeToContents)
         self.tableWidget.verticalHeader().setDefaultSectionSize(28)
+        self._sync_table_height(6)
 
     def createBottomRightGroupBox(self):
-        self.bottomRightGroupBox, layout = _card(
-            "3  Model parameters",
-            "Isolation Forest settings used when detection starts.",
-        )
+        self.bottomRightGroupBox = QFrame()
+        self.bottomRightGroupBox.setObjectName("Card")
+        self.bottomRightGroupBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+        layout = QHBoxLayout(self.bottomRightGroupBox)
+        layout.setContentsMargins(18, 12, 18, 12)
+        layout.setSpacing(18)
+
+        title = QLabel("3  Model parameters")
+        title.setObjectName("CardTitle")
+        hint = QLabel("Isolation Forest settings used when detection starts")
+        hint.setObjectName("CardHint")
+        names = QVBoxLayout()
+        names.setSpacing(2)
+        names.addWidget(title)
+        names.addWidget(hint)
+        layout.addLayout(names, 0)
 
         self.tbox = QComboBox()
         self.tbox.addItems(["25", "50", "100", "150", "200", "250"])
@@ -476,18 +530,12 @@ class WidgetGallery(QDialog):
         self.stbox.addItems(["16", "32", "64", "128", "256", "512"])
         self.stbox.currentIndexChanged.connect(self.selection_change)
 
-        form = QFormLayout()
-        form.setContentsMargins(0, 0, 0, 0)
-        form.setSpacing(8)
         for text, widget in (
             ("Impurity ratio (%)", self.ispinBox),
             ("Sub-sampling size", self.stbox),
             ("No. of trees", self.tbox),
         ):
-            label = QLabel(text)
-            label.setObjectName("FieldLabel")
-            form.addRow(label, widget)
-        layout.addLayout(form)
+            layout.addWidget(self._option_field(text, widget), 1)
 
     def _fill_results_table(self, rows):
         n_rows = min(75, len(rows))
@@ -508,10 +556,17 @@ class WidgetGallery(QDialog):
                     else:
                         item.setBackground(QColor(Qt.red))
                         item.setForeground(QColor(Qt.white))
+        self._sync_table_height(n_rows)
         if n_rows == 1:
             self.resultsMeta.setText("1 detection")
         else:
             self.resultsMeta.setText("%d detections" % n_rows)
+
+    def _sync_table_height(self, n_rows):
+        header = self.tableWidget.horizontalHeader().sizeHint().height()
+        row_h = self.tableWidget.verticalHeader().defaultSectionSize()
+        visible = max(n_rows, 5)
+        self.tableWidget.setFixedHeight(header + visible * row_h + 8)
 
     # ///////////////////// System functions /////////////////////////
 
@@ -666,6 +721,7 @@ class WidgetGallery(QDialog):
         self.saveButton.setVisible(False)
         self.tableWidget.clearContents()
         self.tableWidget.setRowCount(0)
+        self._sync_table_height(0)
         self.resultsMeta.setText("No detections yet")
 
     def save_pdata(self):
