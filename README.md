@@ -1,6 +1,6 @@
 # RailAI — rail defect detection from axle-box acceleration
 
-Code from the Engineering Doctorate thesis *Artificial intelligence based condition monitoring of rail infrastructure* (University of Twente, 2019), developed in collaboration with Strukton Rail.
+Code from the Engineering Doctorate thesis: *Artificial intelligence based condition monitoring of rail infrastructure* (University of Twente, 2019), developed in collaboration with Strukton Rail.
 
 Axle-box accelerometer (ABA) recordings and GPS/route files are used to find and locate rail defects. Isolation Forest scores sliding-window features; kilometre positions come from the SEG/POI route files.
 
