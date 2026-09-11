@@ -51,6 +51,37 @@ strukton_project/
 
 Root launchers `RailCMS.py` and `raildefects_main.py` still work.
 
+## Tests
+
+No measurement files needed. These check features, Isolation Forest, paths, and route-file parsing:
+
+```bash
+pip install -r requirements-dev.txt
+PYTHONPATH=. pytest -q
+```
+
+Push to GitHub and `.github/workflows/ci.yml` runs the same tests, then builds the Docker image.
+
+## Docker (headless pipeline)
+
+The image runs detection only. It does **not** open the PyQt desktop UI.
+
+```bash
+docker build -t railai .
+docker run --rm railai
+```
+
+With your own ABA / SEG tree mounted (see `data/README.md`):
+
+```bash
+docker run --rm \
+  -v "$PWD/data:/data" \
+  -e STRUKTON_DATA_ROOT=/data/Groningen \
+  railai
+```
+
+Or `docker compose run --rm railai` after placing files under `data/Groningen`.
+
 ## Installation
 
 ```bash
