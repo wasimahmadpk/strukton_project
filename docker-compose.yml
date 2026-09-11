@@ -1,0 +1,9 @@
+services:
+  railai:
+    build: .
+    image: railai:latest
+    environment:
+      STRUKTON_DATA_ROOT: /data/Groningen
+    volumes:
+      - ./data:/data
+      - ./figures:/app/figures
